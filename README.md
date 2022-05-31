@@ -14,3 +14,20 @@
   - Purpose: use Alarm to script configuration to send alerts to an ITSM system
   - Check the [README](sendAlarmToScript\README.md) file for the project
   - Use: as part of a Control-M shout to program
+
+## Docker examples
+  - Purpose: create docker image to show possibility of agent running in docker
+  - build_docker_image.sh: Builds the docker image
+  - conn2_docker_container.sh: allows for connecting to the container for verifications
+  - remove_docker_container.sh: 
+  - clean_docker_container.sh
+  - run_docker_container.sh
+  - image
+    - dockerfile
+    - decommission_controlm.sh
+    - run_register_controlm.sh
+### Helix Control-M
+  - [Find the files here](docker\helix)
+
+### Self-Hosted (a.k.a. On-Premise)
+  - [Find the files here](docker\self-hosted)
