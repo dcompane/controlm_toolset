@@ -36,12 +36,7 @@
     - images/run_register_controlm.sh: is the CMD that is being executed for the container work.
     - images/deploy_test_jobs.json: test jobs. Not required, but will need to change the dockerfile and the run_register_controlm.sh
     - Other files as needed
-  
 
-- image
-  - dockerfile
-  - decommission_controlm.sh
-  - run_register_controlm.sh
 ### Helix Control-M
 
 - [Find the files here](docker\helix)

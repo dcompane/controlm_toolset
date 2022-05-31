@@ -9,7 +9,7 @@
   - clean_docker_container.sh: Clean orphan images
   - conn2_docker_container.sh: allows for connecting to the container for verifications
   - remove_docker_container.sh: use docker stop to stop the container
-    - Sends SIGTERM and SIGKILL after timeout. 
+    - Sends SIGTERM and SIGKILL after timeout.
     - Timeout changed to 60 secs to allow for orderly termination.
   - run_docker_container.sh: runs the container
   - signal_docker_container.sh: sends a signal for the container to process
@@ -18,12 +18,7 @@
     - images/run_register_controlm.sh: is the CMD that is being executed for the container work.
     - images/deploy_test_jobs.json: test jobs. Not required, but will need to change the dockerfile and the run_register_controlm.sh
     - Other files as needed
-  
 
-- image
-  - dockerfile
-  - decommission_controlm.sh
-  - run_register_controlm.sh
 ### Helix Control-M
 
 - [Find the files here](docker\helix)
