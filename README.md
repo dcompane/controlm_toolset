@@ -19,7 +19,11 @@
 - Use: as part of a Control-M shout to program
 
 ## Docker examples
+Please let me know of improvements you think would be useful
+For future:
+- test the STOPSIGNAL dockerfile command and use it in the run_register to test for non-usual stop signals.
 
+###Notes
 - Purpose: create docker image to show possibility of agent running in docker
 - Files
   - build_docker_image.sh: Builds the docker image
@@ -37,7 +41,7 @@
     - images/deploy_test_jobs.json: test jobs. Not required, but will need to change the dockerfile and the run_register_controlm.sh
     - Other files as needed
 
-### Helix Control-M
+### Helix Control-M 
 
 - [Find the files here](docker/helix)
 
