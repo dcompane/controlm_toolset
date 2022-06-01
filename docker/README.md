@@ -21,11 +21,11 @@
 
 ### Helix Control-M
 
-- [Find the files here](docker\helix)
+- [Find the files here](docker/helix)
 
 ### Self-Hosted (a.k.a. On-Premise)
 
-- [Find the files here](docker\self-hosted)
+- [Find the files here](docker/self-hosted)
 
 ### Information about Kubernetes
 For the Kubernetes best practice information see [here](https://github.com/controlm/automation-api-quickstart/tree/master/control-m/301-statefulset-agent-to-run-k8s-jobs-using-ai-job)
