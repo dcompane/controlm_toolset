@@ -13,14 +13,14 @@ AAPI_ENDPOINT="se-sanb0x-aapi.us1.controlm.com"
 AAPI_TOKEN=UFJER0ZQOjA1MjZiZDQwLTAwMjUtNDc5MS1iNDI5LTllNDdmMTU1MGM2MzpCdzdPVTRrVUU5WVlWOTNBM0cxTTk5dTJ5RWZERUlBWERPQk1BdlhPdVJNPQ==
 
 # INSTALL_* allows to add a plugin during the build process
-INSTALL_AIT="Y"   # Application Integrator
-INSTALL_MQL="Y"   # Databases
-INSTALL_AMZ="Y"   # AWS
-INSTALL_AZR="Y"   # Azure
-INSTALL_CBD="Y"   # Hadoop
-INSTALL_INF="Y"   # Informatica
-INSTALL_AFP="Y"   # Managed File Transfer
-INSTALL_RMC="Y"   # SAP
+INSTALL_AIT="N"   # Application Integrator
+INSTALL_MQL="N"   # Databases
+INSTALL_AMZ="N"   # AWS
+INSTALL_AZR="N"   # Azure
+INSTALL_CBD="N"   # Hadoop
+INSTALL_INF="N"   # Informatica
+INSTALL_AFP="N"   # Managed File Transfer
+INSTALL_RMC="N"   # SAP
 
 startdate=`date`
 
