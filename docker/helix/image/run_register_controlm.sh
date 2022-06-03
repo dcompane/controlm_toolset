@@ -14,18 +14,20 @@ function sigtrapHandler() {
     echo remove agent [$AGENT_NAME] from hostgroup [$CTM_HOSTGROUP] 
     ctm config server:hostgroup:agent::delete $CTM_SERVER $CTM_HOSTGROUP $AGENT_NAME -e $CTM_ENV
     if [ $? -ne 0 ]; then
-        echo "Error deleting agent $AGENT_NAME from hostgroup $CTM_HOSTGROUP on $CTM_SERVER" 
-        exit 1
-    fi
-
-    echo unregister controlm agent [$AGENT_NAME] from server IN01 
-    ctm config server:agent::delete $CTM_SERVER $AGENT_NAME -e $CTM_ENV
-    if [ $? -ne 0 ]; then
-        echo "Error deleting agent $AGENT_NAME from $CTM_SERVER"
-        exit 1
+        echo "Error deleting agent $AGENT_NAME from hostgroup $CTM_HOSTGROUP on $CTM_SERVER"
+        echo "   Will not attempt to delete the agent. Exiting."
+        getout=13
+        
+    else
+        echo unregister controlm agent [$AGENT_NAME] from server IN01 
+        ctm config server:agent::delete $CTM_SERVER $AGENT_NAME -e $CTM_ENV
+        if [ $? -ne 0 ]; then
+            echo "Error deleting agent $AGENT_NAME from $CTM_SERVER"
+            getout=14
+        fi
     fi
     echo removed agent via $signal and getout set to $getout
-    return $?
+    return $getout
 }
 
 ############ Script starts here ############
