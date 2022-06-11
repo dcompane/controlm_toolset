@@ -13,8 +13,7 @@
 #   sudo docker pull centos
 # RockyLinux does not work yet. Issue bringing down agent after install.
 # https://rockylinux.org/ 
-#FROM rockylinux:latest
-FROM centos:7
+FROM rockylinux:latest
 
 ARG AAPI_ENDPOINT
 ARG AAPI_USER
@@ -22,10 +21,9 @@ ARG AAPI_PASSWORD
 
 ### install basic packages
 ## Next line accelerates build by using deltarpm
-# For Centos
-RUN  yum -y install deltarpm
-#For Rocky (or Centos8)
-#RUN  yum -y install drpm
+#For Rocky (or RHEL8)
+RUN  yum -y install drpm
+
 RUN  yum -y update
 RUN  yum -y install unzip \
         && yum -y install sudo \
@@ -37,6 +35,9 @@ RUN  yum -y install unzip \
 # ENABLE STRACE IF NEEDED FOR TROUBLESHOOTING SIGNALING
 # connect to container and use strace -p 1 to see signals arriving to process
 # RUN  yum -y install strace
+
+# This is needed with RHEL8/RockyLinux
+RUN  yum -y install libnsl
 
 # install nodejs
 RUN curl --silent --location https://rpm.nodesource.com/setup_16.x | bash - \
@@ -66,17 +67,21 @@ RUN mkdir /root/ctm-automation-api \
         && rm ctm-cli.tgz \
         && ctm -v
 
+
 # add controlm endpoint
 USER controlm
 WORKDIR /home/controlm
 
 # next line specific for on-prem
 RUN ctm env add endpoint https://$AAPI_ENDPOINT:8443/automation-api $AAPI_USER $AAPI_PASSWORD \
-        && ctm env set endpoint
+        && ctm env set endpoint \
+        && export AAPI_PASSWORD=""
 
 # provision controlm agent image after validating the agent descriptor name.
 RUN cd \
-        && ctm provision image Agent_20.Linux
+        && ctm provision image Agent_20.Linux \
+        ; exit 0
+
 
 # Uncomment the images for the plugins needed after validating the plugin descriptor names.
 #RUN ctm provision image Application_Integrator_plugin.Linux
@@ -94,22 +99,24 @@ RUN cd \
 #        && sudo chmod 775 /home/controlm/ctm/cm/SAP/exe/sapjco/sapjco3.jar
 
 # enable controlm agent utilities
-RUN echo "source /home/controlm/.bash_profile" >> /home/controlm/.bashrc
+RUN echo "source /home/controlm/.bash_profile" >> /home/controlm/.bashrc 
 
 # Uninstall java 11. Remove comment to uninstall
 # RUN sudo yum -y autoremove java-11-openjdk
 
 # Clean yum cache to reduce image size
 RUN sudo yum clean all \
-        && sudo rm -rf /var/cache/yum
+         && sudo rm -rf /var/cache/yum
 
 ################ Specific for on-prem patches
 # Add patches as needed.
+
 COPY PAKAI.9.0.20.201_Linux-x86_64_INSTALL.BIN  /tmp
 COPY PAKAI.9.0.20.203_Linux-x86_64_INSTALL.BIN  /tmp
 
 RUN sudo chmod 755 /tmp/PAKAI.9.0.20.201_Linux-x86_64_INSTALL.BIN 
 RUN source /home/controlm/.bashrc \
+         && env \
          && /tmp/PAKAI.9.0.20.201_Linux-x86_64_INSTALL.BIN -s
 RUN sudo chmod 755 /tmp/PAKAI.9.0.20.203_Linux-x86_64_INSTALL.BIN 
 RUN source /home/controlm/.bashrc \

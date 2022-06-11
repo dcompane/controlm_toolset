@@ -33,10 +33,14 @@ For future:
 ### Helix Control-M
 
 - [Find the files here](docker/helix)
+- There are two dockerfiles in the images directory
+- Copy the dockerfile you need to "dockerfile" and run the build.
 
 ### Self-Hosted (a.k.a. On-Premise)
 
 - [Find the files here](docker/self-hosted)
+- There are two dockerfiles in the images directory
+- Copy the dockerfile you need to "dockerfile" and run the build.
 
 ### Information about Kubernetes
 
