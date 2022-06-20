@@ -3,9 +3,12 @@
 ## Docker examples
 
 Please let me know of improvements you think would be useful
-For future:
+
+### For future
 
 - test the STOPSIGNAL dockerfile command and use it in the run_register to test for non-usual stop signals.
+
+### Comments
 
 - Purpose: create docker image to show possibility of agent running in docker
 - Files
