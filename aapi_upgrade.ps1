@@ -23,7 +23,7 @@
 # SPDX-License-Identifier: MIT
 # For information on SDPX, https://spdx.org/licenses/MIT.html
 
-param ([int] $myversion=9, [int] $myrelease=20, [int] $fixpack)
+param ([int] $myversion=9, [int] $myrelease=20, [int] $fix)
 #NOTE: Do not forget to change the versions
 
 # Comment next line if no debug information is required
@@ -57,10 +57,10 @@ if ($fixpack -eq $null) {
     write-host "Please enter a fix pack. Assuming $myversion.$myrelease. Exiting (rc=42)."
     exit 42
 } else {
-    $fix = "{0:d3}" -f $fixpack
+    $fixpack = $fix.PadLeft(3,'0')
     $file_to_download="PADEV.$myversion.0.$myrelease.$fixpack"+"_"+$thisArch+$thisExt
     $url = "https://controlm-appdev.s3-us-west-2.amazonaws.com/release/v"+$myversion+"."+$myrelease+"."+$fix+"/output/"+$thisOS+"/"+$file_to_download
-        #https://controlm-appdev.s3-us-west-2.amazonaws.com/release/v9.20.200/output/Windows/PADEV.9.0.20.200_windows_x86_64.exe
+        #https://controlm-appdev.s3-us-west-2.amazonaws.com/release/v9.21.5/output/Windows/PADEV.9.0.20.005_windows_x86_64.exe
     write-host "Downloading from $url"
     Invoke-WebRequest -Uri $url -OutFile $outpath -SkipCertificateCheck
     write-host "Downloaded from $url"
