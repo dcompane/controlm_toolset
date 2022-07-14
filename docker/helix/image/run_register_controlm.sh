@@ -91,10 +91,10 @@ ctm run status $(cat response.json| grep runId | cut -d : -f2 | awk -F\" '{print
 echo "validations ran. entering infinite loop..."
 echo "thanks for your patience!"
 
-# loop forever until getout is set to 1
-getout=1
-set -     #removing the output for the loop
-while [ $getout -eq 1  ]
+# loop forever until getout is different of 99
+getout=99
+set -     #removing the output for the loop 
+while [ $getout -eq 99  ]
 do
   sleep 10
 done

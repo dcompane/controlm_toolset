@@ -16,7 +16,7 @@ function unused_port {
 }
 
 function sigtrapHandler() {
-    # enabling the output for the log 
+    # enabling the output for the log
     set -x
     getout=0
     echo '========================================================================'
@@ -25,18 +25,20 @@ function sigtrapHandler() {
     echo remove agent [$AGENT_NAME] from hostgroup [$CTM_HOSTGROUP] 
     ctm config server:hostgroup:agent::delete $CTM_SERVER $CTM_HOSTGROUP $AGENT_NAME -e $CTM_ENV
     if [ $? -ne 0 ]; then
-        echo "Error deleting agent $AGENT_NAME from hostgroup $CTM_HOSTGROUP on $CTM_SERVER" 
-        exit 1
-    fi
-
-    echo unregister controlm agent [$AGENT_NAME] from server IN01 
-    ctm config server:agent::delete $CTM_SERVER $AGENT_NAME -e $CTM_ENV
-    if [ $? -ne 0 ]; then
-        echo "Error deleting agent $AGENT_NAME from $CTM_SERVER"
-        exit 1
+        echo "Error deleting agent $AGENT_NAME from hostgroup $CTM_HOSTGROUP on $CTM_SERVER"
+        echo "   Will not attempt to delete the agent. Exiting."
+        getout=13
+        
+    else
+        echo unregister controlm agent [$AGENT_NAME] from server IN01 
+        ctm config server:agent::delete $CTM_SERVER $AGENT_NAME -e $CTM_ENV
+        if [ $? -ne 0 ]; then
+            echo "Error deleting agent $AGENT_NAME from $CTM_SERVER"
+            getout=14
+        fi
     fi
     echo removed agent via $signal and getout set to $getout
-    return $?
+    return $getout
 }
 
 ############ Script starts here ############
@@ -121,10 +123,10 @@ ctm run status $(cat response.json| grep runId | cut -d : -f2 | awk -F\" '{print
 echo "validations ran. entering infinite loop..."
 echo "thanks for your patience!"
 
-# loop forever until getout is set to 1
-getout=1
+# loop forever until getout is different of 99
+getout=99
 set -     #removing the output for the loop 
-while [ $getout -eq 1  ]
+while [ $getout -eq 99  ]
 do
   sleep 10
 done
