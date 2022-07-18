@@ -18,6 +18,10 @@ FROM centos:7
 ARG AAPI_ENDPOINT
 ARG AAPI_USER
 ARG AAPI_PASSWORD
+ARG AAPI_ENVIRONMENT="endpoint"
+ENV aapi_env=$AAPI_ENVIRONMENT
+
+ARG CTM_WORKBENCH="N"
 
 ### install basic packages
 ## Next line accelerates build by using deltarpm
@@ -70,13 +74,13 @@ USER controlm
 WORKDIR /home/controlm
 
 # next line specific for on-prem
-RUN ctm env add endpoint https://$AAPI_ENDPOINT:8443/automation-api $AAPI_USER $AAPI_PASSWORD \
-        && ctm env set endpoint \
+RUN ctm env add $AAPI_ENVIRONMENT https://$AAPI_ENDPOINT:8443/automation-api $AAPI_USER $AAPI_PASSWORD \
+        && ctm env set $AAPI_ENVIRONMENT \
         && export AAPI_PASSWORD=""
 
 # provision controlm agent image after validating the agent descriptor name.
 RUN cd \
-        && ctm provision image Agent_20.Linux 
+        && ctm provision image MyAgent_20.Linux 
 
 # Uncomment the images for the plugins needed after validating the plugin descriptor names.
 #RUN ctm provision image Application_Integrator_plugin.Linux
@@ -143,5 +147,5 @@ RUN  sudo chown controlm:controlm /home/controlm/*controlm.sh \
 # use docker stop $container_id -t 60
 # timeout is needed to ensure AAPI has time to process HG and agent removal
 # docker stop default timeout is 10 sec and then a SIGKILL is sent.
-CMD ["/home/controlm/run_register_controlm.sh"]
+CMD ["/home/controlm/run_register_controlm.sh", "$aapi_env"]
 

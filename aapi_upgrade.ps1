@@ -30,7 +30,7 @@ param ([int] $myversion=9, [int] $myrelease=20, [int] $fix)
 Set-PSDebug -Trace 1
 
 #From <https://www.red-gate.com/simple-talk/sysadmin/powershell/how-to-use-parameters-in-powershell/>
-#param ([int] $myversion=9, [int] $myrelease=20, [int] $fixpack)
+param ([int] $myversion=9, [int] $myrelease=21, [int] $fixpack)
 
 # This is to run as see if the user isLocalAdmin
 If($isWindows) {

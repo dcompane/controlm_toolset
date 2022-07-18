@@ -112,13 +112,13 @@ RUN sudo yum clean all \
 # Add patches as needed.
 
 COPY PAKAI.9.0.20.201_Linux-x86_64_INSTALL.BIN  /tmp
-COPY PAKAI.9.0.20.203_Linux-x86_64_INSTALL.BIN  /tmp
-
 RUN sudo chmod 755 /tmp/PAKAI.9.0.20.201_Linux-x86_64_INSTALL.BIN 
-RUN source /home/controlm/.bashrc \
-         && env \
-         && /tmp/PAKAI.9.0.20.201_Linux-x86_64_INSTALL.BIN -s
+COPY PAKAI.9.0.20.203_Linux-x86_64_INSTALL.BIN  /tmp
 RUN sudo chmod 755 /tmp/PAKAI.9.0.20.203_Linux-x86_64_INSTALL.BIN 
+
+RUN set +x && source /home/controlm/.bashrc \
+         && /tmp/PAKAI.9.0.20.201_Linux-x86_64_INSTALL.BIN -s
+
 RUN source /home/controlm/.bashrc \
          && /tmp/PAKAI.9.0.20.203_Linux-x86_64_INSTALL.BIN -s
 
@@ -148,5 +148,5 @@ RUN  sudo chown controlm:controlm /home/controlm/*controlm.sh \
 # use docker stop $container_id -t 60
 # timeout is needed to ensure AAPI has time to process HG and agent removal
 # docker stop default timeout is 10 sec and then a SIGKILL is sent.
-CMD ["/home/controlm/run_register_controlm.sh"]
+CMD ["/home/controlm/run_register_controlm.sh", "endpoint"]
 

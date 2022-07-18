@@ -31,7 +31,7 @@ function sigtrapHandler() {
 }
 
 ############ Script starts here ############
-CTM_ENV=endpoint
+CTM_ENV=${aapi_env}         # Set in  dockerfile ENV
 CTM_SERVER=IN01    # SaaS Specific
 
 # If CID does not work, use UNIQUE (and rename the variable CID)

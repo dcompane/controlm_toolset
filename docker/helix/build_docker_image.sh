@@ -11,6 +11,7 @@ IMG_TAG="controlmsaas"
 
 AAPI_ENDPOINT="se-sanb0x-aapi.us1.controlm.com"
 AAPI_TOKEN=UFJER0ZQOjA1MjZiZDQwLTAwMjUtNDc5MS1iNDI5LTllNDdmMTU1MGM2MzpCdzdPVTRrVUU5WVlWOTNBM0cxTTk5dTJ5RWZERUlBWERPQk1BdlhPdVJNPQ==
+AAPI_ENVIRONMENT=$1
 
 # INSTALL_* allows to add a plugin during the build process
 INSTALL_AIT="N"   # Application Integrator
@@ -28,6 +29,7 @@ startdate=`date`
 sudo docker build --tag=$IMG_TAG $1 \
   --build-arg AAPI_ENDPOINT=$AAPI_ENDPOINT \
   --build-arg AAPI_TOKEN=$AAPI_TOKEN \
+  --build-arg AAPI_ENVIRONMENT=$AAPI_ENVIRONMENT \
   --build-arg INSTALL_AIT=$INSTALL_AIT \
   --build-arg INSTALL_MQL=$INSTALL_MQL \
   --build-arg INSTALL_AMZ=$INSTALL_AMZ \

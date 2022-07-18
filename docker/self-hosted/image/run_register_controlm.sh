@@ -42,10 +42,7 @@ function sigtrapHandler() {
 }
 
 ############ Script starts here ############
-CTM_ENV=endpoint
-#CTM_SERVER provided by parameters
-#CTM_HOSTGROUP provided by parameters
-
+CTM_ENV=${aapi_env}         # Set in  dockerfile ENV
 
 # If CID does not work, use UNIQUE (and rename the variable CID)
 # UNIQUE=$(head /dev/urandom | tr -dc A-Za-z | head -c 6 ; echo '')
