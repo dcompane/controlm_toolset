@@ -9,7 +9,5 @@ else
 fi
 
 sudo docker ps
-sudo docker inspect -f '{{.State.ExitCode}}' $container_id
-dockerlog=$(sudo docker inspect -f '{{.LogPath}}' $container_id)
-sudo cat $dockerlog
+sudo docker inspect  $container_id
 
