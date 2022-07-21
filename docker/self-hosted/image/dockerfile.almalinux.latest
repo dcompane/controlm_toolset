@@ -13,11 +13,13 @@
 #   sudo docker pull centos
 # RockyLinux does not work yet. Issue bringing down agent after install.
 # https://rockylinux.org/ 
-FROM rockylinux:latest
+FROM almalinux:latest
 
 ARG AAPI_ENDPOINT
 ARG AAPI_USER
 ARG AAPI_PASSWORD
+ARG AAPI_ENVIRONMENT="endpoint"
+ENV aapi_env=$AAPI_ENVIRONMENT
 
 ### install basic packages
 ## Next line accelerates build by using deltarpm

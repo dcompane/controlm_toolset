@@ -18,6 +18,10 @@ FROM rockylinux:latest
 ARG AAPI_ENDPOINT
 ARG AAPI_USER
 ARG AAPI_PASSWORD
+ARG AAPI_ENVIRONMENT="endpoint"
+
+# Setting environment for run_register
+ENV aapi_env=$AAPI_ENVIRONMENT
 
 ### install basic packages
 ## Next line accelerates build by using deltarpm
@@ -73,7 +77,7 @@ USER controlm
 WORKDIR /home/controlm
 
 # next line specific for on-prem
-RUN ctm env add endpoint https://$AAPI_ENDPOINT:8443/automation-api $AAPI_USER $AAPI_PASSWORD \
+RUN ctm env add $AAPI_ENVIRONMENT https://$AAPI_ENDPOINT:8443/automation-api $AAPI_USER $AAPI_PASSWORD \
         && ctm env set endpoint \
         && export AAPI_PASSWORD=""
 
