@@ -75,20 +75,19 @@ api_response = run_instance.get_jobs_status_by_filter(limit=limit, order_date_fr
 # print (type (api_response.statuses))
 
 for job in api_response.statuses:
+    print (job.job_id)
+    status = run_instance.get_job_status(job.job_id)
+    print (status)
+    log = run_instance.get_job_log(job.job_id)
+    print (log)
     if (job.output_uri != 'Folder has no output' and job.number_of_runs != 0):
-        print (job.job_id)
-        status = run_instance.get_job_status(job.job_id)
-        print (status)
-        log = run_instance.get_job_log(job.job_id)
-        print (log)
-        if (job.output_uri != 'Folder has no output' and job.number_of_runs != 0):
-            for run_no in range(job.number_of_runs):
-                try:
-                    output = run_instance.get_job_output(job_id=job.job_id, run_no=run_no)
-                    print (output)
-                except ApiException as e:
-                    print("Exception when retrieving output. Likely no Output for the run", job.job_id,"run number", run_no)
-        else:
-            print("No output for job", job.job_id,"that run", job.number_of_runs, "times")
+        for run_no in range(job.number_of_runs):
+            try:
+                output = run_instance.get_job_output(job_id=job.job_id, run_no=run_no)
+                print (output)
+            except ApiException as e:
+                print("Exception when retrieving output. Likely no Output for the run", job.job_id,"run number", run_no)
+    else:
+        print("No output for job", job.job_id,"that run", job.number_of_runs, "times")
 
 exit(0)
