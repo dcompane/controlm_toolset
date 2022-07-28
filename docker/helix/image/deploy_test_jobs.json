@@ -1,0 +1,47 @@
+{
+  "DCO_Docker": {
+  "Type":  "Folder",
+  "ControlmServer": "IN01",
+  "OrderMethod": "Manual",
+  "SubApplication": "DCO_Docker",
+  "CreatedBy": "dcompane1",
+  "Application": "DCO",
+  "When": {
+    "RuleBasedCalendars": {
+      "Included": [
+        "EVERYDAY"
+      ],
+      "EVERYDAY": {
+        "Type": "Calendar:RuleBased",
+        "When": {
+          "DaysRelation": "OR",
+          "WeekDays": [
+            "NONE"
+          ],
+          "MonthDays": [
+            "ALL"
+          ]
+        }
+      }
+    }
+  },
+  "DCO_Docker_Job": {
+    "Type": "Job:Command",
+    "SubApplication": "DCO_Docker",
+    "Host": "HG_DCO_Docker",
+    "CreatedBy": "dcompane1",
+    "RunAs": "controlm",
+    "Application": "DCO",
+    "Command": "date && env",
+    "When": {
+      "WeekDays": [
+        "NONE"
+      ],
+      "MonthDays": [
+        "ALL"
+      ],
+      "DaysRelation": "OR"
+    }
+  }
+  }
+}

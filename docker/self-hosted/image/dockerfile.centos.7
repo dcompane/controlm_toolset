@@ -1,0 +1,184 @@
+#---------------------------------------
+# Control-M/Agent docker container
+# Edited by 
+#       Daniel Companeetz - BMC Software
+# Contributions by 
+#       Aaron Baldwin - BMC Software
+#       Gal Gafni Chen - BMC Software
+#---------------------------------------
+
+# (c) 2020 - 2022 Daniel Companeetz, BMC Software, Inc.
+# All rights reserved.
+
+# BSD 3-Clause Licenses
+
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+
+# 1. Redistributions of source code must retain the above copyright notice, this
+#    list of conditions and the following disclaimer.
+
+# 2. Redistributions in binary form must reproduce the above copyright notice,
+#    this list of conditions and the following disclaimer in the documentation
+#    and/or other materials provided with the distribution.
+
+# 3. Neither the name of the copyright holder nor the names of its
+#    contributors may be used to endorse or promote products derived from
+#    this software without specific prior written permission.
+
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+# SPDX-License-Identifier: BSD-3-Clause
+# For information on SDPX, https://spdx.org/licenses/BSD-3-Clause.html
+
+###Tested with the following OSes
+# ensure you do a
+#   sudo docker pull rockylinux
+#   sudo docker pull centos
+# RockyLinux does not work yet. Issue bringing down agent after install.
+# https://rockylinux.org/ 
+FROM centos:7
+
+ARG AAPI_ENDPOINT
+ARG AAPI_USER
+ARG AAPI_PASSWORD
+ARG AAPI_ENVIRONMENT="endpoint"
+ENV aapi_env=$AAPI_ENVIRONMENT
+
+ARG CTM_WORKBENCH="N"
+
+### install basic packages
+## Next line accelerates build by using deltarpm
+# For Centos
+RUN  yum -y install deltarpm
+
+RUN  yum -y update
+RUN  yum -y install unzip \
+        && yum -y install sudo \
+        && yum -y install net-tools \
+        && yum -y install which \
+        && yum -y install wget \
+        && yum -y install psmisc
+
+# ENABLE STRACE IF NEEDED FOR TROUBLESHOOTING SIGNALING
+# connect to container and use strace -p 1 to see signals arriving to process
+# RUN  yum -y install strace
+
+# install nodejs
+RUN curl --silent --location https://rpm.nodesource.com/setup_16.x | bash - \
+        && yum -y install nodejs \
+        && npm install -g npm@latest \
+        && node -v \
+        && npm -v
+
+# add controlm user and root to sudoers list
+RUN  useradd -d /home/controlm -p controlm -m controlm \
+        && echo 'root ALL=(ALL) ALL' >> /etc/sudoers \
+        && echo 'controlm ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
+
+# install java 11
+RUN  sudo yum -y install java-11-openjdk \
+        && java -version 
+     
+# install ctm-automation-api kit
+WORKDIR /root
+RUN mkdir /root/ctm-automation-api \
+        && cd /root/ctm-automation-api \
+        # next 2 lines specific for on-prem
+        && export LD_LIBRARY_PATH=/usr/lib64 \
+        # next line specific for on-prem
+        && curl --silent -k -O "https://$AAPI_ENDPOINT:8443/automation-api/ctm-cli.tgz" \
+        && npm install -g ctm-cli.tgz \
+        && rm ctm-cli.tgz \
+        && ctm -v
+
+
+# add controlm endpoint
+USER controlm
+WORKDIR /home/controlm
+
+# next line specific for on-prem
+RUN ctm env add $AAPI_ENVIRONMENT https://$AAPI_ENDPOINT:8443/automation-api $AAPI_USER $AAPI_PASSWORD \
+        && ctm env set $AAPI_ENVIRONMENT \
+        && export AAPI_PASSWORD=""
+
+# provision controlm agent image after validating the agent descriptor name.
+RUN cd \
+        && ctm provision image MyAgent_20.Linux 
+
+# Uncomment the images for the plugins needed after validating the plugin descriptor names.
+#RUN ctm provision image Application_Integrator_plugin.Linux
+#RUN ctm provision image Databases_plugin.Linux
+#RUN ctm provision image AWS_plugin.Linux
+#RUN ctm provision image Azure_plugin.Linux
+#RUN ctm provision image Hadoop_plugin.Linux
+#RUN ctm provision image Informatica_plugin.Linux
+#RUN ctm provision image MFT_plugin.Linux
+
+# Keep the following SAP lines together. Uncomment if needed.
+#RUN ctm provision image SAP_plugin.Linux \
+#COPY ./sapjco3.jar /home/controlm/ctm/cm/SAP/exe/sapjco
+#RUN sudo chown controlm:controlm /home/controlm/ctm/cm/SAP/exe/sapjco/sapjco3.jar \
+#        && sudo chmod 775 /home/controlm/ctm/cm/SAP/exe/sapjco/sapjco3.jar
+
+# enable controlm agent utilities
+RUN echo "source /home/controlm/.bash_profile" >> /home/controlm/.bashrc 
+
+# Uninstall java 11. Remove comment to uninstall
+# RUN sudo yum -y autoremove java-11-openjdk
+
+# Clean yum cache to reduce image size
+RUN sudo yum clean all \
+         && sudo rm -rf /var/cache/yum
+
+################ Specific for on-prem patches
+# Add patches as needed.
+
+COPY PAKAI.9.0.20.201_Linux-x86_64_INSTALL.BIN  /tmp
+COPY PAKAI.9.0.20.203_Linux-x86_64_INSTALL.BIN  /tmp
+
+RUN sudo chmod 755 /tmp/PAKAI.9.0.20.201_Linux-x86_64_INSTALL.BIN 
+RUN source /home/controlm/.bashrc \
+         && env \
+         && /tmp/PAKAI.9.0.20.201_Linux-x86_64_INSTALL.BIN -s
+RUN sudo chmod 755 /tmp/PAKAI.9.0.20.203_Linux-x86_64_INSTALL.BIN 
+RUN source /home/controlm/.bashrc \
+         && /tmp/PAKAI.9.0.20.203_Linux-x86_64_INSTALL.BIN -s
+
+RUN sudo rm -f /tmp/PAKAI* 
+
+# log4j vulnerability patch 
+RUN sudo rm -f /home/controlm/ctm/toolbox/Usage_Measurement.jar
+
+# Exposing Agent ports. Use range as not sure what will be used.
+#    See run_register_controlm.sh to determine how that works
+EXPOSE 7000-8000
+
+################ End of Specific for on-prem patches
+
+### Keep these lines just before the end in case changes to the 
+###    run and decomm scripts are needed, to avoid re-build.
+# copy run and register controlm agent script to container
+COPY ./run_register_controlm.sh /home/controlm
+COPY ./agent-parameters.json /home/controlm
+COPY ./deploy_test_jobs.json /home/controlm
+# give execute permissions to start/shut scripts
+RUN  sudo chown controlm:controlm /home/controlm/*controlm.sh \
+        && sudo chmod 775 /home/controlm/*controlm.sh
+
+# CMD in exec mode (using []) is needed for signaling to work
+# Signaling will ensure stopping the container deregister the agent
+# use docker stop $container_id -t 60
+# timeout is needed to ensure AAPI has time to process HG and agent removal
+# docker stop default timeout is 10 sec and then a SIGKILL is sent.
+CMD ["/home/controlm/run_register_controlm.sh", "$aapi_env"]
+

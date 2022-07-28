@@ -1,0 +1,65 @@
+{
+  "DCO_Docker": {
+  "Type":  "Folder",
+  "ControlmServer": "dc01",
+  "OrderMethod": "Manual",
+  "ActiveRetentionPolicy": "CleanEndedOK",
+  "SubApplication": "DCO_Docker",
+  "CreatedBy": "emuser",
+  "Application": "DCO",
+  "When": {
+    "RuleBasedCalendars": {
+      "Included": [
+        "EVERYDAY"
+      ],
+      "EVERYDAY": {
+        "Type": "Calendar:RuleBased",
+        "When": {
+          "DaysRelation": "OR",
+          "WeekDays": [
+            "NONE"
+          ],
+          "MonthDays": [
+            "ALL"
+          ]
+        }
+      }
+    }
+  },
+  "DCO_Docker_Job": {
+    "Type": "Job:Command",
+    "SubApplication": "DCO_Docker",
+    "Host": "HG_DCO_Docker",
+    "CreatedBy": "dcompane1",
+    "RunAs": "controlm",
+    "Application": "DCO",
+    "Command": "date && env",
+    "When": {
+      "WeekDays": [
+        "NONE"
+      ],
+      "MonthDays": [
+        "ALL"
+      ],
+      "DaysRelation": "OR"
+    }
+  },
+  "DCO_Docker_Server2Agent_available": {
+    "Type": "Job:Command",
+    "SubApplication": "DCO_Docker",
+    "CreatedBy": "emuser",
+    "RunAs": "ctmem",
+    "Application": "DCO",
+    "Command": "ctmping -HOSTID agent_name",
+    "When": {
+      "WeekDays": [
+        "NONE"
+      ],
+      "MonthDays": [
+        "ALL"
+      ],
+      "DaysRelation": "OR"
+    }
+  }
+  }
+}

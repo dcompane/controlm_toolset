@@ -1,0 +1,56 @@
+{
+  "comment00": "This file must be in the same directory that the script that uses it",
+  "comment01": "Validate this file with `jq . <filename> after changing by hand.",
+  "comment02": "numbers are so comments will show up in jq validation to try to keep as this json flat as possible",
+  "comment03": "edit with vi tktvars.json;jq . tktvars.json",
+  "comment04": "IMPORTANT: fields with <field> need to be replaced by real values",
+  "ctmvars": {
+    "comment10": "The last 3 are not needed if AAPI CLI is used to get the job log, job output and other information",
+    "comment11": "in case the AAPI cli changes, or some other program would be used.",
+    "jobqrypgm": "ctm",
+    "comment12": "next is used for the self-service url in the ticket body",
+    "ctmweb": "http://<emwebserver>:<webport>",
+    "comment13": "next is to keep a placeholder for AAPI via web variables. Use is commented in code.",
+    "comment14": "  if Python is used, import controlm_client (https://github.com/JoeGoldberg/controlm-client)",
+    "comment15": "  to use the REST calls and the variables below.",
+    "ctmaapi": "https://<emaapiserver>:<emaapiport>/automation-api",
+    "ctmuser": "<someuser>",
+    "ctmpasswd": "<someuserwithstaticpassword"
+  },
+  "tktvars": {
+    "comment20": "These are config vars to access the Incident Management system (Service Now)",
+    "tkturl": "https://dev82797.service-now.com",
+    "tktuser": "CTMAPI",
+    "tktpasswd": "ctmtickets",
+    "tktsysidcaller": "12dbd351db013300a82b2706ca961953"
+  },
+  "pgmvars": {
+    "comment30": "These are program variables for debug and operational purposes.",
+    "comment31": "create ticket if yes. Can be changed with job DCO_SNow[Start|Stop]CrtTkt.",
+    "crttickets": "no",
+    "comment32": "Add created ticket to CTMLOG. ticket will not appear in current log extracted for ticket. Can be changed with job DCO_SNow[Start|Stop]AddTkt2Log.",
+    "addtkt2log": "no",
+    "comment33": "debug information written to gtw_log.<datacenter>_<date>.<filenumber> (usually 0 if only no gtw recycles). Can be changed with job DCO_SNow[Start|Stop]DbgTkt. ",
+    "debug": "no",
+    "comment34": "Next parameter not implemented. Will try to limit concurrent runs in event of alert storm.",
+    "allowedRuns": "10",
+    "comment35": "listed datacenters not to create tickets at all",
+    "excludedDC": "none",
+    "comment36": "capturealerts defines if alerts will be written to a file as received. File is written in log_dir. Alerts can be used for testing or reprocessing.",
+    "capturealerts": "yes",
+    "capturealertsfile": "alerts.out",
+    "comment37": "log_file is log after creating ticket, but line always writen to gateway log.",
+    "log_after": "yes",
+    "log_dir": "<yourlogdirectory>",
+    "log_file": "autoticket.log",
+    "comment38": "job output and log is attached to ticket.",
+    "ctmattachlogs": "yes",
+    "sndupd2tkt": "no"
+  },
+  "ctmservers": {
+    "comment40": "These variables describe the type of ctmservers to properly parse logs and other actions.",
+    "comment41": "valid values are mf and dist. All lowercase.",
+    "<yourdistdatacenter>": "dist",
+    "<yourmfdatacenter>": "mf"
+  }
+}
