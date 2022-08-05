@@ -92,21 +92,31 @@ api_response = run_instance.get_jobs_status_by_filter(limit=limit, order_date_fr
 
 
 for job in api_response.statuses:
-    status = run_instance.get_job_status(job.job_id)
-    if (job.output_uri != 'Folder has no output' and job.number_of_runs != 0):
+    if (job.type == "Folder" or job.type == "Sub-Table"):
+        print (f'===== STATUS For {job.type} {job.name} - {job.job_id} =====')
+        print (job,'\n')
+        print (f'===== END of STATUS For {job.type} {job.name} - {job.job_id} =====\n\n\n\n')
+        log = run_instance.get_job_log(job.job_id)
+        print (f'===== FOLDER - LOG for {job.job_id} =====')
+        print (log,'\n')
+        print (f'===== END of FOLDER - LOG for {job.job_id} =====\n\n\n\n')
+    elif (job.number_of_runs != 0):
+        print (job.job_id,'\n')
+        print (job,'\n')
         for run_no in range(job.number_of_runs):
-            print (job.job_id)
-            print (status)
             log = run_instance.get_job_log(job.job_id)
-            print (log)
+            print (f'===== LOG for {job.job_id}:{run_no} =====')
+            print (log,'\n')
+            print (f'===== END of LOG for {job.job_id}:{run_no} =====\n\n\n\n')
             try:
                 # If the output fails do not print the rest
                 output = run_instance.get_job_output(job_id=job.job_id, run_no=run_no)
                 print (f'===== OUTPUT for {job.job_id}:{run_no} =====')
-                print (output,"\n\n\n\n")
+                print (output,'\n')
+                print (f'===== END of OUTPUT for {job.job_id}:{run_no} =====\n\n\n\n')
             except ApiException as e:
-                print("Exception when retrieving output. Likely no Output for the run", job.job_id,"run number", run_no)
-                print ("No output\n\n\n\n")
+                print(f'Exception when retrieving output. Likely no Output for the run {job.job_id} run number {run_no}')
+                print ('No output\n\n\n\n')
     else:
-        print("No output for job", job.job_id,"that run", job.number_of_runs, "times")
+        print(f'No output for job {job.job_id} that run {job.number_of_runs} times\n\n\n\n')
 
