@@ -53,14 +53,16 @@ from datetime import date, timedelta
 from sys import exit
 
 # Tenant and credential
-host_name = 'sandbox-aapi.us1.controlm.com'
-# host_name = '<Enter your tenant AAPI endpoint>"
-# Example: myhelixcontrol-m-aapi.us1.controlm.com'
-aapi_token = 'DFJER9ZQOmNjZWQyNWUsxLTFhN2QtNGdzMi1hNGYwLTg4MjgxMDE3NWYgMDpNNklMci9jODdXd1d3Wi9FTU1vWUxhMmlObTR2ZityNFBFUlBQUkJ4d2FnPQ=='
+# hostname = '<Enter your tenant AAPI endpoint>"
+# Example: https://myhelixcontrol-m-aapi.us1.controlm.com'
+# api_key = '<Enter your user API token>"
+# Example api_key = 'DFJETU1vWUxhMmlObTR2ZityNFBFUlBQUkJ4d2FnPQ=='
+hostname='se-sanb0x-aapi.us1.controlm.com'
+api_key='UFJER0ZQOmNjZWQyNWUxLTFhN2QtNGYzMi1hNGYwLTg4MjgxMDE3NWY2MDpNNklMci9jODdXd1d3Wi9FTU1vWUxhMmlObTR2ZityNFBFUlBQUkJ4d2FnPQ=='
 
 # Create connection to the SaaS AAPI server
-aapi_client = SaaSConnection(host=host_name,
-                            aapi_token=aapi_token
+aapi_client = SaaSConnection(host=hostname,
+                            aapi_token=api_key
                             )
 
 
@@ -88,20 +90,23 @@ api_response = run_instance.get_jobs_status_by_filter(limit=limit, order_date_fr
 #     But statuses is a list
 # print (type (api_response.statuses))
 
+
 for job in api_response.statuses:
-    print (job.job_id)
     status = run_instance.get_job_status(job.job_id)
-    print (status)
-    log = run_instance.get_job_log(job.job_id)
-    print (log)
     if (job.output_uri != 'Folder has no output' and job.number_of_runs != 0):
         for run_no in range(job.number_of_runs):
+            print (job.job_id)
+            print (status)
+            log = run_instance.get_job_log(job.job_id)
+            print (log)
             try:
+                # If the output fails do not print the rest
                 output = run_instance.get_job_output(job_id=job.job_id, run_no=run_no)
-                print (output)
+                print (f'===== OUTPUT for {job.job_id}:{run_no} =====')
+                print (output,"\n\n\n\n")
             except ApiException as e:
                 print("Exception when retrieving output. Likely no Output for the run", job.job_id,"run number", run_no)
+                print ("No output\n\n\n\n")
     else:
         print("No output for job", job.job_id,"that run", job.number_of_runs, "times")
 
-exit(0)
