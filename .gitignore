@@ -2,3 +2,4 @@ PAKAI*
 .git
 .vscode
 __pycache__
+aapi_creds.py
