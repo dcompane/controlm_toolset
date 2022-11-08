@@ -53,10 +53,10 @@ from datetime import date, timedelta
 yesterday = date.today() - timedelta(days=1)
 order_date = yesterday.strftime('%y%m%d')
 
-hostname='https://se-sanb0x-aapi.us1.controlm.com/automation-api'
-api_key='UFJER0ZQOmNjZWQyNWUxLTFhN2QtNGYzMi1hNGYwLTg4MjgxMDE3NWY2MDpNNklMci9jODdXd1d3Wi9FTU1vWUxhMmlObTR2ZityNFBFUlBQUkJ4d2FnPQ=='
+# Use the aapi_creds_sample.py and create an aapi_creds.py with the right values. 
+from aapi_creds import host_name, aapi_token
 
-w = Workflow(Environment.create_saas(endpoint=hostname,api_key=api_key))
+w = Workflow(Environment.create_saas(endpoint=host_name,api_key=api_token))
 
 monitor = Monitor(w.aapiclient)
 for status in monitor.get_statuses(filter={'order_date_from':order_date,'order_date_to':order_date}).statuses:

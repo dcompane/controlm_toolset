@@ -52,13 +52,8 @@ from datetime import date, timedelta
 
 from sys import exit
 
-# Tenant and credential
-# hostname = '<Enter your tenant AAPI endpoint>"
-# Example: https://myhelixcontrol-m-aapi.us1.controlm.com'
-# api_key = '<Enter your user API token>"
-# Example api_key = 'DFJETU1vWUxhMmlObTR2ZityNFBFUlBQUkJ4d2FnPQ=='
-hostname='se-sanb0x-aapi.us1.controlm.com'
-api_key='UFJER0ZQOmNjZWQyNWUxLTFhN2QtNGYzMi1hNGYwLTg4MjgxMDE3NWY2MDpNNklMci9jODdXd1d3Wi9FTU1vWUxhMmlObTR2ZityNFBFUlBQUkJ4d2FnPQ=='
+# Use the aapi_creds_sample.py and create an aapi_creds.py with the right values. 
+from aapi_creds import host_name, aapi_token
 
 # Create connection to the SaaS AAPI server
 aapi_client = SaaSConnection(host=hostname,

@@ -49,12 +49,8 @@ from aapi_saas_conn import SaaSConnection
 
 from sys import exit
 
-# Tenant and credential
-host_name = 'sandbox-aapi.us1.controlm.com'
-# host_name = '<Enter your tenant AAPI endpoint>"
-# Example: myhelixcontrol-m-aapi.us1.controlm.com'
-aapi_token = 'DFJER9ZQOmNjZWQyNWUsxLTFhN2QtNGdzMi1hNGYwLTg4MjgxMDE3NWYgMDpNNklMci9jODdXd1d3Wi9FTU1vWUxhMmlObTR2ZityNFBFUlBQUkJ4d2FnPQ=='
-
+# Use the aapi_creds_sample.py and create an aapi_creds.py with the right values. 
+from aapi_creds import host_name, aapi_token
 
 # Create connection to the SaaS AAPI server
 aapi_client = SaaSConnection(host=host_name,
