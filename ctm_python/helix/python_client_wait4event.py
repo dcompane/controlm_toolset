@@ -1,3 +1,46 @@
+"""
+(c) 2020 - 2023 Daniel Companeetz, BMC Software, Inc.
+All rights reserved.
+
+BSD 3-Clause License
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this
+   list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright notice,
+   this list of conditions and the following disclaimer in the documentation
+   and/or other materials provided with the distribution.
+
+3. Neither the name of the copyright holder nor the names of its
+   contributors may be used to endorse or promote products derived from
+   this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+# SPDX-License-Identifier: BSD-3-Clause
+For information on SDPX, https://spdx.org/licenses/BSD-3-Clause.html
+
+Input: No input. ensure to modify the alertIDs you want to modify
+Output: printed confirmation from the response
+
+Change Log
+Date (YMD)    Name                  What
+--------      ------------------    ------------------------
+20230307      Daniel Companeetz     Initial commit
+"""
+
 from pprint import pprint
 from sys import exit
 
@@ -7,11 +50,12 @@ from aapi.job import JobCommand
 from aapi.condition import ConditionIn, ConditionOutDelete, ConditionOutAdd
 from aapi import WaitForEvents, DeleteEvents, AddEvents, Folder
 
-environment = 'https://se-sandbox-aapi.controlm.com/automation-api'
-api_key = 'UFJER0ZQOjcyOTgOZWUxLTYznoThinGZWQtNDA0My1iNjhlLTk0YjFlZmineUwNzEyZDplVjNKbzZXZmJyQTlmU250VmY1OUpodVhKMjVldHRBekZDTHFwdEljVMw0PQ=='
+# Use the aapi_creds_sample.py and create an aapi_creds.py with the right values. 
+from aapi_creds import host_name, aapi_token
 
-my_environment = Environment.create_saas(endpoint=environment, api_key=api_key)
+my_environment = Environment.create_saas(endpoint=host_name, api_key=aapi_token)
 
+# Create workflow (folder) object
 workflow = Workflow(my_environment, 
     WorkflowDefaults(
         run_as='someuser',
@@ -20,7 +64,7 @@ workflow = Workflow(my_environment,
     )   # run_as is required
 )
 
-# Create job with basic data
+# Create job object with basic data
 myJob = JobCommand('MyFirstJob', command='echo "Hello world!"', host='myHost')
 
 # Add job to workflow
