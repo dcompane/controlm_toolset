@@ -7,8 +7,8 @@ from aapi.job import JobCommand
 from aapi.condition import ConditionIn, ConditionOutDelete, ConditionOutAdd
 from aapi import WaitForEvents, DeleteEvents, AddEvents, Folder
 
-environment = 'https://se-sanb0x-aapi.us1.controlm.com/automation-api'
-api_key = 'UFJER0ZQOjcyOTg0ZWUxLTYzZWQtNDA0My1iNjhlLTk0YjFlZmUwNzEyZDplVjNKbzZXZmJyQTlmU250VmY1OUpodVhKMjVldHRBekZDTHFwdEljVmw0PQ=='
+environment = 'https://se-sandbox-aapi.controlm.com/automation-api'
+api_key = 'UFJER0ZQOjcyOTgOZWUxLTYznoThinGZWQtNDA0My1iNjhlLTk0YjFlZmineUwNzEyZDplVjNKbzZXZmJyQTlmU250VmY1OUpodVhKMjVldHRBekZDTHFwdEljVMw0PQ=='
 
 my_environment = Environment.create_saas(endpoint=environment, api_key=api_key)
 
