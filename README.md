@@ -5,6 +5,7 @@
 - Purpose: Downloads and installs the AAPI release identified in the parameters
 - Parameters: Version (default=9) Release (default=20) Fixpack (no default)
 - Use: ./aapi_upgrade.ps1 -fixpack 225
+- NOTE: If you install Powershell on Linux (!!) it can also be used in that OS! (tested and works!)
   
 ## sndSMSviaATT.sh
 
