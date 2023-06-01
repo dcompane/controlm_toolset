@@ -86,7 +86,6 @@ echo "Token obtained: $OAUTH_ACCESS_TOKEN"
 
 # Enter telephone number to which the SMS message will be sent.
 # For example: TEL="tel:+1234567890"
-#TEL="tel:+15104243921"
 TEL=`echo $2|awk -F "==" '{print $1}'|sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//'`
 TEL="tel:+1$TEL"
 #echo "addr: $TEL"  >> $outdir/outfile.txt
