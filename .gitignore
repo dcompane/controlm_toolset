@@ -4,3 +4,10 @@ PAKAI*
 __pycache__
 aapi_creds.py
 ConvertRHtoAISSH
+pyproject.toml
+requirements.txt
+autoalert.log
+extalert.code-workspace
+extalert_b*.py
+extalert_s*.py
+tktvars_dco.json
