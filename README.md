@@ -17,7 +17,10 @@
 
 - Purpose: use Alarm to script configuration to send alerts to an ITSM system
 - Check the [README](sendAlarmToScript/README.md) file for the project
-- Use: as part of a Control-M shout to program
+- Two versions very similar in design
+   - [Bash](sendAlarmToScript/Bash)
+   - [Python](sendAlarmToScript/Python)
+       - See an integration for Remedy ITSM at https://github.com/controlm/automation-api-community-solutions/tree/master/helix-control-m/2-external-monitoring-tools-examples/alerts-to-helix-itsm
 
 ## Docker examples
 
