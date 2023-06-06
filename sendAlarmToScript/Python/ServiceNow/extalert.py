@@ -247,11 +247,13 @@ if ctmattachlogs and alert_is_job:
     # Change \n to CRLF on log and output
     #    Log will always exist but output may not
     job_log = (job_log + NL + log)
-    if output is not None :
-        job_output = (job_output + NL +  output)
-    else:
-        job_output = (job_output + NL +  f"*" * 70 + NL + 
-                    "NO OUTPUT AVAILABLE FOR THIS JOB" + NL + f"*" * 70 )
+
+    if output is None :
+        output =f"*" * 70 + NL + "NO OUTPUT AVAILABLE FOR THIS JOB" +
+                 NL + f"*" * 70 )
+
+    job_output = (job_output + NL +  output)
+    
     file_log = f"log_{alert[keywords_json['runId']]}_{alert[keywords_json['runNo']]}.txt"
     file_output = f"output_{alert[keywords_json['runId']]}_{alert[keywords_json['runNo']]}.txt"
 
