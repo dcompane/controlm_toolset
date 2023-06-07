@@ -240,17 +240,28 @@ if ctmattachlogs and alert_is_job:
     incident = snow_incidents.get(query={'number': snow_incident_number})
     log = dbg_assign_var(monitor.get_log(f"{alert[keywords_json['server']]}:{alert[keywords_json['runId']]}"), "Log of Job", dbg_logger)
 
-    # need to add code in case the output is not available
-    #   Use status outputURI which should say there is no output.
-    output = dbg_assign_var(monitor.get_output(f"{alert[keywords_json['server']]}:{alert[keywords_json['runId']]}", 
-            run_no=alert[keywords_json['runNo']]), "Output of job", dbg_logger)
-    # Change \n to CRLF on log and output
+        # Change \n to CRLF on log and output
     #    Log will always exist but output may not
     job_log = (job_log + NL + log)
 
+    try:
+        # need to add code in case the output is not available
+    #   Use status outputURI which should say there is no output.
+        output = dbg_assign_var(monitor.get_output(f"{alert[keywords_json['server']]}:{alert[keywords_json['runId']]}",
+            run_number=alert[keywords_json['runNo']]), "Output of job", dbg_logger, debug, alert_id)
+        if output == None:
+            output = f"*" * 70 + NL + "NO OUTPUT AVAILABLE FOR THIS JOB" + NL + f"*" * 70    
+    except:
+        output = f"*" * 70 + NL + "NO OUTPUT AVAILABLE FOR THIS JOB" + NL + f"*" * 70
+    finally:
+       dbg_logger.info(f'RunID: {alert[keywords_json["runId"]]} RunNo {alert[keywords_json["runNo"]]}')
+
+
+    job_output = (job_output + NL +  output)
+
+
     if output is None :
-        output =f"*" * 70 + NL + "NO OUTPUT AVAILABLE FOR THIS JOB" +
-                 NL + f"*" * 70 )
+        output =f"*" * 70 + NL + "NO OUTPUT AVAILABLE FOR THIS JOB" + NL + f"*" * 70 )
 
     job_output = (job_output + NL +  output)
     

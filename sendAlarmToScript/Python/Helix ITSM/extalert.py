@@ -316,8 +316,10 @@ if ctmattachlogs and alert_is_job:
 
 
     try:
-       output = dbg_assign_var(monitor.get_output(f"{alert[keywords_json['server']]}:{alert[keywords_json['runId']]}",
+        output = dbg_assign_var(monitor.get_output(f"{alert[keywords_json['server']]}:{alert[keywords_json['runId']]}",
             run_number=alert[keywords_json['runNo']]), "Output of job", dbg_logger, debug, alert_id)
+        if output == None:
+            output = f"*" * 70 + NL + "NO OUTPUT AVAILABLE FOR THIS JOB" + NL + f"*" * 70    
     except:
         output = f"*" * 70 + NL + "NO OUTPUT AVAILABLE FOR THIS JOB" + NL + f"*" * 70
     finally:
