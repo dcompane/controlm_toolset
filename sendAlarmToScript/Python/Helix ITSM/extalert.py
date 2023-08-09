@@ -69,7 +69,7 @@ from socket import getfqdn
 # need to pip install  python-dotenv
 from dotenv import dotenv_values
 
-#Not just the RemedyAPI from pipy
+#Not just the RemedyAPI from pip
 from remedy_py.RemedyAPIClient import RemedyClient as itsm_cli
 
 
@@ -98,13 +98,14 @@ except FileNotFoundError as e:
     # Template file with fields not found
     # Assuming all fields will be passed in standard order
     dbg_logger.info('Failed opening field_names.json. Using default')
-    keywords_json = dbg_assign_var( { {'eventType': 'eventType'}, {'id': 'alert_id'}, {'server': 'server'},
-                    {'fileName': 'fileName'}, {'runId': 'runId'}, {'severity': 'severity'},
-                    {'status': 'status'}, {'time': 'time'}, {'user': 'user'}, {'updateTime': 'updateTime'},
-                    {'message': 'message'}, {'runAs': 'runAs'}, {'subApplication': 'subApplication'},
-                    {'application': 'application'}, {'jobName': 'jobName'}, {'host': 'host'}, {'type': 'type'},
-                    {'closedByControlM': 'closedByControlM'}, {'ticketNumber': 'ticketNumber'}, {'runNo': 'runNo'},
-                    {'notes': 'notes'} }, "Default field names used internally", dbg_logger, debug)
+    # keywords_json = dbg_assign_var( { {'eventType': 'eventType'}, {'id': 'alert_id'}, {'server': 'server'},
+    keywords_json = { 'eventType': 'eventType', 'id': 'alert_id', 'server': 'server',
+                    'fileName': 'fileName', 'runId': 'runId', 'severity': 'severity',
+                    'status': 'status', 'time': 'time', 'user': 'user', 'updateTime': 'updateTime',
+                    'message': 'message', 'runAs': 'runAs', 'subApplication': 'subApplication',
+                    'application': 'application', 'jobName': 'jobName', 'host': 'host', 'type': 'type',
+                    'closedByControlM': 'closedByControlM', 'ticketNumber': 'ticketNumber', 'runNo': 'runNo',
+                    'notes': 'notes' }
     keywords = dbg_assign_var(['eventType:', 'id:', 'server:', 'fileName:', 'runId:', 'severity:', 'status:',
             'time:', 'user:' ,'updateTime:' ,'message: ' ,'runAs:' ,'subApplication:' ,'application:',
             'jobName:', 'host:', 'type:', 'closedByControlM:', 'ticketNumber:', 'runNo:', 'notes:'],
@@ -112,7 +113,7 @@ except FileNotFoundError as e:
 
 try:
     dbg_logger.info('Opening tktvars.json')
-    with open('tktvars_dco.json') as config_data:
+    with open('tktvars.json') as config_data:
         config=json.load(config_data)
         dbg_logger.debug('Config file is ' + str(config_data))
 except FileNotFoundError as e:
@@ -249,6 +250,9 @@ if(alert[keywords_json['runId']] != '00000'):
             # # f"https://{ctmweb}/ControlM/#Neighborhood:id={alert[keywords_json['runId']]}&ctm={alert[keywords_json['server']]}&name={alert[keywords_json['jobName']]}"+ \
             # f"&date={order_date}&direction=3&radius=3" + \
 
+radius = 3
+direction = 3
+
 tkt_comments =  \
             f"Agent Name                  : {alert[keywords_json['host']]} {NL}" + \
             f"Folder Name                 : {folder} {NL}" + \
@@ -261,9 +265,13 @@ tkt_comments =  \
             f"The job can be seen on the {'Helix' if ctm_is_helix else ''} " + \
             f"Control-M Self Service site. Click the link below. {NL}" + \
             f"{NL}" + \
-            f"https://{ctmweb}/ControlM/#Neighborhood/{alert[keywords_json['runId']]}_3_3?ctm={alert[keywords_json['server']]}&name={alert[keywords_json['jobName']]}"+ \
-            f"&odate=&direction=3&radius=3" + \
+            f"https://{ctmweb}/ControlM/Monitoring/Neighborhood/{alert[keywords_json['runId']]}_{radius}_{direction}?name={alert[keywords_json['jobName']]}"+ \
+            f"&ctm={alert[keywords_json['server']]}&odate=&direction={direction}&radius={radius}&orderId={alert[keywords_json['runId']]}"+ \
             f"{NL}{NL}" if alert_is_job else "This alert is not job related"
+
+            # These lines are for the URL for on-prem prior to v21.100 and 
+            #f"https://{ctmweb}/ControlM/#Neighborhood/{alert[keywords_json['runId']]}_3_3?ctm={alert[keywords_json['server']]}&name={alert[keywords_json['jobName']]}"+ \
+            #f"&odate=&direction=3&radius=3" + \
 
 tkt_work_notes = f"Ticket created automatically by {'Helix' if ctm_is_helix else ''} Control-M via Restful API" + \
     (f" for {alert[keywords_json['server']]}:{alert[keywords_json['runId']]}::{alert[keywords_json['runNo']]}" if alert_is_job else f"alert: {alert_id}")

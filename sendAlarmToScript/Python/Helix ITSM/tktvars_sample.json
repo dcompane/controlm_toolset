@@ -6,8 +6,8 @@
     "comment02": "next is used for the self-service url in the ticket body",
     "ctmweb": "test.us1.controlm.com",
     "comment03": "AAPI via REST variables (assuming CTM 21 and higher, or Helix Control-M)",
-    "ctmaapi": "se-dev-aapi.sandbox.us1.controlm.com/automation-api",
-    "ctmtoken": "UFJEU0xDOjhjZmU3NTk1LWZlMDMtNGExOC1hOThkLTUyMmEzZjU0MDAwMDpDa1M0ek40a21URG9ka3lkRytNUGFDSzlvK2NrM3hvaUdaZVJIbmp5cFQ0PQ==",
+    "ctmaapi": "test-aapi.us1.controlm.com/automation-api",
+    "ctmtoken": "UFJER0ZQQjRlNotHingE3fThjNWItNGI3NC05ZjAyLWFlNjN0ODY3MzEyNDpicTA3eU4wN28wL3YrajZNb1lCUHRXT2QxNE50eG5PcHU4nmxUl1o1UFRvPQ==",
     "comment05": "Platform should be empty or Helix. If different than Helix is assumed on-prem.",
     "ctmplatform": "Helix"
   },

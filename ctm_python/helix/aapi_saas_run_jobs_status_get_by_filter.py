@@ -56,8 +56,8 @@ from sys import exit
 from aapi_creds import host_name, aapi_token
 
 # Create connection to the SaaS AAPI server
-aapi_client = SaaSConnection(host=hostname,
-                            aapi_token=api_key
+aapi_client = SaaSConnection(host=host_name,
+                            aapi_token=aapi_token
                             )
 
 
@@ -100,17 +100,17 @@ for job in api_response.statuses:
         print (job,'\n')
         for run_no in range(job.number_of_runs):
             log = run_instance.get_job_log(job.job_id)
-            print (f'===== LOG for {job.job_id}:{run_no} =====')
+            print (f'===== LOG for {job.job_id}:{run_no+1} =====')
             print (log,'\n')
-            print (f'===== END of LOG for {job.job_id}:{run_no} =====\n\n\n\n')
+            print (f'===== END of LOG for {job.job_id}:{run_no+1} =====\n\n\n\n')
             try:
                 # If the output fails do not print the rest
                 output = run_instance.get_job_output(job_id=job.job_id, run_no=run_no)
-                print (f'===== OUTPUT for {job.job_id}:{run_no} =====')
+                print (f'===== OUTPUT for {job.job_id}:{run_no+1} =====')
                 print (output,'\n')
-                print (f'===== END of OUTPUT for {job.job_id}:{run_no} =====\n\n\n\n')
+                print (f'===== END of OUTPUT for {job.job_id}:{run_no+1} =====\n\n\n\n')
             except ApiException as e:
-                print(f'Exception when retrieving output. Likely no Output for the run {job.job_id} run number {run_no}')
+                print(f'Exception when retrieving output. Likely no Output for the run {job.job_id} run number {run_no+1}')
                 print ('No output\n\n\n\n')
     else:
         print(f'No output for job {job.job_id} that run {job.number_of_runs} times\n\n\n\n')
