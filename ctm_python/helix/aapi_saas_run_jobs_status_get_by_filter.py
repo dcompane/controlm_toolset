@@ -63,12 +63,14 @@ aapi_client = SaaSConnection(host=host_name,
 
 run_instance = aapi.RunApi(api_client=aapi_client.api_client)
 
-limit = 2000
+limit = 10000
 
-yesterday = date.today() - timedelta(days=1)
-order_date = yesterday.strftime('%y%m%d')
+#yesterday = date.today() - timedelta(days=1)
+today = date.today() - timedelta(days=0)
+today = date.today() + timedelta(days=1)
+order_date = today.strftime('%y%m%d')
 
-api_response = run_instance.get_jobs_status_by_filter(limit=limit, order_date_from=order_date, order_date_to=order_date)
+api_response = run_instance.get_jobs_status_by_filter(limit=limit, order_date_from=order_date, order_date_to=order_date) 
 
 # api_response = run_instance.get_jobs_status_by_filter(limit=limit, jobname=jobname, 
 #                 ctm=ctm, server=server, application=application, sub_application=sub_application, 
@@ -90,28 +92,30 @@ for job in api_response.statuses:
     if (job.type == "Folder" or job.type == "Sub-Table"):
         print (f'===== STATUS For {job.type} {job.name} - {job.job_id} =====')
         print (job,'\n')
-        print (f'===== END of STATUS For {job.type} {job.name} - {job.job_id} =====\n\n\n\n')
         log = run_instance.get_job_log(job.job_id)
         print (f'===== FOLDER - LOG for {job.job_id} =====')
         print (log,'\n')
-        print (f'===== END of FOLDER - LOG for {job.job_id} =====\n\n\n\n')
-    elif (job.number_of_runs != 0):
-        print (job.job_id,'\n')
-        print (job,'\n')
-        for run_no in range(job.number_of_runs):
-            log = run_instance.get_job_log(job.job_id)
-            print (f'===== LOG for {job.job_id}:{run_no+1} =====')
-            print (log,'\n')
-            print (f'===== END of LOG for {job.job_id}:{run_no+1} =====\n\n\n\n')
-            try:
-                # If the output fails do not print the rest
-                output = run_instance.get_job_output(job_id=job.job_id, run_no=run_no)
-                print (f'===== OUTPUT for {job.job_id}:{run_no+1} =====')
-                print (output,'\n')
-                print (f'===== END of OUTPUT for {job.job_id}:{run_no+1} =====\n\n\n\n')
-            except ApiException as e:
-                print(f'Exception when retrieving output. Likely no Output for the run {job.job_id} run number {run_no+1}')
-                print ('No output\n\n\n\n')
+        print (f'===== END of FOLDER - LOG for {job.job_id} =====')
+        print (f'===== END of STATUS For {job.type} {job.name} - {job.job_id} =====\n')
     else:
-        print(f'No output for job {job.job_id} that run {job.number_of_runs} times\n\n\n\n')
+        print (f'===== STATUS For {job.type} {job.name} - {job.job_id} =====')
+        print (job,'\n')
+        if (job.number_of_runs != 0):
+            log = run_instance.get_job_log(job.job_id)
+            print (f'===== LOG for {job.job_id} =====')
+            print (log,'\n')
+            print (f'===== END of LOG for {job.job_id} =====')
+            for run_no in range(job.number_of_runs):
+                try:
+                    # If the output fails do not print the rest
+                    output = run_instance.get_job_output(job_id=job.job_id, run_no=run_no+1)
+                    print (f'===== OUTPUT for {job.job_id}:{run_no+1} =====')
+                    print (output,'\n')
+                    print (f'===== END of OUTPUT for {job.job_id}:{run_no+1} =====')
+                except ApiException as e:
+                    print(f'Exception when retrieving output for the {job.job_id} run number {run_no+1}')
+        else:
+            print(f'No output for job {job.job_id} that run {job.number_of_runs} times')
+
+        print (f'===== END of STATUS For {job.type} {job.name} - {job.job_id} =====\n\n')
 
