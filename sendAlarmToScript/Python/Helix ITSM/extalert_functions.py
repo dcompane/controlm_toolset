@@ -62,6 +62,22 @@ def args2dict(tosplit, keys):
     result = {getkey(i): j.strip() for i,j in elts}
     return result
 
+#########################################
+# Parsing arguments
+#########################################
+import argparse
+def parsing_args():
+    parser = argparse.ArgumentParser()
+    #parser.add_argument('--action', '-a', dest='action', help='Type of action to perform',
+    #                    choices=['list', 'fetch'])
+    #parser.add_argument('--month', '-m', dest='month', help='Month of the report',
+    #                    choices=['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September',
+    #                             'October', 'November', 'December'])
+    #parser.add_argument('-y', '--year', dest='year', action='store', help='Year of report in the format of YYYY')
+    #parser.add_argument('-v', '--verbose', help='Running with debug messages', action='store_true')
+    #parser.add_argument('alert', metavar='N', type=str, nargs='+', help='fromScript')
+    #params = parser.parse_args()
+    #return params
 
 #########################################
 # Initialize logging for debug purposes
@@ -154,81 +170,81 @@ def ctmConnAAPI(host_name, token, logger):
     monitor = Monitor(aapiclient=w.aapiclient)
     return monitor
 
-#########################################
-# Retrieve output
-def ctmOutputFile(monitor, job_name, server, run_id, run_no, logger, debug):
-    logger.debug("Retrieving output using AAPI")
-    # Adding header for output file
-    job_output = \
-        f"*" * 70 + '\n' + \
-        f"" + '\n'+ \
-        f"Job output for {job_name} OrderID: {run_id}:{run_no}" + '\n'+ \
-        f"" + '\n'+ \
-        f"*" * 70 + '\n'
+# #########################################
+# # Retrieve output
+# def ctmOutputFile(monitor, job_name, server, run_id, run_no, logger, debug):
+#     logger.debug("Retrieving output using AAPI")
+#     # Adding header for output file
+#     job_output = \
+#         f"*" * 70 + '\n' + \
+#         f"" + '\n'+ \
+#         f"Job output for {job_name} OrderID: {run_id}:{run_no}" + '\n'+ \
+#         f"" + '\n'+ \
+#         f"*" * 70 + '\n'
 
-    # Retrieve output from the (Helix) Control-M environment
-    output = dbg_assign_var(debug, monitor.get_output(f"{server}:{run_id}",
-            run_no=run_no), "Output of job", logger)
+#     # Retrieve output from the (Helix) Control-M environment
+#     output = dbg_assign_var(monitor.get_output(f"{server}:{run_id}",
+#             run_no=run_no), "Output of job", logger, debug)
 
-    # If there is no output, say it
-    if output is None :
-        job_output = (job_output + '\n' +
-                    f"*" * 70 + '\n' +
-                    "NO OUTPUT AVAILABLE FOR THIS JOB" + '\n' +
-                    f"*" * 70 )
-    else:
-        # Add retrieved output to header
-        job_output = (job_output + '\n' +  output)
+#     # If there is no output, say it
+#     if output is None :
+#         job_output = (job_output + '\n' +
+#                     f"*" * 70 + '\n' +
+#                     "NO OUTPUT AVAILABLE FOR THIS JOB" + '\n' +
+#                     f"*" * 70 )
+#     else:
+#         # Add retrieved output to header
+#         job_output = (job_output + '\n' +  output)
 
-    return job_output
+#     return job_output
 
-#########################################
-# Retrieve log
-def ctmlogFile(monitor, job_name, server, run_id, run_no, logger, debug):
-    logger.debug("Retrieving log using AAPI")
-    # Adding header for log file
-    job_log = \
-        f"*" * 70 + '\n' + \
-        f"Job log for {job_name} OrderID: {run_id}" + '\n'+ \
-        f"LOG includes all executions to this point (runcount: {run_no}" + '\n'+ \
-        f"*" * 70 + '\n'
-    # Retrieve log from the (Helix) Control-M environment
-    log = dbg_assign_var(debug, monitor.get_log(f"{server}:{run_id}"), "Log of Job", dbg_logger)
+# #########################################
+# # Retrieve log
+# def ctmlogFile(monitor, job_name, server, run_id, run_no, logger, debug):
+#     logger.debug("Retrieving log using AAPI")
+#     # Adding header for log file
+#     job_log = \
+#         f"*" * 70 + '\n' + \
+#         f"Job log for {job_name} OrderID: {run_id}" + '\n'+ \
+#         f"LOG includes all executions to this point (runcount: {run_no}" + '\n'+ \
+#         f"*" * 70 + '\n'
+#     # Retrieve log from the (Helix) Control-M environment
+#     log = dbg_assign_var(monitor.get_log(f"{server}:{run_id}"), "Log of Job", dbg_logger, debug)
 
-    # If there is no output, say it
-    if log is None :
-        job_log = (job_log + '\n' +
-                    f"*" * 70 + '\n' +
-                    "NO LOG AVAILABLE FOR THIS JOB" + '\n' +
-                    "INVESTIGATE. THIS IS NOT NORMAL." + '\n' +
-                    f"*" * 70 )
-    else:
-        # Add retrieved output to header
-        job_log = (job_log + '\n' +  log)
+#     # If there is no output, say it
+#     if log is None :
+#         job_log = (job_log + '\n' +
+#                     f"*" * 70 + '\n' +
+#                     "NO LOG AVAILABLE FOR THIS JOB" + '\n' +
+#                     "INVESTIGATE. THIS IS NOT NORMAL." + '\n' +
+#                     f"*" * 70 )
+#     else:
+#         # Add retrieved output to header
+#         job_log = (job_log + '\n' +  log)
 
-    return job_log
+#     return job_log
 
-#########################################
-# Write file to disk for attachment to case
-import os
-import tempfile
-def writeFile4Attach(file_name, content, directory: str, logger, debug):
-    if not os.path.exists(directory):
-            directory=tempfile.gettempdir()
-    file_2write =directory+os.sep+file_name
-    fh = open(file_2write,'w')
-    try:
-        # Print message before writing
-        logger.debug(f'Writing data to file {file_2write}')
-        # Write data to the temporary file
-        fh.write(content)
-        # Close the file after writing
-        fh.close()
-    finally:
-        # Print a message after writing
-        logger.debug(f"File {file_2write} written")
+# #########################################
+# # Write file to disk for attachment to case
+# import os
+# import tempfile
+# def writeFile4Attach(file_name, content, directory: str, logger, debug):
+#     if not os.path.exists(directory):
+#             directory=tempfile.gettempdir()
+#     file_2write =directory+os.sep+file_name
+#     fh = open(file_2write,'w')
+#     try:
+#         # Print message before writing
+#         logger.debug(f'Writing data to file {file_2write}')
+#         # Write data to the temporary file
+#         fh.write(content)
+#         # Close the file after writing
+#         fh.close()
+#     finally:
+#         # Print a message after writing
+#         logger.debug(f"File {file_2write} written")
 
-    return file_2write
+#     return file_2write
 
 
 # Importing the email package
@@ -240,7 +256,6 @@ from email.mime.base import MIMEBase
 from email.mime.text import MIMEText
 from email.utils import COMMASPACE, formatdate
 from email import encoders
-
 
 def send_mail(send_from, send_to, subject, message,
               send_cc=None, send_bcc=None, files=[],

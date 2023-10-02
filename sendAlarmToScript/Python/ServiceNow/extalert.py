@@ -1,8 +1,11 @@
+### See send_mail function in extalert_functions
 
 # Basic imports
 import json
 import sys
 import logging
+import smtplib
+from pprint import pprint
 
 # Importing Control-M Python Client
 from ctm_python_client.core.workflow import *
@@ -11,41 +14,38 @@ from ctm_python_client.core.monitoring import Monitor
 from aapi import *
 
 # Importing functions
-from extalert_functions import args2dict
-from extalert_functions import parsing_args
-from extalert_functions import init_dbg_log
-from extalert_functions import dbg_assign_var
-
-# https://pysnow.readthedocs.io/en/latest/full_examples/create.html
-from pysnow import Client as snow_cli
+from extalert_snow_functions import args2dict
+from extalert_snow_functions import init_dbg_log
+from extalert_snow_functions import dbg_assign_var
+from extalert_functions import send_mail
 
 # To write the log and output to files for attaching.
 import tempfile
 import os
+from os import getcwd, path
+from socket import getfqdn
 
-# To see if we need to set initial debug. If not, can be set at tktvars,
-#    but logging will not be as throrugh in the beginning. 
+
+# To see if we need to set initial debug. If not, can be set at 'SNOWvars',
+#    but logging will not be as throrugh in the beginning.
 # need to pip install  python-dotenv
 from dotenv import dotenv_values
+
+# https://pysnow.readthedocs.io/en/latest/full_examples/create.html
+from pysnow import Client as snow_cli
+
 
 # Set exit code for the procedure
 exitrc = 0
 
+config = {}
+
 # Initialize logging
-dbg_logger=init_dbg_log()
+dbg_logger, config = init_dbg_log()
 
-try:
-    config = dotenv_values('.env.debug')  # could render config = {"DEBUG": "true"}
-    dbg_logger.info(f'file ".env.debug" was loaded. Setting debug to {config["DEBUG"]}.')
-except:
-    dbg_logger.info('file ".env.debug" is not available. Setting debug to False.')
-    config = {}
-    config['DEBUG'] = 'false'
+pprint (config)
 
-# Setting logging level according to .env
-if config['DEBUG'] == 'true':
-    dbg_logger.setLevel(logging.DEBUG)
-    dbg_logger.info('Startup logging to file level adjusted to debug (verbose)')
+debug = True if config['DEBUG'].lower() == 'true' else False
 
 try:
     dbg_logger.info('Opening field_names.json')
@@ -62,25 +62,25 @@ except FileNotFoundError as e:
     # Template file with fields not found
     # Assuming all fields will be passed in standard order
     dbg_logger.info('Failed opening field_names.json. Using default')
-    keywords_json = dbg_assign_var( { {'eventType': 'eventType'}, {'id': 'alert_id'}, {'server': 'server'}, 
-                    {'fileName': 'fileName'}, {'runId': 'runId'}, {'severity': 'severity'}, 
+    keywords_json = dbg_assign_var( { {'eventType': 'eventType'}, {'id': 'alert_id'}, {'server': 'server'},
+                    {'fileName': 'fileName'}, {'runId': 'runId'}, {'severity': 'severity'},
                     {'status': 'status'}, {'time': 'time'}, {'user': 'user'}, {'updateTime': 'updateTime'},
                     {'message': 'message'}, {'runAs': 'runAs'}, {'subApplication': 'subApplication'},
                     {'application': 'application'}, {'jobName': 'jobName'}, {'host': 'host'}, {'type': 'type'},
-                    {'closedByControlM': 'closedByControlM'}, {'ticketNumber': 'ticketNumber'}, {'runNo': 'runNo'}, 
-                    {'notes': 'notes'} }, "Default field names used internally", dbg_logger)
+                    {'closedByControlM': 'closedByControlM'}, {'ticketNumber': 'ticketNumber'}, {'runNo': 'runNo'},
+                    {'notes': 'notes'} }, "Default field names used internally", dbg_logger, debug)
     keywords = dbg_assign_var(['eventType:', 'id:', 'server:', 'fileName:', 'runId:', 'severity:', 'status:',
-            'time:', 'user:' ,'updateTime:' ,'message: ' ,'runAs:' ,'subApplication:' ,'application:', 
-            'jobName:', 'host:', 'type:', 'closedByControlM:', 'ticketNumber:', 'runNo:', 'notes:'], 
-            'Default field names assigned.', dbg_logger)
+            'time:', 'user:' ,'updateTime:' ,'message: ' ,'runAs:' ,'subApplication:' ,'application:',
+            'jobName:', 'host:', 'type:', 'closedByControlM:', 'ticketNumber:', 'runNo:', 'notes:'],
+            'Default field names assigned.', dbg_logger, debug)
 
 try:
     dbg_logger.info('Opening tktvars.json')
-    with open('tktvars.json') as config_data:
+    with open('tktvars_dco.json') as config_data:
         config=json.load(config_data)
         dbg_logger.debug('Config file is ' + str(config_data))
 except FileNotFoundError as e:
-    dbg_logger.info('Failed opening tktvars.json')
+    dbg_logger.info('Failed opening tketvars.json')
     dbg_logger.info('Exception: No config file (tktvars.json) found.')
     dbg_logger.info(e)
     sys.exit(24)
@@ -105,7 +105,7 @@ else:
     dbg_logger.info ('Log and output will NOT be attached to the ticket.')
 
 if (config['pgmvars']['addtkt2alert'] == 'yes'):
-    addtkt2alert = True 
+    addtkt2alert = True
     dbg_logger.info ('Ticket ID will be added to the alert.')
 else:
     addtkt2alert = False
@@ -119,13 +119,14 @@ else:
     dbg_logger.info ('Updates will NOT be sent to the system.')
 
 
-# Ticket variables from tktvars.json
-tkt_url = dbg_assign_var(config['tktvars']['tkturl'], 'Ticketing URL',dbg_logger)
-tkt_rest_path = '/table/incident'
-tkt_id_caller = config['tktvars']['tktsysidcaller']
+# Ticket variables from 'SNOWvars'.json
+tktvars = 'SNOWvars'
+tkt_url = dbg_assign_var(config[tktvars]['tkturl'], 'Ticketing URL',dbg_logger, debug)
+tkt_rest_path = dbg_assign_var(config[tktvars]['tktpath'], 'Ticketing table path',dbg_logger, debug) # '/table/incident'
+tkt_id_caller = config[tktvars]['tktsysidcaller']
 tkt_attach_file=''
-tkt_user = config['tktvars']['tktuser']
-tkt_pass = config['tktvars']['tktpasswd']
+tkt_user = config[tktvars]['tktuser']
+tkt_pass = config[tktvars]['tktpasswd']
 #NewLine for SNOW messages
 NL='\n';
 
@@ -159,14 +160,14 @@ if (ctmupdatetkt and alert[keywords_json['eventType']]):
 
 
 #### Build Ticket fields
-tkt_category=dbg_assign_var('Service Interruption', 'Ticket category', dbg_logger)
-tkt_urgency=dbg_assign_var('1', 'Ticket Urgency', dbg_logger)
-tkt_impact=dbg_assign_var('2', 'Ticket Impact', dbg_logger)
-tkt_watch_list=dbg_assign_var('dcompane@gmail.com', 'Ticket watchlist (SNow specific', dbg_logger)
-tkt_work_list=dbg_assign_var('dcompazrctm@gmail.com', 'Ticket worklist (SNow specific', dbg_logger)
-tkt_assigned_group=dbg_assign_var('CTM GROUP', 'Ticket assigned group (SNow specific)', dbg_logger)
+tkt_category=dbg_assign_var('Service Interruption', 'Ticket category', dbg_logger, debug)
+tkt_urgency=dbg_assign_var('1', 'Ticket Urgency', dbg_logger, debug)
+tkt_impact=dbg_assign_var('2', 'Ticket Impact', dbg_logger, debug)
+tkt_watch_list=dbg_assign_var('dcompane@gmail.com', 'Ticket watchlist (SNow specific', dbg_logger, debug)
+tkt_work_list=dbg_assign_var('dcompazrctm@gmail.com', 'Ticket worklist (SNow specific', dbg_logger, debug)
+tkt_assigned_group=dbg_assign_var('CTM GROUP', 'Ticket assigned group (SNow specific)', dbg_logger, debug)
 tkt_short_description=dbg_assign_var(f"{alert[keywords_json['jobName']]} {alert[keywords_json['message']]}",
-                        'Ticket Short Description', dbg_logger)
+                        'Ticket Short Description', dbg_logger, debug)
 
 # Configure Helix Control-M AAPI client
 
@@ -192,11 +193,14 @@ if(alert[keywords_json['runId']] != '00000'):
         f"*" * 70 + NL
 
     status = dbg_assign_var(monitor.get_statuses(
-            filter={"jobid": f"{alert[keywords_json['server']]}:{alert[keywords_json['runId']]}"}), "Status of job", dbg_logger)
+            filter={"jobid": f"{alert[keywords_json['server']]}:{alert[keywords_json['runId']]}"}), "Status of job", dbg_logger, debug)
 
 
 #Order date has been simplified for this example. The orderDate should be taken from the job and not the first status.
 # https://stackoverflow.com/questions/7079241/python-get-a-dict-from-a-list-based-on-something-inside-the-dict
+
+radius = 3
+direction = 3
 
 tkt_comments =  \
             f"Agent Name                  : {alert[keywords_json['host']]} {NL}" + \
@@ -210,9 +214,10 @@ tkt_comments =  \
             f"The job can be seen on the {'Helix' if ctm_is_helix else ''} " + \
             f"Control-M Self Service site. Click the link below. {NL}" + \
             f"{NL}" + \
-            f"https://{ctmweb}/ControlM/#Neighborhood:id={alert[keywords_json['runId']]}&ctm={alert[keywords_json['server']]}&name={alert[keywords_json['jobName']]}"+ \
-            f"&date={status.statuses[0].order_date}&direction=3&radius=3" + \
+            f"https://{ctmweb}/ControlM/Monitoring/Neighborhood/{alert[keywords_json['runId']]}_{radius}_{direction}?name={alert[keywords_json['jobName']]}"+ \
+            f"&ctm={alert[keywords_json['server']]}&odate=&direction={direction}&radius={radius}&orderId={alert[keywords_json['runId']]}"+ \
             f"{NL}{NL}" if alert_is_job else "This alert is not job related"
+
 
 tkt_work_notes = f"Ticket created automatically by {'Helix' if ctm_is_helix else ''} Control-M" + \
     (f" for {alert[keywords_json['server']]}:{alert[keywords_json['runId']]}::{alert[keywords_json['runNo']]}" if alert_is_job else "")
@@ -221,10 +226,10 @@ snow_payload= {'short_description': tkt_short_description,
     'assignment_group': tkt_assigned_group,
     'urgency': tkt_urgency,
     'impact': tkt_impact,
-    'comments': tkt_comments, 
-    'watch_list': tkt_watch_list, 
-    'category': tkt_category, 
-    'caller_id': tkt_id_caller, 
+    'comments': tkt_comments,
+    'watch_list': tkt_watch_list,
+    'category': tkt_category,
+    'caller_id': tkt_id_caller,
     'work_notes': tkt_work_notes,
     'work_notes_list': tkt_work_list
     }
@@ -238,7 +243,7 @@ snow_incident_number =  result.__getitem__('number')
 # Load AAPI variables and create workflow object if need to attach logs
 if ctmattachlogs and alert_is_job:
     incident = snow_incidents.get(query={'number': snow_incident_number})
-    log = dbg_assign_var(monitor.get_log(f"{alert[keywords_json['server']]}:{alert[keywords_json['runId']]}"), "Log of Job", dbg_logger)
+    log = dbg_assign_var(monitor.get_log(f"{alert[keywords_json['server']]}:{alert[keywords_json['runId']]}"), "Log of Job", dbg_logger, debug)
 
         # Change \n to CRLF on log and output
     #    Log will always exist but output may not
@@ -250,7 +255,7 @@ if ctmattachlogs and alert_is_job:
         output = dbg_assign_var(monitor.get_output(f"{alert[keywords_json['server']]}:{alert[keywords_json['runId']]}",
             run_number=alert[keywords_json['runNo']]), "Output of job", dbg_logger, debug, alert_id)
         if output == None:
-            output = f"*" * 70 + NL + "NO OUTPUT AVAILABLE FOR THIS JOB" + NL + f"*" * 70    
+            output = f"*" * 70 + NL + "NO OUTPUT AVAILABLE FOR THIS JOB" + NL + f"*" * 70
     except:
         output = f"*" * 70 + NL + "NO OUTPUT AVAILABLE FOR THIS JOB" + NL + f"*" * 70
     finally:
@@ -261,10 +266,10 @@ if ctmattachlogs and alert_is_job:
 
 
     if output is None :
-        output =f"*" * 70 + NL + "NO OUTPUT AVAILABLE FOR THIS JOB" + NL + f"*" * 70 )
+        output =f"*" * 70 + NL + "NO OUTPUT AVAILABLE FOR THIS JOB" + NL + f"*" * 70
 
     job_output = (job_output + NL +  output)
-    
+
     file_log = f"log_{alert[keywords_json['runId']]}_{alert[keywords_json['runNo']]}.txt"
     file_output = f"output_{alert[keywords_json['runId']]}_{alert[keywords_json['runNo']]}.txt"
 
@@ -287,7 +292,7 @@ if ctmattachlogs and alert_is_job:
     finally:
         # Print a message before reading
         dbg_logger.debug("log data added to the ticket")
-        
+
     os.remove(file_name)
 
     # Write output
@@ -309,7 +314,7 @@ if ctmattachlogs and alert_is_job:
     finally:
         # Print a message before reading
         dbg_logger.debug("output data added to the ticket")
-        
+
     os.remove(file_name)
 
 sys.exit(exitrc)
