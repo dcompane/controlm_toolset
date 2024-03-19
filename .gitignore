@@ -12,4 +12,5 @@ extalert_b*.py
 extalert_s*.py
 tktvars_dco.json
 tktvars.json
+tktvars copy.json
 SNOW ids.txt
