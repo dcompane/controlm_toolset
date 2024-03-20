@@ -1,19 +1,26 @@
 # controlm_toolset
 
-## aapi_upgrade.ps1
+## [aapi_upgrade.ps1](aapi_upgrade.ps1)
 
 - Purpose: Downloads and installs the AAPI release identified in the parameters
 - Parameters: Version (default=9) Release (default=20) Fixpack (no default)
 - Use: ./aapi_upgrade.ps1 -fixpack 225
 - NOTE: If you install Powershell on Linux (!!) it can also be used in that OS! (tested and works!)
   
-## sndSMSviaATT.sh
+## [sndSMSviaATT.sh](misc_tools\sndSMSviaATT.sh)
 
 - Purpose: as a control-M Shout, sends an SMS message via a REST request
 - Parameters: standard shout parameters $2 is used as message and contains the phone and text message separated by "=="
 - Use: as part of a Control-M shout to program
 
-## SendAlarmToScript
+## [eventViaNotifDest.bat](misc_tools\eventViaNotifDest.bat)
+
+- Purpose: Allows to send an event via the ctm cli to some other system using the notification (shout) destinations mechanism
+- Parameters: standard shout parameters %2 is used as message and contains the phone and text message separated by "=="
+-- 
+- Use: as part of a Control-M shout to program
+
+## [SendAlarmToScript](sendAlarmToScript)
 
 - Purpose: use Alarm to script configuration to send alerts to an ITSM system
 - Check the [README](sendAlarmToScript/README.md) file for the project
