@@ -40,3 +40,9 @@ Then
   * Log (if Y, will write log files with the following name)
     * logfile=$currdir/$currdate-$currtime-$event.txt
 * Use: as part of a Control-M shout to program
+
+## [sndSMSviaATT.sh](misc_tools\sndSMSviaATT.sh)
+
+- Purpose: as a control-M Shout, sends an SMS message via a REST request
+- Parameters: standard shout parameters $2 is used as message and contains the phone and text message separated by "=="
+- Use: as part of a Control-M shout to progra
