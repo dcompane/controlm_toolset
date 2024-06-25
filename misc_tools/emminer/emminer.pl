@@ -16,8 +16,8 @@
 # https://opensource.org/licenses/MIT
 
 
-$emminer_version="2.08";             	# used in verifying current version and in displays
-$emminer_version_date="Jan 2024";
+$emminer_version="2.09";             	# used in verifying current version and in displays
+$emminer_version_date="Jun 2024";
 $emailcontact="nonegiven";  # email address for emminer.pl routine comments/issues
 $thispgm="EMminer";                   	# variable holds the name of this routine
  
@@ -56,8 +56,10 @@ print "\n";
 #           ~<control-m_user>/bmcperl/perl emminer.pl
 #           ~<control-m_user>/bmcperl/perl emminer.pl -silent
 #  
-# updates
 
+# updates
+#Jun 2024 v2.09
+#           -	(dc) Fixing an issue with Pauser(3355)
 #Feb 2024 v2.08
 #           -	(dc) added some additional character replacements (search for "# Character replacements") and generic line to remove any non-printable chars (ascii over 127) after the initial replacements
 #			- 	(dc) added $nolock to reports query for standardization (although not really needed)
