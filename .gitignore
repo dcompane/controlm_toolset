@@ -1,3 +1,4 @@
+.gitignore
 PAKAI*
 .git
 .vscode
@@ -19,3 +20,5 @@ Jira
 xxctm_python
 sendAlarmToScript/Python/Helix ITSM/resources/Windows/README.md
 *.ori
+#no push stuf
+np_*
