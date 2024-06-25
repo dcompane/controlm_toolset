@@ -3352,7 +3352,7 @@ $rowno=0;                                                                     # 
 
            if (($current_sheet eq "EMPARMS") && ($colarray1[0] eq "HandleAlertsOnRerun") && ($col == 2) && (${xx} eq "0"))
              {
-                 if ($debug) {print " -- see not handling alerts on rerun, changing color\n";}
+                 if ($debug) {print "-- see not handling alerts on rerun, changing color\n";}
                  $number_of_excel_comments++;
                  $exstyle = " ss:StyleID=\"s27\"";
                  $comment="<Comment ss:Author=\"Best Practice: \"><ss:Data xmlns=\"http://www.w3.org/TR/REC-html40\"><B><Font html:Face=\"Tahoma\" x:Family=\"Swiss\" html:Size=\"8\" html:Color=\"#000000\">  </Font></B><Font html:Face=\"Tahoma\" x:Family=\"Swiss\" html:Size=\"8\" html:Color=\"#000000\" ss:ShowAlways=\"1\">&#10;If you set this to 1, job failure alerts will automatically be handled when you rerun the job.&#10;&#10;</Font></ss:Data></Comment>";
@@ -3463,7 +3463,10 @@ $rowno=0;                                                                     # 
 			$xx=~s/\º/ /g;
 			# Catch all non-ascii over 127
 			$xx=~s/(.)/(ord($1) > 127) ? "" : $1/egs;
-			&Pauser(3355);
+			if ($debug) {
+				print "\n";
+				&Pauser(3468);
+			}
               
             print EXCEL "    <Cell${exstyle}><Data ss:Type=${extype}>${xx}</Data>$comment</Cell>\n";
 #            print EXCEL "    <Cell><Data ss:Type=\"String\">${xx}</Data></Cell>\n";
