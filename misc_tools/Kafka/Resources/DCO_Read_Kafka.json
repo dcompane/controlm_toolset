@@ -1,0 +1,53 @@
+{
+  "DCO_Read_Kafka": {
+  "Type":  "Folder",
+  "ControlmServer": "IN01",
+  "Description": "reads a Karka topic and prints a message to output",
+  "OrderMethod": "Manual",
+  "SubApplication": "DCO_Kafka",
+  "CreatedBy": "daniel_companeetz@bmc.com",
+  "Application": "DCO",
+  "When": {
+    "RuleBasedCalendars": {
+      "Included": [
+        "EVERYDAY"
+      ],
+      "EVERYDAY": {
+        "Type": "Calendar:RuleBased",
+        "When": {
+          "DaysRelation": "OR",
+          "WeekDays": [
+            "NONE"
+          ],
+          "MonthDays": [
+            "ALL"
+          ]
+        }
+      }
+    }
+  },
+  "AI DCO_Kafka_Job_2": {
+    "Type": "Job:ApplicationIntegrator:AI DCO_Kafka",
+    "ConnectionProfile": "DCO_KAFKA_DC01",
+    "AI-Job Duration": "5",
+    "AI-Topic": "test",
+    "AI-file path": "/tmp",
+    "AI-file name prefix": "DCO",
+    "AI-file name body": "%%ORDERID._%%RUNCOUNT",
+    "SubApplication": "DCO_Kafka",
+    "Host": "dco_dc01_saasagsand",
+    "CreatedBy": "daniel_companeetz@bmc.com",
+    "RunAs": "DCO_KAFKA_DC01",
+    "Application": "DCO",
+    "When": {
+      "WeekDays": [
+        "NONE"
+      ],
+      "MonthDays": [
+        "ALL"
+      ],
+      "DaysRelation": "OR"
+    }
+  }
+  }
+}
