@@ -1,0 +1,10 @@
+{
+  "DCO_KAFKA_DC01": {
+    "Type": "ConnectionProfile:ApplicationIntegrator:AI DCO_Kafka",
+    "AI-Group ID": "test",
+    "AI-bootstrap port": "9092",
+    "AI-bootstrap-server": "dc01",
+    "Description": "",
+    "Centralized": true
+  }
+}
