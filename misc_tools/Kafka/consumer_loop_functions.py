@@ -40,8 +40,7 @@ Date (YMD)    Name                  What
 
 """
 
-from datetime import datetime
-from time import sleep
+from time import sleep, time
 from os import path
 
 def basic_consume_loop(consumer, topics):
@@ -58,8 +57,7 @@ def basic_consume_loop(consumer, topics):
     print(f'Job Duration is set to {job_duration}')
 
     # Set start time
-    now = datetime.now().time()   
-    start_time = (now.hour * 60 + now.minute) * 60 + now.second
+    start_time = time()   
 
     msg_number = 0
     running = True
@@ -115,8 +113,7 @@ def shutdown():
     return shut
 
 def get_out_time(start_time, job_duration): 
-    now = datetime.now().time()
-    now_time = (now.hour*60+now.minute)*60+now.second
+    now_time = time()
     get_out = False
     if now_time > start_time + job_duration:
         # print (now_time, start_time + job_duration)
