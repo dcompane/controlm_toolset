@@ -31,14 +31,18 @@ NOTE: If the job is re-run, the long duration can cause issues. I recommend to u
 
 ## Download
 
-* [Click this to download a zip of the PlugIn jobtype](Resources\DCO_KAFKA.zip) `<br>`
+* [Click this to download a zip of the PlugIn jobtype](https://github.com/dcompane/controlm_toolset/blob/main/misc_tools/Kafka/Resources/DCO_KAFKA.zip)
+
   Click download and unzip the archive. Then, import the file into the Application Integrator designer.
-* [Click this for the uncompressed raw DCO_Kafka.ctmai file](Resources\DCO_KAFKA.ctmai) `<br>`
+
+* [Click this for the uncompressed raw DCO_Kafka.ctmai file](https://github.com/dcompane/controlm_toolset/blob/main/misc_tools/Kafka/Resources/DCO_KAFKA.ctmai)
+
   This will allow you to retrieve the raw ctmai file as described in the repository [Readme](https://github.com/controlm/integrations-plugins-community-solutions#saving-application-integrator-files-for-use).
+
 * Or use the following command:
 
   ```bash
-  wget -O AI_DCO_KAFKA.ctmai https://github.com/dcompane/controlm_toolset/blob/main/misc_tools/Kafka/Resources/DCO_KAFKA.ctmai
+  wget -O DCO_KAFKA.ctmai https://github.com/dcompane/controlm_toolset/blob/main/misc_tools/Kafka/Resources/DCO_KAFKA.ctmai
   ```
 
 ## Fields and available actions
