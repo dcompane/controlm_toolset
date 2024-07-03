@@ -15,7 +15,7 @@ The job type is created as a python script that accesses Kafka using the conluen
 
 The code follows the code at [Python Client code examples -> Basic poll loop](https://docs.confluent.io/kafka-clients/python/current/overview.html#basic-poll-loop) a of 2024-06-26
 
-The AI plug-in requires the python package confluent-kafka. It can be installed by running 
+The AI plug-in requires the python package confluent-kafka. It can be installed by running
 
 ```python
 pip install confluent-kafka
@@ -60,7 +60,6 @@ NOTE: If the job is re-run, the long duration can cause issues. I recommend to u
   }
 }
 
-
 ### Kafka Job Form
 
 "AI DCO_Kafka_Job_2": {
@@ -86,8 +85,8 @@ Connection refused (after 0ms in state CONNECT)
 ```
 
 For future development: use python -u instead of plain python.
-See Why at https://bugs.python.org/issue41449
-And see HowTo at https://stackoverflow.com/questions/107705/disable-output-buffering 
+See Why at [https://bugs.python.org/issue41449](Python issue 41449)
+And see HowTo at [https://stackoverflow.com/questions/107705/disable-output-buffering ](Stackoverflow on buffering STDOUT on Python)
 
 ## Requirements
 

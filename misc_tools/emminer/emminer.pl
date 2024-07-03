@@ -510,7 +510,7 @@ sub dbqueries
 	     
 		if ($emver =>9)
 			{
-				$sqlquery1 = "select Name, \',\', status, \',\', enabled from add_ons $nolock";
+				$sqlquery1 = "select NAME, \',\', STATUS, \',\', ENABLED from ADD_ONS $nolock";
 				dosql(0);
 				 
 				&Openordie("INCONF :: $sqloutfile :: < :: Cannot access temp file $sqloutfile. Check file and directory permissions and ownership.\n");
@@ -3465,12 +3465,9 @@ $rowno=0;                                                                     # 
 			$xx=~s/\º/ /g;
 			# Catch all non-ascii over 127
 			$xx=~s/(.)/(ord($1) > 127) ? "" : $1/egs;
-			if ($debug) {
-				print "\n";
-				&Pauser(3468);
-			}
-              
+			
             print EXCEL "    <Cell${exstyle}><Data ss:Type=${extype}>${xx}</Data>$comment</Cell>\n";
+#            print EXCEL "    <Cell><Data ss:Type=\"String\">${xx}</Data></Cell>\n";
 #            print EXCEL "    <Cell><Data ss:Type=\"String\">${xx}</Data></Cell>\n";
            #if ($current_sheet eq "EMPARMS") {print "---emparms col=$col. xx=$xx\n";&Pauser(3263);}
            if (($current_sheet eq "EMPARMS") && ($col == 2))
