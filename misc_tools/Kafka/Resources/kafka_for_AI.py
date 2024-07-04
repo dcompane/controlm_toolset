@@ -1,4 +1,4 @@
-python << EOF
+python -u << EOF
 
 """
 (c) 2020 - 2024 Daniel Companeetz, BMC Software, Inc.
@@ -39,10 +39,12 @@ Change Log
 Date (YMD)    Name                  What
 --------      ------------------    ------------------------
 20240626      Daniel Companeetz     Initial work
+20240703      Daniel Companeetz     Added -u to python to flush buffer when no tty
 
 """
 
-from time import sleep, time
+from datetime import datetime
+from time import sleep
 from os import path
 
 def basic_consume_loop(consumer, topics):
@@ -58,7 +60,8 @@ def basic_consume_loop(consumer, topics):
     print(f'Job Duration is set to {job_duration}')
 
     # Set start time
-    start_time = time()
+    now = datetime.now().time()   
+    start_time = (now.hour * 60 + now.minute) * 60 + now.second
 
     msg_number = 0
     running = True
@@ -116,7 +119,8 @@ def shutdown():
     return shut
 
 def get_out_time(start_time, job_duration): 
-    now_time = time()
+    now = datetime.now().time()
+    now_time = (now.hour*60+now.minute)*60+now.second
     get_out = False
     if now_time > start_time + job_duration:
         get_out = True

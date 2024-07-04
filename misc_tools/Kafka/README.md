@@ -5,6 +5,7 @@
 | Date       | Who               | What               |
 | ---------- | ----------------- | ------------------ |
 | 2024-06-29 | Daniel Companeetz | Initial deployment |
+| 2024-07-03 | Daniel Companeetz | Added -u to python to disable out buffering when no tty |
 |            |                   |                    |
 
 ## Detailed Description
@@ -84,7 +85,7 @@ It is possible that an initial connection refused message is seen, but that does
 Connection refused (after 0ms in state CONNECT)
 ```
 
-For future development: use python -u instead of plain python.
+Disable output buffering: use python -u instead of plain python.
 See Why at [https://bugs.python.org/issue41449](Python issue 41449)
 And see HowTo at [https://stackoverflow.com/questions/107705/disable-output-buffering ](Stackoverflow on buffering STDOUT on Python)
 
