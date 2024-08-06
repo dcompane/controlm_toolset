@@ -1,0 +1,14 @@
+python -u << EOF
+
+
+#include 
+#https://github.com/dcompane/controlm_toolset/blob/main/Integrations/Kafka/consumer_loop_functions.py
+
+#include
+#https://github.com/dcompane/controlm_toolset/blob/main/Integrations/Kafka/consumer_loop.py
+
+#replace 
+
+# topic with the variables as needed
+
+EOF

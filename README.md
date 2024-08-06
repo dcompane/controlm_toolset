@@ -6,7 +6,7 @@
 - Parameters: Version (default=9) Release (default=20) Fixpack (no default)
 - Use: ./aapi_upgrade.ps1 -fixpack 225
 - NOTE: If you install Powershell on Linux (!!) it can also be used in that OS! (tested and works!)
-  
+
 ## [sndSMSviaATT.sh](misc_tools\sndSMSviaATT.sh)
 
 - Purpose: as a control-M Shout, sends an SMS message via a REST request
@@ -31,9 +31,9 @@
 - Purpose: use Alarm to script configuration to send alerts to an ITSM system
 - Check the [README](sendAlarmToScript/README.md) file for the project
 - Two versions very similar in design
-   - [Bash](sendAlarmToScript/Bash)
-   - [Python](sendAlarmToScript/Python)
-       - See an integration for Remedy ITSM at https://github.com/controlm/automation-api-community-solutions/tree/master/helix-control-m/2-external-monitoring-tools-examples/alerts-to-helix-itsm
+  - [Bash](sendAlarmToScript/Bash)
+  - [Python](sendAlarmToScript/Python)
+    - See an integration for Remedy ITSM at https://github.com/controlm/automation-api-community-solutions/tree/master/helix-control-m/2-external-monitoring-tools-examples/alerts-to-helix-itsm
 
 ## Docker examples
 

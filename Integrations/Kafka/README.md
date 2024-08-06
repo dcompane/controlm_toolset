@@ -2,11 +2,11 @@
 
 ## Changes on this version
 
-| Date       | Who               | What               |
-| ---------- | ----------------- | ------------------ |
-| 2024-06-29 | Daniel Companeetz | Initial deployment |
+| Date       | Who               | What                                                    |
+| ---------- | ----------------- | ------------------------------------------------------- |
+| 2024-06-29 | Daniel Companeetz | Initial deployment                                      |
 | 2024-07-03 | Daniel Companeetz | Added -u to python to disable out buffering when no tty |
-|            |                   |                    |
+|            |                   |                                                         |
 
 ## Detailed Description
 
@@ -14,7 +14,7 @@ This Control-M Application Integrator job type enables the automation of reading
 
 The job type is created as a python script that accesses Kafka using the conluent-kafka python package (v2.4.0)
 
-The code follows the code at [Python Client code examples -> Basic poll loop](https://docs.confluent.io/kafka-clients/python/current/overview.html#basic-poll-loop) a of 2024-06-26
+The code follows the code at [Python Client code examples -&gt; Basic poll loop](https://docs.confluent.io/kafka-clients/python/current/overview.html#basic-poll-loop) as of 2024-06-26
 
 The AI plug-in requires the python package confluent-kafka. It can be installed by running
 
@@ -26,20 +26,16 @@ For now, the AI plugin will only run on Linux, as uses the heredoc funcionality 
 
 The objective of this fully functional module is to show how easy it is to configure a job type based on any application that has an available API, in this case implemented by the confluent-kafka package.
 
-There is a provision to end the loop after a certain time, with a default on 15 minutes. If the duration is 0 (zero), the duration is calculated to 23hrs 59 mins. This is to allow for the job to finish at some point during the next day. 
-
-NOTE: If the job is re-run, the long duration can cause issues. I recommend to use a cycle time of 15 minutes and use a cyclic job.
+There is a provision to end the loop after a certain time, with a default of 15 minutes. If the duration is 0 (zero), the duration is calculated to 23hrs 59 mins. This is to allow for the job to finish at some point during the next day. However, if the y job needs to be restarted, the duration should not be left as 0 (zero).
 
 ## Download
 
 * [Click this to download a zip of the PlugIn jobtype](https://github.com/dcompane/controlm_toolset/blob/main/misc_tools/Kafka/Resources/DCO_KAFKA.zip)
 
   Click download and unzip the archive. Then, import the file into the Application Integrator designer.
-
 * [Click this for the uncompressed raw DCO_Kafka.ctmai file](https://github.com/dcompane/controlm_toolset/blob/main/misc_tools/Kafka/Resources/DCO_KAFKA.ctmai)
 
   This will allow you to retrieve the raw ctmai file as described in the repository [Readme](https://github.com/controlm/integrations-plugins-community-solutions#saving-application-integrator-files-for-use).
-
 * Or use the following command:
 
   ```bash
