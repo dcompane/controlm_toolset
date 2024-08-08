@@ -5,9 +5,9 @@ Run this on all your prod and non-prod environments
 ## [1.     Produce the **EMMiner** output for all your EMs]()
 
 1. You can find the EMMiner [here](misc_tools\emminer\emminer.pl)
-
    1. Run the emminer as the Linux `<emuser>`
    2. Windows: Run as a user that has access to the Enterprise Manager
+2. You can open the resulting XML file with Excel.
 
 ### [Troubleshooting the EMMiner run]()
 
