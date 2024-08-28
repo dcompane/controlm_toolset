@@ -40,7 +40,7 @@ param ([int] $myversion=9, [int] $myrelease=20, [int] $fix)
 Set-PSDebug -Trace 1
 
 #From <https://www.red-gate.com/simple-talk/sysadmin/powershell/how-to-use-parameters-in-powershell/>
-param ( [int] $myversion, [int] $myrelease, [int] $fix)
+param ( $myversion, [int] $myrelease, [int] $fix)
 
 # This is to run as see if the user isLocalAdmin
 If($isWindows) {
@@ -53,24 +53,36 @@ If($isWindows) {
         write-host "This needs to be executed by an administrator. Exiting (rc=99)."
         exit 99
     }
-}
-
-#No validation if Linux. Assumes it is the EM User
-If($isLinux) {
+} elseif ($isLinux) {
+    #No validation if Linux. Assumes it is the EM User
     $outpath = "/tmp/padev_current.exe"
     $thisOS = "Unix"
     $thisArch="Linux-x86_64"
     $thisExt="_INSTALL.BIN"
+} else {
+    #it is not Windows nor Linux. Exit with error
+    exit 98
 }
 
-if ($fix -eq $null) {
+if ($null -eq $fix -and $myversion -ne "latest") {
     write-host "Please enter a fix pack. Assuming $myversion.$myrelease. Exiting (rc=42)."
     exit 42
 } else {
-    $fixpack = $fix.PadLeft(3,'0')
-    $file_to_download="PADEV.$myversion.0.$myrelease.$fixpack"+"_"+$thisArch+$thisExt
-    $url = "https://controlm-appdev.s3-us-west-2.amazonaws.com/release/v"+$myversion+"."+$myrelease+"."+$fix+"/output/"+$thisOS+"/"+$file_to_download
-        #https://controlm-appdev.s3-us-west-2.amazonaws.com/release/v9.21.5/output/Windows/PADEV.9.0.20.005_windows_x86_64.exe
+    # the URL is also available as latest
+    # https://controlm-appdev.s3.us-west-2.amazonaws.com/release/latest/output/Unix/PADEV.latest_Linux-x86_64_INSTALL.BIN
+    # https://controlm-appdev.s3.us-west-2.amazonaws.com/release/latest/output/Windows/PADEV.latest_windows_x86_64.exe
+    if ($myversion -eq "latest") {
+        $dirversion = "latest"
+        $fileversion = "latest"
+    } else {
+        $fixpack = $fix.PadLeft(3,'0')
+        $dirversion = $myversion+"."+$myrelease+"."+$fix
+        $fileversion = $myversion+".0."+$myrelease+"."+$fixpack
+    }
+    
+    $file_to_download="PADEV."+$fileversion+"_"+$thisArch+$thisExt
+    $url = "https://controlm-appdev.s3-us-west-2.amazonaws.com/release/v"+$dirversion+"/output/"+$thisOS+"/"+$file_to_download
+    #https://controlm-appdev.s3-us-west-2.amazonaws.com/release/v9.21.5/output/Windows/PADEV.9.0.20.005_windows_x86_64.exe
     write-host "Downloading from $url"
     Invoke-WebRequest -Uri $url -OutFile $outpath -SkipCertificateCheck
     write-host "Downloaded from $url"
