@@ -1,6 +1,7 @@
 # [Data Collection for Distributed systems]()
 
-Run this on all your prod and non-prod environments
+- Run this on all your prod and non-prod environments.
+- The XML output can be opened as an MS-Excel worksheet. (use Open with, if needed))
 
 ## [1.     Produce the **EMMiner** output for all your EMs]()
 
