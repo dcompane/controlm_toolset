@@ -102,7 +102,6 @@ def basic_consume_loop(consumer, topics, job_duration):
         # Close down consumer to commit final offsets.
         consumer.close()
 
-
 def shutdown():
     '''
     if loop needs to exit, set to false
@@ -136,7 +135,7 @@ def msg_process(number,message):
     file.close()
 
 def loop_duration ():
-    #the job duration will be different for the 1st
+    #the job duration will be different for the 1st run
     duration = 0 
     runcount = getenv('RUNCOUNT')
     if runcount is None or runcount != 0:
@@ -144,7 +143,6 @@ def loop_duration ():
         #if it is a re-run (not the first run)
         duration = 15 * 60 
     
-
     # max duration is 23:59
     if duration == 0:
         job_duration = (23 * 60 + 59) * 60 # 23:59 hours in seconds.
