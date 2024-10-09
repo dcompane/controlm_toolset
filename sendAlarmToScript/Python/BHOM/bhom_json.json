@@ -1,0 +1,1132 @@
+{
+"name": "CTM_JOB",
+"parentClassName": "CTM_EVENT",
+"childClassNames": [],
+"allAttributes": [
+    {
+        "name": "jobKey",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [
+            {
+                "name": "read_only",
+                "value": "true"
+            },
+            {
+                "name": "topology_lookup",
+                "value": "key,name,short_name"
+            }
+        ],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "ctmFolder",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "ctmFolderID",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "ctmJobHeld",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "ctmJobTpe",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "ctmJobCyclic",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "ctmOwner",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "ctmJobID",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "system_category",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "system_status",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "ctmUpdateType",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "ctmAlertId",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "ctmDataCenter",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "ctmMemName",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "ctmOrderId",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "ctmTime",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "ctmStatus",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "ctmJobName",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "ctmMessage",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "ctmApplication",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "ctmSubApplication",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "ctmAlertType",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "ctmClosedFromEM",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "ctmTicketNumber",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "ctmRunCounter",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "ctmUser",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "ctmUpdateTime",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "ctmNotes",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "ctmseverity",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "ctmNodeid",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "object",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "object_class",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "object_id",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "agent_name",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "agent_port",
+        "dataType": "INTEGER",
+        "default": "0",
+        "allFacet": [],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "agent_address",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "metric_name",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "metric_value",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "metric_unit",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "_identifier",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [
+            {
+                "name": "read_only",
+                "value": "true"
+            },
+            {
+                "name": "internal",
+                "value": "true"
+            }
+        ],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "_arrival_time",
+        "dataType": "DATE",
+        "default": "0",
+        "allFacet": [
+            {
+                "name": "read_only",
+                "value": "true"
+            },
+            {
+                "name": "internal",
+                "value": "true"
+            }
+        ],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "_modified_time",
+        "dataType": "DATE",
+        "default": "0",
+        "allFacet": [
+            {
+                "name": "internal",
+                "value": "true"
+            }
+        ],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "_repeat_count",
+        "dataType": "INTEGER",
+        "default": "0",
+        "allFacet": [],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "_tenant_id",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [
+            {
+                "name": "read_only",
+                "value": "true"
+            },
+            {
+                "name": "internal",
+                "value": "true"
+            }
+        ],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "_tenant_name",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [
+            {
+                "name": "internal",
+                "value": "true"
+            }
+        ],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "_ci_id",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [
+            {
+                "name": "read_only",
+                "value": "true"
+            },
+            {
+                "name": "internal",
+                "value": "true"
+            }
+        ],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "_unmapped_data",
+        "dataType": "OBJECT",
+        "default": "[]",
+        "allFacet": [
+            {
+                "name": "read_only",
+                "value": "true"
+            },
+            {
+                "name": "internal",
+                "value": "true"
+            }
+        ],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "_lifecycle_time",
+        "dataType": "LONG",
+        "default": "0",
+        "allFacet": [
+            {
+                "name": "read_only",
+                "value": "true"
+            },
+            {
+                "name": "internal",
+                "value": "true"
+            }
+        ],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "_node_id",
+        "dataType": "STRING_LIST",
+        "default": "[]",
+        "allFacet": [
+            {
+                "name": "read_only",
+                "value": "true"
+            },
+            {
+                "name": "internal",
+                "value": "true"
+            }
+        ],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "_service_id",
+        "dataType": "STRING_LIST",
+        "default": "[]",
+        "allFacet": [
+            {
+                "name": "read_only",
+                "value": "true"
+            },
+            {
+                "name": "internal",
+                "value": "true"
+            }
+        ],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "_model",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [
+            {
+                "name": "read_only",
+                "value": "true"
+            },
+            {
+                "name": "internal",
+                "value": "true"
+            }
+        ],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "class",
+        "dataType": "STRING",
+        "default": "EVENT",
+        "allFacet": [
+            {
+                "name": "read_only",
+                "value": "true"
+            }
+        ],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "source_identifier",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [
+            {
+                "name": "read_only",
+                "value": "true"
+            },
+            {
+                "name": "mandatory",
+                "value": "true"
+            }
+        ],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "source_hostname",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [
+            {
+                "name": "read_only",
+                "value": "true"
+            },
+            {
+                "name": "topology_lookup",
+                "value": "name,short_name"
+            }
+        ],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "source_address",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [
+            {
+                "name": "read_only",
+                "value": "true"
+            }
+        ],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "source_port",
+        "dataType": "INTEGER",
+        "default": "0",
+        "allFacet": [
+            {
+                "name": "read_only",
+                "value": "true"
+            }
+        ],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "location",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "msg",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [
+            {
+                "name": "mandatory",
+                "value": "true"
+            }
+        ],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "details",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "alias",
+        "dataType": "STRING_LIST",
+        "default": "[]",
+        "allFacet": [],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "creation_time",
+        "dataType": "DATE",
+        "default": "0",
+        "allFacet": [],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "tags",
+        "dataType": "STRING_LIST",
+        "default": "[]",
+        "allFacet": [],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "user_assigned",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "incident_id",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "incident_company",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "componentalias",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "cdmclass",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "modelname",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "instancename",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "status",
+        "dataType": "STATUS",
+        "default": "OPEN",
+        "allFacet": [],
+        "enumElements": [
+            {
+                "index": 0,
+                "value": "OPEN",
+                "label": "Open"
+            },
+            {
+                "index": 10,
+                "value": "ACK",
+                "label": "Acknowledged"
+            },
+            {
+                "index": 20,
+                "value": "ASSIGNED",
+                "label": "Assigned"
+            },
+            {
+                "index": 30,
+                "value": "CLOSED",
+                "label": "Closed"
+            },
+            {
+                "index": 40,
+                "value": "BLACKOUT",
+                "label": "Blackout"
+            }
+        ],
+        "enum": true
+    },
+    {
+        "name": "severity",
+        "dataType": "SEVERITY",
+        "default": "MINOR",
+        "allFacet": [],
+        "enumElements": [
+            {
+                "index": 10,
+                "value": "UNKNOWN",
+                "label": "Unknown"
+            },
+            {
+                "index": 20,
+                "value": "OK",
+                "label": "Ok"
+            },
+            {
+                "index": 30,
+                "value": "INFO",
+                "label": "Information"
+            },
+            {
+                "index": 40,
+                "value": "WARNING",
+                "label": "Warning"
+            },
+            {
+                "index": 50,
+                "value": "MINOR",
+                "label": "Minor"
+            },
+            {
+                "index": 60,
+                "value": "MAJOR",
+                "label": "Major"
+            },
+            {
+                "index": 70,
+                "value": "CRITICAL",
+                "label": "Critical"
+            }
+        ],
+        "enum": true
+    },
+    {
+        "name": "priority",
+        "dataType": "PRIORITY",
+        "default": "PRIORITY_5",
+        "allFacet": [],
+        "enumElements": [
+            {
+                "index": 10,
+                "value": "PRIORITY_5",
+                "label": "Lowest"
+            },
+            {
+                "index": 20,
+                "value": "PRIORITY_4",
+                "label": "Low"
+            },
+            {
+                "index": 30,
+                "value": "PRIORITY_3",
+                "label": "Moderate"
+            },
+            {
+                "index": 40,
+                "value": "PRIORITY_2",
+                "label": "High"
+            },
+            {
+                "index": 50,
+                "value": "PRIORITY_1",
+                "label": "Highest"
+            }
+        ],
+        "enum": true
+    },
+    {
+        "name": "category",
+        "dataType": "CATEGORY",
+        "default": "OPERATIONS_MANAGEMENT",
+        "allFacet": [],
+        "enumElements": [
+            {
+                "index": 0,
+                "value": "",
+                "label": ""
+            },
+            {
+                "index": 100,
+                "value": "SLA_MANAGEMENT",
+                "label": "SLA Management"
+            },
+            {
+                "index": 110,
+                "value": "CAPACITY_MANAGEMENT",
+                "label": "Capacity Management"
+            },
+            {
+                "index": 120,
+                "value": "SERVICE_CONTINUITY_MANAGEMENT",
+                "label": "Service Continuity Management"
+            },
+            {
+                "index": 130,
+                "value": "AVAILABILITY_MANAGEMENT",
+                "label": "Availability Management"
+            },
+            {
+                "index": 140,
+                "value": "INCIDENT_MANAGEMENT",
+                "label": "Incident Management"
+            },
+            {
+                "index": 150,
+                "value": "CONFIGURATION_MANAGEMENT",
+                "label": "Configuration Management"
+            },
+            {
+                "index": 160,
+                "value": "RELEASE_MANAGEMENT",
+                "label": "Release Management"
+            },
+            {
+                "index": 170,
+                "value": "PROBLEM_MANAGEMENT",
+                "label": "Problem Management"
+            },
+            {
+                "index": 180,
+                "value": "CHANGE_MANAGEMENT",
+                "label": "Change Management"
+            },
+            {
+                "index": 190,
+                "value": "OPERATIONS_MANAGEMENT",
+                "label": "Operations Management"
+            },
+            {
+                "index": 200,
+                "value": "SECURITY_MANAGEMENT",
+                "label": "Security Management"
+            },
+            {
+                "index": 210,
+                "value": "FINANCIAL_MANAGEMENT",
+                "label": "Financial Management"
+            },
+            {
+                "index": 220,
+                "value": "SERVICE_DESK_MANAGEMENT",
+                "label": "Service Desk Management"
+            }
+        ],
+        "enum": true
+    },
+    {
+        "name": "sub_category",
+        "dataType": "SUB_CATEGORY",
+        "default": "OTHER",
+        "allFacet": [],
+        "enumElements": [
+            {
+                "index": 10,
+                "value": "OTHER",
+                "label": "Other"
+            },
+            {
+                "index": 20,
+                "value": "APPLICATION",
+                "label": "Application"
+            },
+            {
+                "index": 30,
+                "value": "DATABASE",
+                "label": "Database"
+            },
+            {
+                "index": 40,
+                "value": "NETWORK",
+                "label": "Network"
+            },
+            {
+                "index": 50,
+                "value": "SYSTEM",
+                "label": "System"
+            },
+            {
+                "index": 60,
+                "value": "USER_TRANSACTIONS",
+                "label": "User Transactions"
+            }
+        ],
+        "enum": true
+    },
+    {
+        "name": "_errors",
+        "dataType": "STRING_LIST",
+        "default": "[]",
+        "allFacet": [
+            {
+                "name": "internal",
+                "value": "true"
+            }
+        ],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "_relationships",
+        "dataType": "OBJECT",
+        "default": "[]",
+        "allFacet": [
+            {
+                "name": "read_only",
+                "value": "true"
+            },
+            {
+                "name": "internal",
+                "value": "true"
+            }
+        ],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "_node_service_mapping",
+        "dataType": "STRING_LIST",
+        "default": "[]",
+        "allFacet": [
+            {
+                "name": "read_only",
+                "value": "true"
+            },
+            {
+                "name": "internal",
+                "value": "true"
+            }
+        ],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "significance",
+        "dataType": "INTEGER",
+        "default": "0",
+        "allFacet": [],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "_signature",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [
+            {
+                "name": "read_only",
+                "value": "true"
+            },
+            {
+                "name": "internal",
+                "value": "true"
+            }
+        ],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "_entropy",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [
+            {
+                "name": "read_only",
+                "value": "true"
+            },
+            {
+                "name": "internal",
+                "value": "true"
+            }
+        ],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "_node_service_key_mapping",
+        "dataType": "STRING_LIST",
+        "default": "[]",
+        "allFacet": [
+            {
+                "name": "read_only",
+                "value": "true"
+            },
+            {
+                "name": "internal",
+                "value": "true"
+            }
+        ],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "_service_name",
+        "dataType": "STRING_LIST",
+        "default": "[]",
+        "allFacet": [
+            {
+                "name": "read_only",
+                "value": "true"
+            },
+            {
+                "name": "internal",
+                "value": "true"
+            }
+        ],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "incident_sysid",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "sourceEntityType",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "_service_key",
+        "dataType": "STRING_LIST",
+        "default": "[]",
+        "allFacet": [
+            {
+                "name": "read_only",
+                "value": "true"
+            },
+            {
+                "name": "internal",
+                "value": "true"
+            }
+        ],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "_node_key",
+        "dataType": "STRING_LIST",
+        "default": "[]",
+        "allFacet": [
+            {
+                "name": "read_only",
+                "value": "true"
+            },
+            {
+                "name": "internal",
+                "value": "true"
+            }
+        ],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "change_id",
+        "dataType": "STRING",
+        "default": "",
+        "allFacet": [],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "_impacted_service_key",
+        "dataType": "STRING_LIST",
+        "default": "[]",
+        "allFacet": [],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "_node_impacted_service_key_mapping",
+        "dataType": "STRING_LIST",
+        "default": "[]",
+        "allFacet": [],
+        "enumElements": [],
+        "enum": false
+    },
+    {
+        "name": "_impacted_service_name",
+        "dataType": "STRING_LIST",
+        "default": "[]",
+        "allFacet": [],
+        "enumElements": [],
+        "enum": false
+    }
+]
+}

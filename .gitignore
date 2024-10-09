@@ -22,3 +22,4 @@ sendAlarmToScript/Python/Helix ITSM/resources/Windows/README.md
 *.ori
 #no push stuf
 np_*
+evtvars_*

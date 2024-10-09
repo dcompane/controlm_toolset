@@ -1,0 +1,164 @@
+{
+    "uuid": "2c044657-ee5f-4068-8ccc-c56ff6095cf2",
+    "raw": [
+        {
+            "call_type": "I",
+            "alert_id": "741",
+            "data_center": "mwl-ctm-em.bmc.com",
+            "memname": null,
+            "order_id": "006vw",
+            "severity": "V",
+            "status": "Not_Noticed",
+            "send_time": "20241004070018",
+            "last_user": null,
+            "last_time": null,
+            "message": "Ended not OK",
+            "run_as": "patrol",
+            "sub_application": null,
+            "application": null,
+            "job_name": "My Job",
+            "host_id": "mwl-ctm-em.bmc.com",
+            "alert_type": "R",
+            "closed_from_em": null,
+            "ticket_number": null,
+            "run_counter": "00001",
+            "notes": null
+        }
+    ],
+    "jobAlert": [
+        {
+            "alert_id": "741",
+            "alert_type": "Regular",
+            "application": null,
+            "call_type": "New",
+            "closed_from_em": null,
+            "data_center": "mwl-ctm-em.bmc.com",
+            "data_center_dns": "bmc.com",
+            "data_center_fqdn": "mwl-ctm-em.bmc.com",
+            "data_center_ip": "172.25.157.93",
+            "host_id": "mwl-ctm-em.bmc.com",
+            "host_ip": "172.25.157.93",
+            "host_ip_dns": "bmc.com",
+            "host_ip_fqdn": "mwl-ctm-em.bmc.com",
+            "job_id": "mwl-ctm-em.bmc.com:006vw",
+            "job_name": "My Job",
+            "job_script": null,
+            "job_uri": "https://mwl-ctm-em.bmc.com:8443/ControlM/#Search:id=Search_2&search=006vw&date=20241004&controlm=mwl-ctm-em.bmc.com",
+            "last_time": null,
+            "last_user": null,
+            "memname": null,
+            "message": "Ended not OK",
+            "message_notes": "CTRL-M Job My Job failed. Job ID: mwl-ctm-em.bmc.com:006vw with Job Run Count: 00001",
+            "message_summary": "Job My Job failed",
+            "notes": null,
+            "order_id": "006vw",
+            "run_as": "patrol",
+            "run_counter": "00001",
+            "send_time": "2024-10-04 07:00:18",
+            "severity": "CRITICAL",
+            "status": "OPEN",
+            "sub_application": null,
+            "system_category": "job",
+            "system_class": null,
+            "system_status": "failed",
+            "ticket_number": null
+        }
+    ],
+    "jobInfo": [
+        {
+            "count": 2,
+            "status": true,
+            "entries": [
+                {
+                    "job_id": "mwl-ctm-em.bmc.com:006vw",
+                    "folder_id": "mwl-ctm-em.bmc.com:006vv",
+                    "number_of_runs": 1,
+                    "name": "My Job",
+                    "folder": "Folder_1",
+                    "type": "Command",
+                    "status": "Ended Not OK",
+                    "held": false,
+                    "deleted": false,
+                    "cyclic": false,
+                    "start_time": "2024-10-04 07:00:15",
+                    "end_time": "2024-10-04 07:00:16",
+                    "estimated_start_time": "2024-10-04 07:00:15",
+                    "estimated_end_time": "2024-10-04 07:05:20",
+                    "order_date": "2024-10-04",
+                    "ctm": "mwl-ctm-em.bmc.com",
+                    "description": "",
+                    "host": "mwl-ctm-em.bmc.com",
+                    "library": null,
+                    "application": "",
+                    "sub_application": "",
+                    "job_json": null,
+                    "output_uri": "https://mwl-ctm-em.bmc.com:8443/automation-api/run/job/mwl-ctm-em.bmc.com:006vw/output",
+                    "log_uri": "https://mwl-ctm-em.bmc.com:8443/automation-api/run/job/mwl-ctm-em.bmc.com:006vw/log",
+                    "count": 24
+                }
+            ]
+        }
+    ],
+    "jobConfig": [
+        {
+            "count": 1,
+            "status": true,
+            "entries": [
+                {
+                    "Folder_1": {
+                        "Type": "Folder",
+                        "ControlmServer": "mwl-ctm-em.bmc.com",
+                        "CreatedBy": "myates",
+                        "DaysKeepActiveIfNotOk": "1",
+                        "When": {
+                            "RuleBasedCalendars": {
+                                "Included": [
+                                    "EVERYDAY"
+                                ],
+                                "EVERYDAY": {
+                                    "Type": "Calendar:RuleBased",
+                                    "When": {
+                                        "DaysRelation": "OR",
+                                        "WeekDays": [
+                                            "NONE"
+                                        ],
+                                        "MonthDays": [
+                                            "ALL"
+                                        ]
+                                    }
+                                }
+                            }
+                        },
+                        "My Job": {
+                            "Type": "Job:Command",
+                            "CreatedBy": "myates",
+                            "RunAs": "patrol",
+                            "Command": "ech hello",
+                            "When": {
+                                "WeekDays": [
+                                    "NONE"
+                                ],
+                                "MonthDays": [
+                                    "ALL"
+                                ],
+                                "DaysRelation": "OR"
+                            }
+                        }
+                    }
+                }
+            ]
+        }
+    ],
+    "jobLog": [
+        {
+            "count": 0,
+            "status": "experimental"
+        }
+    ],
+    "jobOutput": [
+        {
+            "count": 0,
+            "status": "unknown"
+        }
+    ]
+}

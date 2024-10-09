@@ -1,0 +1,26 @@
+{
+    "fields":
+    [
+      {"eventType":"call_type"},
+      {"id":"alert_id"},
+      {"server":"data_center"},
+      {"fileName":"memname"},
+      {"runId":"order_id"},
+      {"severity":"severity"},
+      {"status":"status"},
+      {"time":"send_time"},
+      {"user":"last_user"},
+      {"updateTime":"last_time"},
+      {"message":"message"},
+      {"runAs":"run_as"},
+      {"subApplication":"sub_application"},
+      {"application":"application"},
+      {"jobName":"job_name"},
+      {"host":"host_id"},
+      {"type":"alert_type"},
+      {"closedByControlM":"closed_from_em"},
+      {"ticketNumber":"ticket_number"},
+      {"runNo":"run_counter"},
+      {"notes":"notes"}
+    ]
+  }

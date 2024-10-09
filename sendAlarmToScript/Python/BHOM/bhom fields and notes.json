@@ -1,0 +1,83 @@
+[{"jobKey":   "value01",
+
+"class": "CTM_JOB"
+"ctmFolder":   "value02",
+"ctmFolderID":   "value03",
+"ctmJobHeld":   "value04",
+"ctmJobTpe":   "value05",
+"ctmJobCyclic":   "value06",
+"ctmOwner":   "value07",
+"ctmJobID":   "value08",
+"ctmUpdateType":   "value09",
+"ctmAlertId":   "value10",
+"ctmDataCenter":   "value11",
+"ctmMemName":   "value12",
+"ctmOrderId":   "value13",
+"ctmTime":   "value14",
+"ctmStatus":   "value15",
+"ctmJobName":   "value16",
+"ctmMessage":   "value17",
+"ctmApplication":   "value18",
+"ctmSubApplication":   "value19",
+"ctmAlertType":   "value20",
+"ctmClosedFromEM":   "value21",
+"ctmTicketNumber":   "value22",
+"ctmRunCounter":   "value23",
+"ctmUser":   "value24",
+"ctmUpdateTime":   "value25",
+"ctmNotes":   "value26",
+"ctmseverity":   "value27",
+"ctmNodeid":   "value28"}]
+
+When alert is closed
+"Status": "CLOSED"
+
+When alert is handled
+"Status": "ACK"
+
+
+Alert fields
+
+'eventType:',
+'id:',
+'server:', 
+'fileName:', 
+'runId:', 
+'severity:', 
+'status:',
+'time:', 
+'user:', 
+'updateTime:', 
+'message: ', 
+'runAs:', 
+'subApplication:' 
+'application:',
+'jobName:',
+'host:',
+'type:',
+'closedByControlM:',
+'ticketNumber:',
+'runNo:',
+'notes:'],
+
+call_type:
+alert_id:
+data_center:
+memname:
+order_id:
+severity:
+status:
+send_time:
+last_user:
+last_time:
+message:
+run_as:
+sub_application:
+application:
+job_name:
+host_id:
+alert_type:
+closed_from_em:
+ticket_number:
+run_counter:
+notes:

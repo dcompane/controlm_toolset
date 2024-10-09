@@ -1,0 +1,28 @@
+This is a partial AAPI response using the ctm-python-client (see test_aapi.py)
+
+
+'statuses': [{
+               'application': 'use-cases',
+               'ctm': 'IN01',
+               'cyclic': False,
+               'deleted': False,
+               'description': '',
+               'end_time': '20241004000102',
+               'estimated_end_time': None,
+               'estimated_start_time': None,
+               'folder': 'cbs-pov/cbs-use-case-1-2',
+               'folder_id': 'IN01:',
+               'held': False,
+               'host': 'zzz-eks-sandbox-1.bmci2t.com',
+               'job_id': 'IN01:0errp',
+               'job_json': None,
+               'log_uri': 'https://se-dev-aapi.sandbox.us1.controlm.com/automation-api/run/job/IN01:0errp/log',
+               'name': 'cbs-job-122',
+               'number_of_runs': 1,
+               'order_date': '241004',
+               'output_uri': 'https://se-dev-aapi.sandbox.us1.controlm.com/automation-api/run/job/IN01:0errp/output',
+               'start_time': '20241004000022',
+               'status': 'Ended OK',
+               'sub_application': 'use-case-1',
+               'type': 'Command'}],
+ 'total': 1}
