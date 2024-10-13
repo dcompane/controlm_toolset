@@ -26,3 +26,5 @@ This is a partial AAPI response using the ctm-python-client (see test_aapi.py)
                'sub_application': 'use-case-1',
                'type': 'Command'}],
  'total': 1}
+
+ ctm deploy jobs::get -s "ctm=dc01&folder=DCO_Test_Folder&job=OS_Job#1"

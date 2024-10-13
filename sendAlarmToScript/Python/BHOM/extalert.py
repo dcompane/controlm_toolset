@@ -67,13 +67,15 @@ exitrc = 0
 config = {}
 
 # Initialize logging
+basedir = "C:\\Users\\dcomp\\OneDrive\\BMC\\controlm_toolset\\controlm_toolset\\sendAlarmToScript\\Python\\BHOM\\"
 dbg_logger, config = init_dbg_log()
 
 # debug = True if config['DEBUG'].lower() == 'true' else False
+debug = True
 
 try:
     dbg_logger.info('Opening field_names.json')
-    with open('controlm_toolset\\sendAlarmToScript\\Python\\np_BHOM\\field_names.json') as keyword_data:
+    with open(f'{basedir}field_names.json') as keyword_data:
         json_keywords = json.load(keyword_data)
         dbg_logger.debug(f'Fields file is {str(json_keywords)}')
         keywords = []
@@ -91,6 +93,8 @@ except FileNotFoundError as e:
     #call_type: U alert_id: 11 data_center: dc01 memname: order_id: 00009 severity: V status: Noticed send_time: 20241003133003 last_user: emuser last_time: 20241004134738 message: Ended not OK run_as: ctmem sub_application: DCO_Test application: DCO job_name: DCO_OS_Job host_id: dc01 alert_type: R closed_from_em: ticket_number: run_counter: 2 notes:
     pass
 
+    debug = True
+
     keywords_json = { 'eventType': 'eventType', 'id': 'alert_id', 'server': 'server',
                     'fileName': 'fileName', 'runId': 'runId', 'severity': 'severity',
                     'status': 'status', 'time': 'time', 'user': 'user', 'updateTime': 'updateTime',
@@ -105,7 +109,7 @@ except FileNotFoundError as e:
 
 try:
     dbg_logger.info('Opening evtvars.json')
-    with open('controlm_toolset\\sendAlarmToScript\\Python\\np_BHOM\\evtvars.json') as config_data:
+    with open(f'{basedir}evtvars_dc01.json') as config_data:
         config=json.load(config_data)
         dbg_logger.debug('Config file is ' + str(config_data))
 except FileNotFoundError as e:
@@ -253,7 +257,7 @@ evt_payload = {
             "ctmMessage": alert[keywords_json['message']],
             "ctmNodeid": alert[keywords_json['host']],
             "ctmNotes": alert[keywords_json['notes']],
-            "ctmOrderID": alert[keywords_json['runId']],
+            "ctmOrderId": alert[keywords_json['runId']],
             "ctmOwner": alert[keywords_json['runAs']],
             "ctmRunCounter": alert[keywords_json['runNo']],
             "ctmseverity": 'MINOR' if alert[keywords_json['severity']] == 'R'    

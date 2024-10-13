@@ -103,7 +103,7 @@ def init_dbg_log(config={}):
     dbg_format = logging.Formatter(dbg_format_str)
     # logging to file settings
     base_dir = getcwd() + path.sep
-    dbg_filename = base_dir + 'controlm_toolset\\sendAlarmToScript\\Python\\np_BHOM\\autoalert.log'
+    dbg_filename = base_dir + 'controlm_toolset\\sendAlarmToScript\\Python\\BHOM\\autoalert.log'
     dbg_file = logging.handlers.RotatingFileHandler(filename=dbg_filename, mode='a', maxBytes=1000000, backupCount=10,
                                                     encoding=None, delay=False)
     # dbg_file.setLevel(logging.INFO)
