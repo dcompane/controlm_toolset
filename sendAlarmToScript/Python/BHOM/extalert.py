@@ -226,6 +226,10 @@ for item_no in range (0, status.returned):
             status.statuses[item_no].type == 'SubFolder')):
         break
 
+evt_weburl = f"https://{ctmweb}/ControlM/Monitoring/Neighborhood/{alert[keywords_json['runId']]}_{radius}_{direction}?name={alert[keywords_json['jobName']]}"+ \
+            f"&ctm={alert[keywords_json['server']]}&odate=&direction={direction}&radius={radius}&orderId={alert[keywords_json['runId']]}"+ \
+            f"{NL}{NL}" if alert_is_job else "This alert is not job related"
+
 evt_payload = {
             "CLASS": evt_Class,
             # UNKNOWN, OK, INFO, WARNING, MINOR, MAJOR, CRITICAL
