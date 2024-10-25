@@ -71,7 +71,7 @@ exitrc = 0
 config = {}
 
 # Initialize logging
-basedir = "C:\\Users\\dcomp\\OneDrive\\BMC\\controlm_toolset\\controlm_toolset\\sendAlarmToScript\\Python\\BHOM\\"
+basedir = "/home/ctmem/custom/BHOM/"
 dbg_logger, config = init_dbg_log()
 
 # debug = True if config['DEBUG'].lower() == 'true' else False
@@ -317,4 +317,6 @@ response = dbg_assign_var(requests.request(method="POST", url=evt_endpoint, head
               )
 
 
+dbg_logger.info(f"Response is: {str(response)}")
+dbg_logger.info(f"Exiting program")
 exit(exitrc)
