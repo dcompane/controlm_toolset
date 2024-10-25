@@ -23,3 +23,6 @@ sendAlarmToScript/Python/Helix ITSM/resources/Windows/README.md
 #no push stuf
 np_*
 evtvars_*
+aapi_lab
+python lab
+aapi_conn.py

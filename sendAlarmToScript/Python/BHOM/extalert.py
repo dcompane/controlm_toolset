@@ -47,19 +47,23 @@ import os
 from os import getcwd, path
 from socket import getfqdn
 import requests
+import urllib.parse
 
 # Importing Control-M Python Client
 from ctm_python_client.core.workflow import *
 from ctm_python_client.core.comm import *
 from ctm_python_client.core.monitoring import Monitor
 from aapi import *
+from ctm_python_client.core.comm import SaasAAPIClient
+
+# Old Style Control-M python package from Swagger-Codegen
+# install with pip install git+https://github.com/dcompane/controlm_py.git
+# from aapi_conn import SaaSConnection
 
 # Importing functions
 from extalert_functions import args2dict
 from extalert_functions import init_dbg_log
 from extalert_functions import dbg_assign_var
-
-
 
 # Set exit code for the procedure
 exitrc = 0
@@ -226,9 +230,24 @@ for item_no in range (0, status.returned):
             status.statuses[item_no].type == 'SubFolder')):
         break
 
-evt_weburl = f"https://{ctmweb}/ControlM/Monitoring/Neighborhood/{alert[keywords_json['runId']]}_{radius}_{direction}?name={alert[keywords_json['jobName']]}"+ \
-            f"&ctm={alert[keywords_json['server']]}&odate=&direction={direction}&radius={radius}&orderId={alert[keywords_json['runId']]}"+ \
-            f"{NL}{NL}" if alert_is_job else "This alert is not job related"
+radius = 3
+direction = 3
+
+evt_parms = {
+            "name": alert[keywords_json['jobName']],
+            "ctm": alert[keywords_json['server']],
+            "odate": '',
+            "direction": direction,
+            "radius": radius,
+            "orderId": alert[keywords_json['runId']],
+            "mapView": "TileView"
+            }
+
+evt_qry = urllib.parse.urlencode(evt_parms)
+
+#https://dc01:8443/ControlM/Monitoring/Neighborhood/0002p_5_3?name=DCO_OS_Job%231&ctm=dc01&odate=&direction=3&radius=5&orderId=0002p&mapView=TileView
+#https://dc01:8443/ControlM/Monitoring/Neighborhood/0002p_3_3?name=DCO_OS_Job#2&ctm=dc01&odate=&direction=3&radius=3&orderId=0002p&mapView=TileView
+evt_weburl = f"https://{ctmweb}/ControlM/Monitoring/Neighborhood/{alert[keywords_json['runId']]}_{radius}_{direction}?{evt_qry}"
 
 evt_payload = {
             "CLASS": evt_Class,
@@ -277,11 +296,13 @@ evt_payload = {
             "ctmUser": alert[keywords_json['user']],
             "ctmLogUri": status.statuses[item_no].log_uri,
             "ctmOutputUri": status.statuses[item_no].output_uri,
-            "ctmOrderDate": status.statuses[item_no].order_date
+            "ctmJobURL": evt_weburl,
+            "ctmOrderDate": status.statuses[item_no].order_date,
+            "ctmEvtProvenance": f"Event sent from {getfqdn()}"
              }
 
 
-# Configure RITSM client
+# Configure BHOM client
 
 evt_headers = {
                 'Authorization': f'apiKey {evt_apiKey}',
@@ -290,128 +311,10 @@ evt_headers = {
 
 evt_endpoint = evt_url + evt_Path
 
-response = requests.request(method="POST", url=evt_endpoint, headers=evt_headers,
+response = dbg_assign_var(requests.request(method="POST", url=evt_endpoint, headers=evt_headers,
              data=json.dumps([evt_payload]), verify=evt_verifySSL, timeout=(10,30)
+              ), 'Response from BHOM', dbg_logger, debug, alert[keywords_json['id']]
               )
 
 
-exit(0)
-
-#Add comments to case worklog
-updated_incident, status_code = itsm_client.add_worklog_to_incident(incident_id, evt_comments)
-
-evt_provenance = f"Ticket sent from {getfqdn()}. Entry ID: {updated_incident['values']['Entry ID']}"
-
-updated_incident, status_code = itsm_client.add_worklog_to_incident(incident_id, evt_provenance)
-
-
-# Load AAPI variables and create workflow object if need to attach logs
-#### Leaving the code in case we want to augment the alert with the log and output later.
-##### Logic is not developed, but left behind from other effort
-# if ctmattachlogs and alert_is_job and false:
-#     log = dbg_assign_var(monitor.get_log(f"{alert[keywords_json['server']]}:{alert[keywords_json['runId']]}"), "Log of Job", dbg_logger, debug, alert_id)
-#     job_log = (job_log + NL + log)
-
-
-#     try:
-#         output = dbg_assign_var(monitor.get_output(f"{alert[keywords_json['server']]}:{alert[keywords_json['runId']]}",
-#             run_number=alert[keywords_json['runNo']]), "Output of job", dbg_logger, debug, alert_id)
-#         if output == None:
-#             output = f"*" * 70 + NL + "NO OUTPUT AVAILABLE FOR THIS JOB" + NL + f"*" * 70    
-#     except:
-#         output = f"*" * 70 + NL + "NO OUTPUT AVAILABLE FOR THIS JOB" + NL + f"*" * 70
-#     finally:
-#        dbg_logger.info(f'RunID: {alert[keywords_json["runId"]]} RunNo {alert[keywords_json["runNo"]]}')
-
-
-#     job_output = (job_output + NL +  output)
-
-#     tmpdir = tempfile.gettempdir()
-#     file_log = f"log_{alert[keywords_json['runId']]}_{alert[keywords_json['runNo']]}_{alert_id}.txt"
-#     file_output = f"output_{alert[keywords_json['runId']]}_{alert[keywords_json['runNo']]}_{alert_id}.txt"
-
-#     # Write log
-#     # Declare object to open temporary file for writing
-#     file_name = dbg_assign_var(file_log, "Log Filename", dbg_logger, debug, alert_id)
-#     content = job_log
-#     try:
-#         fh = open(tmpdir+os.sep+file_name,'w')
-#         # Print message before writing
-#         dbg_logger.debug(f'Write data to log file {tmpdir+os.sep+file_name}')
-#         # Write data to the temporary file
-#         fh.write(content)
-#         # Close the file after writing
-#         fh.close()
-#         # Attach to Incident
-#         updated_incident, status_code = itsm_client.attach_file_to_incident(incident_id, filepath=tmpdir, filename=file_name,
-#                 details=f"{'Helix ' if ctm_is_helix else ''} Control-M Log file")
-#     except Exception as ex:
-#         message = f"Exception type {type(ex).__name__} occurred. Arguments:\n{str(ex.args)}"
-#         dbg_logger.info(message)
-#         exitrc = 30
-#     finally:
-#         # Print a message before reading
-#         dbg_logger.debug("Log data section completed. Log may have been added to the ticket")
-
-#     # Write output
-#     # Declare object to open temporary file for writing
-#     file_name = dbg_assign_var(file_output, "Output Filename", dbg_logger, debug, alert_id)
-#     content = job_output
-#     try:
-#         fh = open(tmpdir+os.sep+file_name,'w')
-#         # Print message before writing
-#         dbg_logger.debug(f'Write data to output file {tmpdir+os.sep+file_name}')
-#         # Write data to the temporary file
-#         fh.write(content)
-#         # Close the file after writing
-#         fh.close()
-#         # Attach to Incident
-#         updated_incident, status_code = itsm_client.attach_file_to_incident(incident_id, filepath=tmpdir, filename=file_name,
-#                 details=f"{'Helix ' if ctm_is_helix else ''} Control-M Output file")
-#     except Exception as ex:
-#         message = f"Exception type {type(ex).__name__} occurred. Arguments:\n{str(ex.args)}"
-#         dbg_logger.info(message)
-#         exitrc = 30
-#     finally:
-#         # Print a message before reading
-#         dbg_logger.debug("Output data section completed. Output may have been added to the ticket")
-
-# itsm_client.release_token()
-
-# send_email = dbg_assign_var(config['pgmvars']['sendemail'], 'Send email',dbg_logger, debug)
-# if send_email == "yes":
-#     # Ticket variables from evtvars.json
-#     smtp_url = dbg_assign_var(config['emailvars']['smtpurl'], 'SMTP URL',dbg_logger, debug)
-#     smtp_port = dbg_assign_var(config['emailvars']['smtpport'], 'SMTP Port',dbg_logger, debug)
-#     smtp_SSL = dbg_assign_var(config['emailvars']['smtpverifySSL'], 'SMTP SSL',dbg_logger, debug)
-#     smtp_sender = dbg_assign_var(config['emailvars']['smtpsender'], 'SMTP Sender',dbg_logger, debug)
-#     smtp_recipient = dbg_assign_var(config['emailvars']['smtprecipient'], 'SMTP Recipient',dbg_logger, debug)
-#     smtp_username = dbg_assign_var(config['emailvars']['smtpuser'], 'SMTP User',dbg_logger, debug)
-#     smtp_password = config['emailvars']['smtppasswd']
-
-#     evt_work_notes = f"Email created automatically by {'Helix' if ctm_is_helix else ''} Control-M " + \
-#              (f" for {alert[keywords_json['server']]}:{alert[keywords_json['runId']]}::{alert[keywords_json['runNo']]}"
-#                      if alert_is_job else f"alert: {alert_id}")
-#     evt_provenance = f"Email sent from {getfqdn()}. Entry ID: {updated_incident['values']['Entry ID']}"
-
-#     evt_comments = evt_comments + NL * 2 + evt_work_notes + NL * 2 + evt_provenance
-
-#     dbg_logger.info("Sending email")
-
-#     send_mail(smtp_sender, [smtp_recipient], evt_short_description, evt_comments,
-#                 files=[tmpdir+os.sep+file_log, tmpdir+os.sep+file_output],
-#                 server=smtp_url, port=smtp_port, use_tls=smtp_SSL,
-#                 username=smtp_username, password=smtp_password)
-
-# if ctmattachlogs and alert_is_job:
-#     try:
-#         message = f"Removing files {file_log} and {file_output}"
-#         dbg_logger.info(message)
-#         os.remove(tmpdir+os.sep+file_log)
-#         os.remove(tmpdir+os.sep+file_output)
-#     except Exception as ex:
-#         message = f"Exception type {type(ex).__name__} occurred. Arguments:\n{str(ex.args)}"
-#         dbg_logger.info(message)
-#         exitrc = 31
-
-sys.exit(exitrc)
+exit(exitrc)
