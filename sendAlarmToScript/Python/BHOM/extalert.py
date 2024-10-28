@@ -159,8 +159,8 @@ else:
 
 
 # Ticket variables from evtvars.json
-evt_url = dbg_assign_var(f"https://{config['evtvars']['evturl']}:{config['evtvars']['evtport']}", 'URL',dbg_logger, debug)
-evt_url = dbg_assign_var(f"https://{config['evtvars']['evturl']}", 'URL',dbg_logger, debug)
+evt_url = dbg_assign_var(f"https://{config['evtvars']['evturl']}"+f":{config['evtvars']['evtport']}" if (config['evtvars']['evtport'] != 443) else '', 'URL',dbg_logger, debug)
+# evt_url = dbg_assign_var(f"https://{config['evtvars']['evturl']}", 'URL',dbg_logger, debug)
 evt_verifySSL = dbg_assign_var(True if (config['evtvars']['evtverifySSL']== "yes") else False,"Verify SSL", dbg_logger, debug)
 evt_apiKey = config['evtvars']['evtAPIKey'] # do not show in logs
 dbg_assign_var("Adding the API Key", 'API KEY',dbg_logger, debug)
@@ -221,86 +221,132 @@ if alert[keywords_json['runId']] != '00000':
             folder= "No status found to derive folder"
             order_date = "No status found to derive order date"
 
-#Order date has been simplified for this example. The orderDate should be taken from the job and not the first status.
-# https://stackoverflow.com/questions/7079241/python-get-a-dict-from-a-list-based-on-something-inside-the-dict
+    #Order date has been simplified for this example. The orderDate should be taken from the job and not the first status.
+    # https://stackoverflow.com/questions/7079241/python-get-a-dict-from-a-list-based-on-something-inside-the-dict
 
 
-for item_no in range (0, status.returned):
-    if ( not (status.statuses[item_no].type == 'Folder' or
-            status.statuses[item_no].type == 'SubFolder')):
-        break
+    for item_no in range (0, status.returned):
+        if ( not (status.statuses[item_no].type == 'Folder' or
+                status.statuses[item_no].type == 'SubFolder')):
+            break
 
-radius = 3
-direction = 3
+    radius = 3
+    direction = 3
 
-evt_parms = {
-            "name": alert[keywords_json['jobName']],
-            "ctm": alert[keywords_json['server']],
-            "odate": '',
-            "direction": direction,
-            "radius": radius,
-            "orderId": alert[keywords_json['runId']],
-            "mapView": "TileView"
-            }
+    evt_parms = {
+                "name": alert[keywords_json['jobName']],
+                "ctm": alert[keywords_json['server']],
+                "odate": '',
+                "direction": direction,
+                "radius": radius,
+                "orderId": alert[keywords_json['runId']],
+                "mapView": "TileView"
+                }
 
-evt_qry = urllib.parse.urlencode(evt_parms)
+    evt_qry = urllib.parse.urlencode(evt_parms)
 
-#https://dc01:8443/ControlM/Monitoring/Neighborhood/0002p_5_3?name=DCO_OS_Job%231&ctm=dc01&odate=&direction=3&radius=5&orderId=0002p&mapView=TileView
-#https://dc01:8443/ControlM/Monitoring/Neighborhood/0002p_3_3?name=DCO_OS_Job#2&ctm=dc01&odate=&direction=3&radius=3&orderId=0002p&mapView=TileView
-evt_weburl = f"https://{ctmweb}/ControlM/Monitoring/Neighborhood/{alert[keywords_json['runId']]}_{radius}_{direction}?{evt_qry}"
+    #https://dc01:8443/ControlM/Monitoring/Neighborhood/0002p_5_3?name=DCO_OS_Job%231&ctm=dc01&odate=&direction=3&radius=5&orderId=0002p&mapView=TileView
+    #https://dc01:8443/ControlM/Monitoring/Neighborhood/0002p_3_3?name=DCO_OS_Job#2&ctm=dc01&odate=&direction=3&radius=3&orderId=0002p&mapView=TileView
+    evt_weburl = f"https://{ctmweb}/ControlM/Monitoring/Neighborhood/{alert[keywords_json['runId']]}_{radius}_{direction}?{evt_qry}"
 
-evt_payload = {
-            "CLASS": evt_Class,
-            # UNKNOWN, OK, INFO, WARNING, MINOR, MAJOR, CRITICAL
-            "severity": 'MINOR' if alert[keywords_json['severity']] == 'R'    
-                   else 'MAJOR' if alert[keywords_json['severity']] == 'U'    
-                   else 'CRITICAL' if alert[keywords_json['severity']] == 'V' 
-                   else 'UNKNOWN', 
-            "msg": alert[keywords_json['message']],
-            "details": f"{'Helix ' if ctm_is_helix else ''}Control-M Job " +
-                       f"{alert[keywords_json['jobName']]} " +
-                       f"{alert[keywords_json['message']]}. " +
-                       f"Job ID: {alert[keywords_json['server']]}:{alert[keywords_json['runId']]}" +
-                       f"::{alert[keywords_json['runNo']]}",
-            "source_identifier": alert[keywords_json['server']],
-            "source_hostname": alert[keywords_json['server']],
-            "ctmAlertId": alert[keywords_json['id']],
-            "ctmAlertType": alert[keywords_json['eventType']],
-            "ctmApplication": alert[keywords_json['application']],
-            "ctmClosedFromEM":alert[keywords_json['closedByControlM']],
-            "ctmDataCenter": alert[keywords_json['server']],
-            "ctmFolder": status.statuses[item_no].folder,
-            "ctmFolderID": status.statuses[item_no].folder_id,
-            "ctmJobCyclic": 'Yes' if status.statuses[item_no].cyclic else 'No',
-            "ctmJobHeld": 'Yes' if status.statuses[item_no].held else 'No',
-            "ctmJobID": status.statuses[item_no].job_id,
-            "ctmJobName": alert[keywords_json['jobName']],
-            "ctmJobType": status.statuses[item_no].type,
-            # "ctmMemName": status.statuses[item_no].type,
-            "ctmMessage": alert[keywords_json['message']],
-            "ctmNodeid": alert[keywords_json['host']],
-            "ctmNotes": alert[keywords_json['notes']],
-            "ctmOrderId": alert[keywords_json['runId']],
-            "ctmOwner": alert[keywords_json['runAs']],
-            "ctmRunCounter": alert[keywords_json['runNo']],
-            "ctmseverity": 'MINOR' if alert[keywords_json['severity']] == 'R'    
-                   else 'MAJOR' if alert[keywords_json['severity']] == 'U'    
-                   else 'CRITICAL' if alert[keywords_json['severity']] == 'V' 
-                   else 'UNKNOWN',
-            "ctmStatus": alert[keywords_json['status']],
-            "ctmSubApplication": alert[keywords_json['subApplication']],
-            "ctmTicketNumber": alert[keywords_json['ticketNumber']],
-            "ctmTime": alert[keywords_json['time']],
-            "ctmUpdateTime": alert[keywords_json['updateTime']],
-            "ctmUpdateType": alert[keywords_json['eventType']],
-            "ctmUser": alert[keywords_json['user']],
-            "ctmLogUri": status.statuses[item_no].log_uri,
-            "ctmOutputUri": status.statuses[item_no].output_uri,
-            "ctmJobURL": evt_weburl,
-            "ctmOrderDate": status.statuses[item_no].order_date,
-            "ctmEvtProvenance": f"Event sent from {getfqdn()}"
-             }
-
+    evt_payload = {
+                "CLASS": evt_Class,
+                # UNKNOWN, OK, INFO, WARNING, MINOR, MAJOR, CRITICAL
+                "severity": 'MINOR' if alert[keywords_json['severity']] == 'R'    
+                    else 'MAJOR' if alert[keywords_json['severity']] == 'U'    
+                    else 'CRITICAL' if alert[keywords_json['severity']] == 'V' 
+                    else 'UNKNOWN', 
+                "msg": alert[keywords_json['message']],
+                "details": f"{'Helix ' if ctm_is_helix else ''}Control-M Job " +
+                        f"{alert[keywords_json['jobName']]} " +
+                        f"{alert[keywords_json['message']]}. " +
+                        f"Job ID: {alert[keywords_json['server']]}:{alert[keywords_json['runId']]}" +
+                        f"::{alert[keywords_json['runNo']]}",
+                "source_identifier": alert[keywords_json['server']],
+                "source_hostname": alert[keywords_json['server']],
+                "ctmAlertId": alert[keywords_json['id']],
+                "ctmAlertType": alert[keywords_json['eventType']],
+                "ctmApplication": alert[keywords_json['application']],
+                "ctmClosedFromEM":alert[keywords_json['closedByControlM']],
+                "ctmDataCenter": alert[keywords_json['server']],
+                "ctmFolder": status.statuses[item_no].folder,
+                "ctmFolderID": status.statuses[item_no].folder_id,
+                "ctmJobCyclic": 'Yes' if status.statuses[item_no].cyclic else 'No',
+                "ctmJobHeld": 'Yes' if status.statuses[item_no].held else 'No',
+                "ctmJobID": status.statuses[item_no].job_id,
+                "ctmJobName": alert[keywords_json['jobName']],
+                "ctmJobType": status.statuses[item_no].type,
+                # "ctmMemName": status.statuses[item_no].type,
+                "ctmMessage": alert[keywords_json['message']],
+                "ctmNodeid": alert[keywords_json['host']],
+                "ctmNotes": alert[keywords_json['notes']],
+                "ctmOrderId": alert[keywords_json['runId']],
+                "ctmOwner": alert[keywords_json['runAs']],
+                "ctmRunCounter": alert[keywords_json['runNo']],
+                "ctmseverity": 'MINOR' if alert[keywords_json['severity']] == 'R'    
+                    else 'MAJOR' if alert[keywords_json['severity']] == 'U'    
+                    else 'CRITICAL' if alert[keywords_json['severity']] == 'V' 
+                    else 'UNKNOWN',
+                "ctmStatus": alert[keywords_json['status']],
+                "ctmSubApplication": alert[keywords_json['subApplication']],
+                "ctmTicketNumber": alert[keywords_json['ticketNumber']],
+                "ctmTime": alert[keywords_json['time']],
+                "ctmUpdateTime": alert[keywords_json['updateTime']],
+                "ctmUpdateType": alert[keywords_json['eventType']],
+                "ctmUser": alert[keywords_json['user']],
+                "ctmLogUri": status.statuses[item_no].log_uri,
+                "ctmOutputUri": status.statuses[item_no].output_uri,
+                "ctmJobURL": evt_weburl,
+                "ctmOrderDate": status.statuses[item_no].order_date,
+                "ctmEvtProvenance": f"Event sent from {getfqdn()}"
+                }
+else:
+    # Alert is not a job.
+    evt_Class = dbg_assign_var(config['evtvars']['evtClassNoJob'],
+            "BHOM Event Class", dbg_logger, debug)
+    evt_Path =  dbg_assign_var(config['evtvars']['evtPathNoJob'],
+            "BHOM Event Class", dbg_logger, debug)
+    
+    evt_payload = {
+                "CLASS": evt_Class,
+                # UNKNOWN, OK, INFO, WARNING, MINOR, MAJOR, CRITICAL
+                "severity": 'MINOR' if alert[keywords_json['severity']] == 'R'    
+                    else 'MAJOR' if alert[keywords_json['severity']] == 'U'    
+                    else 'CRITICAL' if alert[keywords_json['severity']] == 'V' 
+                    else 'UNKNOWN', 
+                "msg": alert[keywords_json['message']],
+                "details": f"{'Helix ' if ctm_is_helix else ''}Control-M Job " +
+                        f"{alert[keywords_json['jobName']]} " +
+                        f"{alert[keywords_json['message']]}. " +
+                        f"Job ID: {alert[keywords_json['server']]}:{alert[keywords_json['runId']]}" +
+                        f"::{alert[keywords_json['runNo']]}",
+                "source_identifier": alert[keywords_json['server']],
+                "source_hostname": alert[keywords_json['server']],
+                "ctmAlertId": alert[keywords_json['id']],
+                "ctmAlertType": alert[keywords_json['eventType']],
+                "ctmApplication": alert[keywords_json['application']],
+                "ctmClosedFromEM":alert[keywords_json['closedByControlM']],
+                "ctmDataCenter": alert[keywords_json['server']],
+                "ctmJobName": alert[keywords_json['jobName']],
+                "ctmMessage": alert[keywords_json['message']],
+                "ctmNodeid": alert[keywords_json['host']],
+                "ctmNotes": alert[keywords_json['notes']],
+                "ctmOrderId": alert[keywords_json['runId']],
+                "ctmOwner": alert[keywords_json['runAs']],
+                "ctmRunCounter": alert[keywords_json['runNo']],
+                "ctmseverity": 'MINOR' if alert[keywords_json['severity']] == 'R'    
+                    else 'MAJOR' if alert[keywords_json['severity']] == 'U'    
+                    else 'CRITICAL' if alert[keywords_json['severity']] == 'V' 
+                    else 'UNKNOWN',
+                "ctmStatus": alert[keywords_json['status']],
+                "ctmSubApplication": alert[keywords_json['subApplication']],
+                "ctmTicketNumber": alert[keywords_json['ticketNumber']],
+                "ctmTime": alert[keywords_json['time']],
+                "ctmUpdateTime": alert[keywords_json['updateTime']],
+                "ctmUpdateType": alert[keywords_json['eventType']],
+                "ctmUser": alert[keywords_json['user']],
+                "ctmEvtProvenance": f"Event sent from {getfqdn()}"
+                }
 
 # Configure BHOM client
 
