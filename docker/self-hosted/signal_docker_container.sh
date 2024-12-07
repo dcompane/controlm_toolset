@@ -42,8 +42,6 @@ else
     SIGNAL="$1"
 fi
 
-
-
 IMG_TAG="controlmonprem"
 
 container_id=$(docker ps -a | grep $IMG_TAG | grep Up | awk '{print $1}')

@@ -35,6 +35,10 @@
 
 set -x
 
-container_id=$(docker ps -a | grep controlmop | grep Up | awk '{print $1}')
+if [ $1 == "" ]; then 
+   container_id=$(sudo docker ps -a | grep controlmonp | grep Up | awk '{print $1}')
+else
+   container_id=$1
+fi   
 sudo docker ps
 sudo docker logs $container_id

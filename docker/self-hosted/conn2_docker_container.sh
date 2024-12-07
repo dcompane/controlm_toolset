@@ -34,7 +34,11 @@
 # For information on SDPX, https://spdx.org/licenses/BSD-3-Clause.html
 
 set -x
+if [ $1 == "" ]; then
+    container_id=$(docker ps -a | grep controlmonprem | grep Up | awk '{print $1}')a
+else
+    container_id=$1
+fi
 
-container_id=$(docker ps -a | grep controlmonprem | grep Up | awk '{print $1}')
 sudo docker ps
 sudo docker exec -i -t $container_id /bin/bash

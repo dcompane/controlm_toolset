@@ -36,7 +36,7 @@
 set -x
 IMG_TAG="controlmonprem"
 
-if [ x$1 == "x" ]; then
+if [ $1 == "" ]; then
     container_id=$(docker ps -a | grep $IMG_TAG | grep Up | awk '{print $1}')
 else
     container_id=$1

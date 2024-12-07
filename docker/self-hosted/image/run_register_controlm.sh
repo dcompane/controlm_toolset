@@ -56,7 +56,7 @@ function sigtrapHandler() {
     echo Received signal $signal at sigtrapHandler
     echo '========================================================================'
     echo remove agent [$AGENT_NAME] from hostgroup [$CTM_HOSTGROUP] 
-    ctm config server:hostgroup:agent::delete $CTM_SERVER $CTM_HOSTGROUP $AGENT_NAME -e $CTM_ENV
+    ctm config server:hostgroup:agent::delete $CTM_SERVER $CTM_HOSTGROUP $AGENT_NAME 
     if [ $? -ne 0 ]; then
         echo "Error deleting agent $AGENT_NAME from hostgroup $CTM_HOSTGROUP on $CTM_SERVER"
         echo "   Will not attempt to delete the agent. Exiting."
@@ -64,7 +64,7 @@ function sigtrapHandler() {
         
     else
         echo unregister controlm agent [$AGENT_NAME] from server IN01 
-        ctm config server:agent::delete $CTM_SERVER $AGENT_NAME -e $CTM_ENV
+        ctm config server:agent::delete $CTM_SERVER $AGENT_NAME 
         if [ $? -ne 0 ]; then
             echo "Error deleting agent $AGENT_NAME from $CTM_SERVER"
             getout=14
@@ -75,7 +75,6 @@ function sigtrapHandler() {
 }
 
 ############ Script starts here ############
-CTM_ENV=${aapi_env}         # Set in  dockerfile ENV
 
 # If CID does not work, use UNIQUE (and rename the variable CID)
 # UNIQUE=$(head /dev/urandom | tr -dc A-Za-z | head -c 6 ; echo '')
@@ -121,7 +120,7 @@ set_agent_mode -u controlm -o 3
 
 echo Adding or creating a Control-M hostgroup [$CTM_HOSTGROUP] with agent [$AGENT_NAME]
 echo Please wait for actions
-ctm config server:hostgroup:agent::add $CTM_SERVER $CTM_HOSTGROUP $AGENT_NAME -e $CTM_ENV
+ctm config server:hostgroup:agent::add $CTM_SERVER $CTM_HOSTGROUP $AGENT_NAME 
 if [ $? -ne 0 ]; then
     echo "Error adding agent $AGENT_NAME to agent host group $CTM_HOSTGROUP on $CTM_SERVER"
         exit 1
