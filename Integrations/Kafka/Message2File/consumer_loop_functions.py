@@ -36,7 +36,7 @@ For information on SDPX, https://spdx.org/licenses/BSD-3-Clause.html
 Change Log
 Date (YMD)    Name                  What
 --------      ------------------    ------------------------
-20240626      Daniel Companeetz     Initial work
+20241029      Daniel Companeetz     Initial work
 
 """
 

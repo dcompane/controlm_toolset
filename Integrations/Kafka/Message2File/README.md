@@ -2,19 +2,18 @@
 
 ## Changes on this version
 
-| Date       | Who               | What                                                    |
-| ---------- | ----------------- | ------------------------------------------------------- |
-| 2024-06-29 | Daniel Companeetz | Initial deployment                                      |
-| 2024-07-03 | Daniel Companeetz | Added -u to python to disable out buffering when no tty |
-|            |                   |                                                         |
+| Date       | Who               | What               |
+| ---------- | ----------------- | ------------------ |
+| 2024-10-29 | Daniel Companeetz | Initial deployment |
+|            |                   |                    |
 
 ## Detailed Description
 
-This Control-M Application Integrator job type enables the automation of reading a Kafka topic's mesage and storing the payload as a file
+This Control-M Application Integrator job type enables the automation of reading a Kafka topic's message and storing the payload as a file
 
-The job type is created as a python script that accesses Kafka using the conluent-kafka python package (v2.4.0)
+The job type is created as a python script that accesses Kafka using the confluent-kafka python package (v2.4.0)
 
-The code follows the code at [Python Client code examples -&gt; Basic poll loop](https://docs.confluent.io/kafka-clients/python/current/overview.html#basic-poll-loop) as of 2024-06-26
+The code follows the code at [Python Client code examples -&gt; Basic poll loop](https://docs.confluent.io/kafka-clients/python/current/overview.html#basic-poll-loop)
 
 The AI plug-in requires the python package confluent-kafka. It can be installed by running
 
@@ -72,18 +71,18 @@ There is a provision to end the loop after a certain time, with a default of 15 
 
 ## Additional Information
 
-There will be no output until the job ends.
-
-It is possible that an initial connection refused message is seen, but that does not mean the job will fail
+* It is possible that an initial connection refused message is seen, but that does not mean the job will fail
 
 ```text
 %3|1719709861.182|FAIL|rdkafka#consumer-1| [thrd:dc01:9092/bootstrap]: dc01:9092/bootstrap: Connect to ipv4#127.0.0.1:9092 failed: \
 Connection refused (after 0ms in state CONNECT)
 ```
 
-Disable output buffering: use python -u instead of plain python.
-See Why at [https://bugs.python.org/issue41449](Python issue 41449)
-And see HowTo at [https://stackoverflow.com/questions/107705/disable-output-buffering ](Stackoverflow on buffering STDOUT on Python)
+* There will be no output until the job ends.
+
+    Disable output buffering: use python -u instead of plain python.
+	See Why at [https://bugs.python.org/issue41449](Python issue 41449)
+	And see HowTo at [https://stackoverflow.com/questions/107705/disable-output-buffering ](Stackoverflow on buffering STDOUT on Python)
 
 ## Requirements
 
