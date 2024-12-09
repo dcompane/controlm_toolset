@@ -185,7 +185,11 @@ RUN  sudo chown controlm:controlm /home/controlm/*controlm.sh \
 
 # CMD in exec mode (using []) is needed for signaling to work
 # Signaling will ensure stopping the container deregister the agent
-# use docker stop $container_id -t 60
-# timeout is needed to ensure AAPI has time to process HG and agent removal
-# docker stop default timeout is 10 sec and then a SIGKILL is sent.
+# use 
+#  docker kill -s {SIGUSR1|SIGTERM} $container_id 
+#      NOTE: SIGKILL (untrappable) will terminate the agent and does not remove it from Control-M
+#      docker stop generates SIGTERM before timeout (see below)
+#  docker stop $container_id -t 60
+#      timeout is needed to ensure AAPI has time to process HG and agent removal
+#      docker stop default timeout is 10 sec and then a SIGKILL is sent.
 CMD ["/home/controlm/run_register_controlm.sh", "endpoint"]

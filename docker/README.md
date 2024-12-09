@@ -35,16 +35,27 @@ Please let me know of improvements you think would be useful
 
 ### Helix Control-M
 
+- ```plaintext
+  Note: this is an old release. Likely works with new releases, but customization and changes may be needed.
+  ```
 - [Find the files here](docker/helix)
 - There are two dockerfiles in the images directory
 - Copy the dockerfile you need to "dockerfile" and run the build.
 
 ### Self-Hosted (a.k.a. On-Premise)
 
+- ```plaintext
+  Note: Updated to 9.0.21.300
+  ```
 - [Find the files here](docker/self-hosted)
-- There are two dockerfiles in the images directory
-- Copy the dockerfile you need to "dockerfile" and run the build.
+- The Dockerfile is based on AlmaLinux:latest
+- - You will need to pull from the Docker Hub to your repositoryCopy the dockerfile you need to "dockerfile" and run the build.
+- The Dockerfile and other required files are in the images directory
+  - Note that the dockerfile also implements patches. You need to download them from EPD.
+  - The dockerfile installs the GCP Composer plugin as an example. Follow the appropriate documentation to install the plugins on your specific Control-M environment.
 
 ### Information about Kubernetes
 
-For the Kubernetes best practice information see [here](https://github.com/controlm/automation-api-quickstart/tree/master/control-m/301-statefulset-agent-to-run-k8s-jobs-using-ai-job)
+For the Kubernetes best practice information see [here](https://github.com/controlm/automation-api-quickstart/tree/master/control-m/301-statefulset-agent-to-run-k8s-jobs-using-ai-job). This implementation is NOT supported by BMC.
+
+See in the link following the **[Control-M for Kubernetes ](https://docs.bmc.com/docs/controlm/kubernetes/home-1205541755.html)**supported implementation.
