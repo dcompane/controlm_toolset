@@ -53,4 +53,5 @@ if __name__ == "__main__":
     topics = ["test"]
 
     # invoke the consumer loop[]
-    basic_consume_loop(consumer, topics)
+    basic_consume_loop(consumer, topics, action="event")
+

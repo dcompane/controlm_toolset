@@ -47,7 +47,13 @@ import sys
 
 from confluent_kafka import KafkaError, KafkaException
 
-def basic_consume_loop(consumer, topics, job_duration):
+import controlm_py as ctm
+from controlm_py.rest import ApiException
+from aapi_conn import SaaSConnection
+
+from consumer_platform import ctmcli
+
+def basic_consume_loop(consumer, topics, action="file", job_duration=10, cycle_time=5):
     '''
     basic loop for the consumer
     '''
@@ -74,7 +80,7 @@ def basic_consume_loop(consumer, topics, job_duration):
                                 'Time limit exceeded. Exiting. rc=0')
                     running = shutdown()
                 else:
-                    sleep(5)
+                    sleep(cycle_time)
 
                 continue
 
@@ -92,7 +98,17 @@ def basic_consume_loop(consumer, topics, job_duration):
             else:
                 # there is at least one message
                 msg_number += 1
-                msg_process(msg_number,msg)
+                if action == "file":
+                    # Write the message to a file
+                    # The message is a consumer object
+                    print(f"Message number {msg_number} received: {msg.value().decode('UTF-8')}")
+                    msg_process(msg_number,msg)
+                    print("File created")
+                elif action == "event":
+                    # print the message
+                    print(f"Message number {msg_number} received: {msg.value().decode('UTF-8')}")
+                    send_evt_2ctm(msg)
+                    print("Event sent to CTM")
 
             if get_out_time(start_time, job_duration):
                 print ("Max job duration reached. Exiting. rc=0")
@@ -127,22 +143,42 @@ def msg_process(number,message):
     # Write the message to a file
     # The message is a consumer object
     message = message.value().decode('UTF-8')
-    directory = r'c:\users\dcomp\Downloads'
+    directory = f"{getenv('USERPROFILE')}\\Downloads"
     file_name = path.join(directory, f'file_{number}.txt')
     with open(file_name, 'w', encoding="utf-8") as file:
         file.write(message)
         print(f'Message number {number} was written to {file_name}')
     file.close()
 
+def send_evt_2ctm(message):
+    '''
+    docstring
+    '''
+    # Send the message to CTM
+    # The message is a consumer object
+    evt, odate, server = message.value().decode('UTF-8').split(':')
+    body = {"name": f"{evt}","date": f"{odate}"}
+
+    aapi_client = SaaSConnection(host=ctmcli['ctmhost'], port=ctmcli['ctmport'], 
+                            aapi_token=ctmcli['ctmtoken'], ssl=ctmcli['ctmssl'], verify_ssl=ctmcli['ctm_verify_ssl'],
+                            additional_login_header={'Accept': 'application/json'})
+
+    run = ctm.api.run_api.RunApi(api_client=aapi_client.api_client)
+
+    run.add_event(body=body, server=server)
+    
 def loop_duration ():
+    '''
+    docstring
+    '''
     #the job duration will be different for the 1st run
-    duration = 0 
+    duration = 0
     runcount = getenv('RUNCOUNT')
     if runcount is None or runcount != 0:
         #the environment variable does not exist (should not be ever the case)
         #if it is a re-run (not the first run)
         duration = 15 * 60 
-    
+
     # max duration is 23:59
     if duration == 0:
         job_duration = (23 * 60 + 59) * 60 # 23:59 hours in seconds.
