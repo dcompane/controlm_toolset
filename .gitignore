@@ -25,4 +25,4 @@ np_*
 evtvars_*
 aapi_lab
 python lab
-aapi_conn.py
+!Kafka/Message2File/aapi_conn.py

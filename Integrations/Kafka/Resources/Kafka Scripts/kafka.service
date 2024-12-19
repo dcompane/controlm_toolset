@@ -1,0 +1,16 @@
+[Unit]
+Description=Apache Kafka server (broker)
+Documentation=http://kafka.apache.org/documentation.html
+Requires=network.target
+After=network.target kafka-zookeeper.service
+
+[Service]
+Type=simple
+User=kafka
+Environment=JAVA_HOME=/etc/alternatives/jre_21
+#Note the config dir is not on the ~/kafka dir as it is a symlink
+ExecStart=/home/kafka/kafka/bin/kafka-server-start.sh /home/kafka/config/server.properties
+ExecStop=/home/kafka/kafka/bin/kafka-server-stop.sh
+
+[Install]
+WantedBy=multi-user.target

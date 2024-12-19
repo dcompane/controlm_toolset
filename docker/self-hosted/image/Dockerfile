@@ -69,6 +69,9 @@ RUN dnf -y module install nodejs:22 \
         && node -v \
         && npm -v
 
+# Prep for new AAPI 9.22.0
+RUN dnf -y install python pip git
+
 # install Java
 RUN dnf -y install java-21-openjdk-headless \
         && java --version \
@@ -79,7 +82,7 @@ RUN dnf -y install java-21-openjdk-headless \
 RUN sudo dnf -y install libxcrypt-compat
 # Provides ps
 RUN sudo dnf -y install procps-ng
-# Provides libnsl.so
+# Provides libnsl.so 
 RUN  dnf -y install libnsl
 
 # add controlm user and root to sudoers list

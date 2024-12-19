@@ -44,14 +44,15 @@ from time import sleep, time
 from os import path
 from os import getenv
 import sys
-
+import json
 from confluent_kafka import KafkaError, KafkaException
 
 import controlm_py as ctm
 from controlm_py.rest import ApiException
 from aapi_conn import SaaSConnection
 
-from consumer_platform import ctmcli
+#Import AAPI connection parameters
+from ctm_platform import ctmcli
 
 def basic_consume_loop(consumer, topics, action="file", job_duration=10, cycle_time=5):
     '''
@@ -98,16 +99,33 @@ def basic_consume_loop(consumer, topics, action="file", job_duration=10, cycle_t
             else:
                 # there is at least one message
                 msg_number += 1
+                # print the message
+                print(f"Message number {msg_number} received: {msg.value().decode('UTF-8')}")
+                #decode msg from kafka object to string 
+                # The message is a consumer object
+                msg_decoded = msg.value().decode('UTF-8')
                 if action == "file":
                     # Write the message to a file
-                    # The message is a consumer object
-                    print(f"Message number {msg_number} received: {msg.value().decode('UTF-8')}")
-                    msg_process(msg_number,msg)
+                    msg_process(msg_number,msg_decoded)
                     print("File created")
                 elif action == "event":
-                    # print the message
-                    print(f"Message number {msg_number} received: {msg.value().decode('UTF-8')}")
-                    send_evt_2ctm(msg)
+                    if msg_decoded[0] == "{":
+                        #if the first char is a "{",  it must be a dict
+                        try:
+                            msg_2_send = json.loads(msg_decoded)
+                        except json.decoder.JSONDecodeError as e:
+                            # Should never reach here!
+                            print(f'THISMESSAGE: Error with the event: {msg_decoded}. Event not sent to Control-M. Exiting.')
+                            print( '   The event must a json formatted string that starts with a "{" at the beginning of the string.')
+                            print(f'Error: {e}')
+                            print(f'Error encountered: exiting')
+                            running=shutdown()
+
+                    else:
+                        #It's a string!
+                        msg_2_send = msg_decoded
+
+                    send_evt_2ctm(msg_2_send)
                     print("Event sent to CTM")
 
             if get_out_time(start_time, job_duration):
@@ -131,7 +149,7 @@ def get_out_time(start_time, job_duration):
     '''
     now_time = time()
     get_out = False
-    if now_time > start_time + job_duration:
+    if now_time > (start_time + job_duration * 60):
         # print (now_time, start_time + job_duration)
         get_out = True
     return get_out
@@ -140,9 +158,7 @@ def msg_process(number,message):
     '''
     docstring
     '''
-    # Write the message to a file
-    # The message is a consumer object
-    message = message.value().decode('UTF-8')
+    # Write the message (already string) to a file
     directory = f"{getenv('USERPROFILE')}\\Downloads"
     file_name = path.join(directory, f'file_{number}.txt')
     with open(file_name, 'w', encoding="utf-8") as file:
@@ -155,8 +171,15 @@ def send_evt_2ctm(message):
     docstring
     '''
     # Send the message to CTM
-    # The message is a consumer object
-    evt, odate, server = message.value().decode('UTF-8').split(':')
+    # The message is a consumer object and must be string or dict
+    if isinstance(message, dict):
+        evt = message["event"]
+        odate = message["date"]
+        server = message["server"]
+    else: 
+        #Must be strings
+        evt, odate, server = message.split(':')
+    
     body = {"name": f"{evt}","date": f"{odate}"}
 
     aapi_client = SaaSConnection(host=ctmcli['ctmhost'], port=ctmcli['ctmport'], 
@@ -164,7 +187,6 @@ def send_evt_2ctm(message):
                             additional_login_header={'Accept': 'application/json'})
 
     run = ctm.api.run_api.RunApi(api_client=aapi_client.api_client)
-
     run.add_event(body=body, server=server)
     
 def loop_duration ():

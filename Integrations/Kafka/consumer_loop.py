@@ -55,3 +55,5 @@ if __name__ == "__main__":
     # invoke the consumer loop[]
     basic_consume_loop(consumer, topics, action="event")
 
+    print("THISMessage: Event reading cycle completed successfully") 
+
