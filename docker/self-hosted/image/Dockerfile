@@ -167,7 +167,7 @@ RUN sudo rm -f /tmp/PAAIT*
 
 # Adding some Python packages to the local agent repository
 #  This may need to be revised when v22 AAPI is released.
-RUN pip install ctm-python-client confluent-kafka \
+RUN pip -v install ctm-python-client confluent-kafka \
         && pip install git+https://github.com/dcompane/controlm_py,git
 
 # Clean dnf cache to reduce image size
