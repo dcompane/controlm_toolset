@@ -165,9 +165,14 @@ RUN set +x \
 
 RUN sudo rm -f /tmp/PAAIT* 
 
+# Adding some Python packages to the local agent repository
+#  This may need to be revised when v22 AAPI is released.
+RUN pip install ctm-python-client confluent-kafka \
+        && pip install git+https://github.com/dcompane/controlm_py,git
+
 # Clean dnf cache to reduce image size
 RUN sudo dnf clean all \
-         && sudo rm -rf /var/cache/dnf \
+         && sudo rm -rf /var/cache/dnf
 
 # Exposing Agent ports. Use range as not sure what will be used.
 #    See run_register_controlm.sh to determine how that works
