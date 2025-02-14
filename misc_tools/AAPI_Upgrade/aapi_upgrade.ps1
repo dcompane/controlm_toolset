@@ -33,14 +33,34 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # For information on SDPX, https://spdx.org/licenses/BSD-3-Clause.html
 
-param ([int] $myversion=9, [int] $myrelease=20, [int] $fix)
-#NOTE: Do not forget to change the versions
-
 # Comment next line if no debug information is required
 Set-PSDebug -Trace 1
 
-#From <https://www.red-gate.com/simple-talk/sysadmin/powershell/how-to-use-parameters-in-powershell/>
-param ( $myversion, [int] $myrelease, [int] $fix)
+# This will check if there is an upgrade to be made.
+# Allows to run the script under the emuser to automate the AAPI update.
+$hostname = hostname
+$version = Invoke-WebRequest -Uri "https://$(hostname):8443/automation-api/build_time.txt"  -SkipCertificateCheck
+$build = $version.content.Substring(17,8)
+$version = Invoke-WebRequest -Uri "https://controlm-appdev.s3.us-west-2.amazonaws.com/release/latest/version.txt"  -SkipCertificateCheck
+$latest = $version.content.trimend()
+if ($build -ge $latest) {
+    write-host Nothing to do. Latest version less or equal to current. Exiting (rc=98).
+    write-host Current version: $build
+    write-host Latest version: $latest
+    Set-PSDebug -Trace 0
+    exit 98
+} else {
+    $dot1 =$latest.indexof(".")
+    $dot2 =$latest.indexof(".", $dot1+1)
+    $version = $latest.substring(0, $dot1)
+    $release = $latest.substring($dot1+1, $dot2-$dot1-1)
+    $fix = $latest.substring($dot2+1, $latest.length-$dot2-1)
+}
+
+
+# In case you want to use parameters, set the param as the first line in the file to be executed
+# From <https://www.red-gate.com/simple-talk/sysadmin/powershell/how-to-use-parameters-in-powershell/>
+#param ( $myversion, [int] $myrelease, [int] $fix)
 
 # This is to run as see if the user isLocalAdmin
 If($isWindows) {
@@ -64,20 +84,20 @@ If($isWindows) {
     exit 98
 }
 
-if ($null -eq $fix -and $myversion -ne "latest") {
+if ($null -eq $fix -and $version -ne "latest") {
     write-host "Please enter a fix pack. Assuming $myversion.$myrelease. Exiting (rc=42)."
     exit 42
 } else {
     # the URL is also available as latest
     # https://controlm-appdev.s3.us-west-2.amazonaws.com/release/latest/output/Unix/PADEV.latest_Linux-x86_64_INSTALL.BIN
     # https://controlm-appdev.s3.us-west-2.amazonaws.com/release/latest/output/Windows/PADEV.latest_windows_x86_64.exe
-    if ($myversion -eq "latest") {
+    if ($version -eq "latest") {
         $dirversion = "latest"
         $fileversion = "latest"
     } else {
         $fixpack = $fix.PadLeft(3,'0')
-        $dirversion = $myversion+"."+$myrelease+"."+$fix
-        $fileversion = $myversion+".0."+$myrelease+"."+$fixpack
+        $dirversion = $version+"."+$release+"."+$fix
+        $fileversion = $version+".0."+$release+"."+$fixpack
     }
     
     $file_to_download="PADEV."+$fileversion+"_"+$thisArch+$thisExt

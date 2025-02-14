@@ -39,21 +39,51 @@ Date (YMD)    Name                  What
 20241029      Daniel Companeetz     Initial work
 
 """
+from sys import exit
 
-from confluent_kafka import Consumer
+# Imports from Confluent Kafka
+from confluent_kafka.admin import AdminClient, NewTopic
+from confluent_kafka import Consumer, Producer
+from confluent_kafka import KafkaError, KafkaException
+
+
 # import consumer_cloud
-from consumer_platform import conf
-from consumer_loop_functions import basic_consume_loop
+from consumer_loop_functions import basic_consume_loop, create_new_topics, write_messages
 
 if __name__ == "__main__":
-    #Initialize the consumer object
-    consumer = Consumer(conf)
+   
 
-    #define the topics list
-    topics = ["test"]
+   #define the topics list
+   topics = ["test43456", "test42345"]
+   action = "Read"
+   #  action = "Topic"
+   #  action = "Write"
+   #  action = "Read"
+   #  action = "File"
 
-    # invoke the consumer loop[]
-    basic_consume_loop(consumer, topics, action="event")
+   if action == "Topic":
+      # Topic: Create a new topic in the Kafka queue
+      topics=['test1','test2']
+      retcode = create_new_topics(topics)
+      
+   # Write: Write a message to the topic
+   elif action == "Write":
+      messages=["test1", "test2"]
+      retcode = write_messages(messages=messages, topic="tet")
 
-    print("THISMessage: Event reading cycle completed successfully") 
+   # Read and File are loops
+   elif action == "Read" or action == "File":
+   
+      # define the topics list
+      topics = ["tent"]
+      # invoke the consumer loop[]
+      retcode = basic_consume_loop(topics, action=action)
 
+      if retcode == 0:
+         print("Event reading cycle completed successfully")
+
+   else:
+      retcode = 13
+      print(f"Action: {action} - Invalid action. Exiting with error {retcode}.")
+
+exit(retcode)
