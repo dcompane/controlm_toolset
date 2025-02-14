@@ -127,10 +127,11 @@ RUN ctm env add endpoint https://$AAPI_ENDPOINT:8443/automation-api $AAPI_TOKEN 
 #}
 
 RUN cd \
-        && ctm provision image Agent.Linux \
-        ; exit 0
+        && ctm provision image Agent.Linux 
+#       ; exit 0
 
 # Uncomment the images for the plugins needed after validating the plugin descriptor names.
+# # # # # Check the name of the  plugins on your 
 RUN set +x \
          && source /home/controlm/.bash_profile \
          && ctm provision image GCP_Composer_plugin.Linux
@@ -149,26 +150,32 @@ RUN set +x \
 RUN echo "source /home/controlm/.bash_profile" >> /home/controlm/.bashrc 
 
 ################ Specific for on-prem patches
-# Add patches as needed.
-COPY PAAIT.9.0.21.301_Linux-x86_64_INSTALL.BIN  /tmp
-RUN sudo chmod 755 /tmp/PAAIT.9.0.21.301_Linux-x86_64_INSTALL.BIN 
-COPY PAAIT.9.0.21.302_Linux-x86_64_INSTALL.BIN  /tmp
-RUN sudo chmod 755 /tmp/PAAIT.9.0.21.302_Linux-x86_64_INSTALL.BIN 
+# # # # UNCOMMENT AS NEEDED # # # # 
+# # # # Recommended to install the patches
+# # Add patches as needed.
+# COPY PAAIT.9.0.21.301_Linux-x86_64_INSTALL.BIN  /tmp
+# RUN sudo chmod 755 /tmp/PAAIT.9.0.21.301_Linux-x86_64_INSTALL.BIN 
+# COPY PAAIT.9.0.21.302_Linux-x86_64_INSTALL.BIN  /tmp
+# RUN sudo chmod 755 /tmp/PAAIT.9.0.21.302_Linux-x86_64_INSTALL.BIN 
 
-RUN set +x \
-         && source /home/controlm/.bash_profile \
-         && /tmp/PAAIT.9.0.21.301_Linux-x86_64_INSTALL.BIN -s
+# RUN set +x \
+#          && source /home/controlm/.bash_profile \
+#          && /tmp/PAAIT.9.0.21.301_Linux-x86_64_INSTALL.BIN -s
 
-RUN set +x \
-         && source /home/controlm/.bash_profile \
-         && /tmp/PAAIT.9.0.21.302_Linux-x86_64_INSTALL.BIN -s
+# RUN set +x \
+#          && source /home/controlm/.bash_profile \
+#          && /tmp/PAAIT.9.0.21.302_Linux-x86_64_INSTALL.BIN -s
 
-RUN sudo rm -f /tmp/PAAIT* 
+# RUN sudo rm -f /tmp/PAAIT* 
+
+
 
 # Adding some Python packages to the local agent repository
 #  This may need to be revised when v22 AAPI is released.
-RUN pip -v install ctm-python-client confluent-kafka \
-        && pip install git+https://github.com/dcompane/controlm_py,git
+# # # # UNCOMMENT AS NEEDED # # # # 
+# # # # This needed to use the Python client or other features
+# RUN pip -v install ctm-python-client confluent-kafka 
+# RUN pip install git+https://github.com/dcompane/controlm_py,git
 
 # Clean dnf cache to reduce image size
 RUN sudo dnf clean all \
@@ -184,7 +191,7 @@ RUN echo Build almost done
 ### Keep these lines just before the end in case changes to the 
 ###    run and decomm scripts are needed, to avoid re-build.
 # copy run and register controlm agent script to container
-COPY ./run_register_controlm.sh /home/controlm
+COPY ./run_register_controlm.sh /home/controlm 
 COPY ./agent-parameters.json /home/controlm
 COPY ./deploy_test_jobs.json /home/controlm
 # give execute permissions to start/shut scripts

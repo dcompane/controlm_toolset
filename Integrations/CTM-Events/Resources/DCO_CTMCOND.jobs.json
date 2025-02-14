@@ -1,0 +1,246 @@
+{
+  "DCO_COND" : {
+    "Type" : "Folder",
+    "ControlmServer" : "dc01",
+    "SubApplication" : "DCO_COND",
+    "CreatedBy" : "emuser",
+    "Application" : "DCO",
+    "DaysKeepActiveIfNotOk" : "1",
+    "Jobs" : [ {
+      "Type" : "Job:ApplicationIntegrator:AI ControlM Condition",
+      "ConnectionProfile" : "DCO_CTMCOND",
+      "AI-Action" : "Delete event",
+      "AI-ODate type" : "Any",
+      "AI-AnnotationSubject" : "From AAPI",
+      "AI-Server" : "dc01",
+      "AI-Event Date (MMDD)" : "%%date",
+      "AI-Event Name" : "test1",
+      "SubApplication" : "DCO_COND",
+      "Host" : "dc01",
+      "CreatedBy" : "emuser",
+      "RunAs" : "DCO_CTMCOND",
+      "Application" : "DCO",
+      "Variables" : [ {
+        "date" : "%%SUBSTR %%ODATE 3 4"
+      } ],
+      "Name" : "AI ControlM Condition_Job_1_DelIgnErr",
+      "When" : {
+        "WeekDays" : [ "NONE" ],
+        "MonthDays" : [ "ALL" ],
+        "DaysRelation" : "OR"
+      },
+      "eventsToAdd" : {
+        "Type" : "AddEvents",
+        "Events" : [ {
+          "Event" : "AI_ControlM_Condition_Job_1_DelIgnErr-TO-AI_ControlM_Condition_Job_1_DelNoIgnErr"
+        } ]
+      }
+    }, {
+      "Type" : "Job:ApplicationIntegrator:AI ControlM Condition",
+      "ConnectionProfile" : "DCO_CTMCOND",
+      "AI-Action" : "Delete event",
+      "AI-ODate type" : "Any",
+      "AI-AnnotationSubject" : "From AAPI",
+      "AI-Server" : "dc01",
+      "AI-Event Date (MMDD)" : "%%date",
+      "AI-Event Name" : "test1",
+      "AI-Ignore Errors" : "No",
+      "SubApplication" : "DCO_COND",
+      "Host" : "dc01",
+      "CreatedBy" : "emuser",
+      "RunAs" : "DCO_CTMCOND",
+      "Application" : "DCO",
+      "Variables" : [ {
+        "date" : "%%SUBSTR %%ODATE 3 4"
+      } ],
+      "Name" : "AI ControlM Condition_Job_1_DelNoIgnErr",
+      "When" : {
+        "WeekDays" : [ "NONE" ],
+        "MonthDays" : [ "ALL" ],
+        "DaysRelation" : "OR"
+      },
+      "eventsToWaitFor" : {
+        "Type" : "WaitForEvents",
+        "Events" : [ {
+          "Event" : "AI_ControlM_Condition_Job_1_DelIgnErr-TO-AI_ControlM_Condition_Job_1_DelNoIgnErr"
+        } ]
+      },
+      "eventsToDelete" : {
+        "Type" : "DeleteEvents",
+        "Events" : [ {
+          "Event" : "AI_ControlM_Condition_Job_1_DelIgnErr-TO-AI_ControlM_Condition_Job_1_DelNoIgnErr"
+        } ]
+      }
+    }, {
+      "Type" : "Job:ApplicationIntegrator:AI ControlM Condition",
+      "ConnectionProfile" : "DCO_CTMCOND",
+      "AI-Action" : "Delete event",
+      "AI-ODate type" : "Specific Date",
+      "AI-AnnotationSubject" : "From AAPI",
+      "AI-Server" : "dc01",
+      "AI-Event Date (MMDD)" : "%%date",
+      "AI-Event Name" : "test1",
+      "AI-Ignore Errors" : "No",
+      "SubApplication" : "DCO_COND",
+      "Host" : "dc01",
+      "CreatedBy" : "emuser",
+      "RunAs" : "DCO_CTMCOND",
+      "Application" : "DCO",
+      "Variables" : [ {
+        "date" : "%%SUBSTR %%ODATE 3 4"
+      } ],
+      "Name" : "AI ControlM Condition_Job_1_DelNoIgnErr",
+      "When" : {
+        "WeekDays" : [ "NONE" ],
+        "MonthDays" : [ "ALL" ],
+        "DaysRelation" : "OR"
+      },
+      "eventsToWaitFor" : {
+        "Type" : "WaitForEvents",
+        "Events" : [ {
+          "Event" : "AI_ControlM_Condition_Job_1_NoIgnErr-TO-AI_ControlM_Condition_Job_1_DelNoIgnErr"
+        } ]
+      },
+      "eventsToAdd" : {
+        "Type" : "AddEvents",
+        "Events" : [ {
+          "Event" : "AI_ControlM_Condition_Job_1_NoIgnErr-TO-AI_ControlM_Condition_Job_1_DelIgnErr"
+        } ]
+      },
+      "eventsToDelete" : {
+        "Type" : "DeleteEvents",
+        "Events" : [ {
+          "Event" : "AI_ControlM_Condition_Job_1_NoIgnErr-TO-AI_ControlM_Condition_Job_1_DelNoIgnErr"
+        } ]
+      }
+    }, {
+      "Type" : "Job:ApplicationIntegrator:AI ControlM Condition",
+      "ConnectionProfile" : "DCO_CTMCOND",
+      "AI-ODate type" : "Today",
+      "AI-AnnotationSubject" : "From AAPI",
+      "AI-Server" : "dc01",
+      "AI-Event Date (MMDD)" : "%%date",
+      "AI-Event Name" : "test1",
+      "SubApplication" : "DCO_COND",
+      "Host" : "dc01",
+      "CreatedBy" : "emuser",
+      "RunAs" : "DCO_CTMCOND",
+      "Application" : "DCO",
+      "Variables" : [ {
+        "date" : "%%SUBSTR %%ODATE 3 4"
+      } ],
+      "Name" : "AI ControlM Condition_Job_1_IgnErr",
+      "When" : {
+        "WeekDays" : [ "NONE" ],
+        "MonthDays" : [ "ALL" ],
+        "DaysRelation" : "OR"
+      },
+      "eventsToWaitFor" : {
+        "Type" : "WaitForEvents",
+        "Events" : [ {
+          "Event" : "AI_ControlM_Condition_Job_1_NoErr-TO-AI_ControlM_Condition_Job_1_IgnErr"
+        } ]
+      },
+      "eventsToAdd" : {
+        "Type" : "AddEvents",
+        "Events" : [ {
+          "Event" : "AI_ControlM_Condition_Job_1_IgnErr-TO-AI_ControlM_Condition_Job_1_NoIgnErr"
+        } ]
+      },
+      "eventsToDelete" : {
+        "Type" : "DeleteEvents",
+        "Events" : [ {
+          "Event" : "AI_ControlM_Condition_Job_1_NoErr-TO-AI_ControlM_Condition_Job_1_IgnErr"
+        } ]
+      }
+    }, {
+      "Type" : "Job:ApplicationIntegrator:AI ControlM Condition",
+      "ConnectionProfile" : "DCO_CTMCOND",
+      "AI-ODate type" : "Today",
+      "AI-AnnotationSubject" : "From AAPI",
+      "AI-Server" : "dc01",
+      "AI-Event Date (MMDD)" : "%%date",
+      "AI-Event Name" : "test1",
+      "SubApplication" : "DCO_COND",
+      "Host" : "dc01",
+      "CreatedBy" : "emuser",
+      "RunAs" : "DCO_CTMCOND",
+      "Application" : "DCO",
+      "Variables" : [ {
+        "date" : "%%SUBSTR %%ODATE 3 4"
+      } ],
+      "Name" : "AI ControlM Condition_Job_1_NoErr",
+      "When" : {
+        "WeekDays" : [ "NONE" ],
+        "MonthDays" : [ "ALL" ],
+        "DaysRelation" : "OR"
+      },
+      "eventsToAdd" : {
+        "Type" : "AddEvents",
+        "Events" : [ {
+          "Event" : "AI_ControlM_Condition_Job_1_NoErr-TO-AI_ControlM_Condition_Job_1_IgnErr"
+        } ]
+      }
+    }, {
+      "Type" : "Job:ApplicationIntegrator:AI ControlM Condition",
+      "ConnectionProfile" : "DCO_CTMCOND",
+      "AI-ODate type" : "Specific Date",
+      "AI-AnnotationSubject" : "From AAPI",
+      "AI-Server" : "dc01",
+      "AI-Event Date (MMDD)" : "%%date",
+      "AI-Event Name" : "test1",
+      "AI-Ignore Errors" : "No",
+      "SubApplication" : "DCO_COND",
+      "Host" : "dc01",
+      "CreatedBy" : "emuser",
+      "RunAs" : "DCO_CTMCOND",
+      "Application" : "DCO",
+      "Variables" : [ {
+        "date" : "%%SUBSTR %%ODATE 3 4"
+      } ],
+      "Name" : "AI ControlM Condition_Job_1_NoIgnErr",
+      "When" : {
+        "WeekDays" : [ "NONE" ],
+        "MonthDays" : [ "ALL" ],
+        "DaysRelation" : "OR"
+      },
+      "eventsToWaitFor" : {
+        "Type" : "WaitForEvents",
+        "Events" : [ {
+          "Event" : "AI_ControlM_Condition_Job_1_IgnErr-TO-AI_ControlM_Condition_Job_1_NoIgnErr"
+        } ]
+      },
+      "eventsToAdd" : {
+        "Type" : "AddEvents",
+        "Events" : [ {
+          "Event" : "AI_ControlM_Condition_Job_1_NoIgnErr-TO-AI_ControlM_Condition_Job_1_DelIgnErr"
+        }, {
+          "Event" : "AI_ControlM_Condition_Job_1_NoIgnErr-TO-AI_ControlM_Condition_Job_1_DelNoIgnErr"
+        } ]
+      },
+      "eventsToDelete" : {
+        "Type" : "DeleteEvents",
+        "Events" : [ {
+          "Event" : "AI_ControlM_Condition_Job_1_IgnErr-TO-AI_ControlM_Condition_Job_1_NoIgnErr"
+        }, {
+          "Event" : "AI_ControlM_Condition_Job_1_IgnErr-TO-AI_ControlM_Condition_Job_1_NoIgnErr-302"
+        }, {
+          "Event" : "AI_ControlM_Condition_Job_1_IgnErr-TO-AI_ControlM_Condition_Job_1_NoIgnErr-368"
+        } ]
+      }
+    } ],
+    "When" : {
+      "RuleBasedCalendars" : {
+        "Included" : [ "EVERYDAY" ],
+        "EVERYDAY" : {
+          "Type" : "Calendar:RuleBased",
+          "When" : {
+            "DaysRelation" : "OR",
+            "WeekDays" : [ "NONE" ],
+            "MonthDays" : [ "ALL" ]
+          }
+        }
+      }
+    }
+  }
+}

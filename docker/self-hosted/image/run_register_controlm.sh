@@ -140,17 +140,22 @@ echo "Done setting up"
 echo "Control-M Agent setup complete"
 echo "Agent Name: $AGENT_NAME"
 echo "---> May need to ping the agent from the server to have it become available<---"
-sed -i "s/agent_name/$AGENT_NAME/" deploy_test_jobs.json
-ctm deploy deploy_test_jobs.json
-ctm run order $CTM_SERVER DCO_Docker DCO_Docker_Server2Agent_available > response.json
-cat response.json
-ctm run status $(cat response.json| grep runId | cut -d : -f2 | awk -F\" '{print $2}')
-echo run test job
-ctm run order $CTM_SERVER DCO_Docker DCO_Docker_Job > response.json
-cat response.json
-ctm run status $(cat response.json| grep runId | cut -d : -f2 | awk -F\" '{print $2}')
-echo "validations ran. entering infinite loop..."
-echo "thanks for your patience!"
+
+# Setting up test jobs
+# # # # UNCOMMENT AS NEEDED # # # # 
+# # # # deploy jobs to test the agent
+# sed -i "s/agent_name/$AGENT_NAME/" deploy_test_jobs.json
+# ctm deploy deploy_test_jobs.json
+# ctm run order $CTM_SERVER DCO_Docker DCO_Docker_Server2Agent_available > response.json
+# cat response.json
+# ctm run status $(cat response.json| grep runId | cut -d : -f2 | awk -F\" '{print $2}')
+# echo run test job
+# ctm run order $CTM_SERVER DCO_Docker DCO_Docker_Job > response.json
+# cat response.json
+# ctm run status $(cat response.json| grep runId | cut -d : -f2 | awk -F\" '{print $2}')
+# echo "Validations ran."
+echo "Entering infinite loop..."
+echo "Thanks for your patience!"
 
 # loop forever until getout is different of 99
 getout=99

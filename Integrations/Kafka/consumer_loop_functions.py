@@ -45,7 +45,12 @@ from os import path
 from os import getenv
 import sys
 import json
+from typing import Union
+from confluent_kafka.admin import AdminClient, NewTopic
+from confluent_kafka import Producer, Consumer
 from confluent_kafka import KafkaError, KafkaException
+
+from consumer_platform import conf, conf_admin
 
 import controlm_py as ctm
 from controlm_py.rest import ApiException
@@ -54,18 +59,20 @@ from aapi_conn import SaaSConnection
 #Import AAPI connection parameters
 from ctm_platform import ctmcli
 
-def basic_consume_loop(consumer, topics, action="file", job_duration=10, cycle_time=5):
+def basic_consume_loop(topics, action="file", job_duration=10, cycle_time=5):
     '''
     basic loop for the consumer
     '''
         # Set start time
     start_time = time()
 
+    retcode = 0
     msg_number = 0
     running = True
 
     try:
         # Subscribe to the topic
+        consumer = Consumer(conf)
         consumer.subscribe(topics)
 
         # loop on the messages
@@ -90,12 +97,18 @@ def basic_consume_loop(consumer, topics, action="file", job_duration=10, cycle_t
                 # End of Partition message is ok. Just record it and continue
                 if msg.error().code() == KafkaError._PARTITION_EOF:
                     # End of partition event
-                    #sys.stderr.write('%% %s [%d] reached end at offset %d\n' %
-                    #                 (msg.topic(), msg.partition(), msg.offset()))
-                    sys.stderr.write(f"% {msg.topic()} {msg.partition()} reached end at offset {msg.offset()}\n")
+                    print(f"INFO: Topic: {msg.topic()} Partition: {msg.partition()} reached end at offset {msg.offset()}")
+                elif msg.error().code() == KafkaError.UNKNOWN_TOPIC_OR_PART:
+                    # Topic is not available
+                    retcode = 5
+                    print(f"ERROR: Topic {msg.topic()} or partition {msg.partition()} is not available to read or does not exist.")
+                    print(f"Extiting with rc={retcode}.")
+                    running = shutdown()
                 elif msg.error():
                     # Unexpected error occured
-                    raise KafkaException(msg.error())
+                    retcode=6
+                    print(f"ERROR: Unexpected error {msg.error()} occurred.")
+                    running = shutdown()
             else:
                 # there is at least one message
                 msg_number += 1
@@ -104,11 +117,16 @@ def basic_consume_loop(consumer, topics, action="file", job_duration=10, cycle_t
                 #decode msg from kafka object to string 
                 # The message is a consumer object
                 msg_decoded = msg.value().decode('UTF-8')
-                if action == "file":
+
+                # Action to be performed
+                # File: Write a message to a file
+                if action == "File":
                     # Write the message to a file
                     msg_process(msg_number,msg_decoded)
                     print("File created")
-                elif action == "event":
+
+                # Read: Read the topic and post anything that comes as an event
+                elif action == "Read":
                     if msg_decoded[0] == "{":
                         #if the first char is a "{",  it must be a dict
                         try:
@@ -123,7 +141,7 @@ def basic_consume_loop(consumer, topics, action="file", job_duration=10, cycle_t
 
                     else:
                         #It's a string!
-                        msg_2_send = msg_decoded
+                        msg_2_send = msg_decode
 
                     send_evt_2ctm(msg_2_send)
                     print("Event sent to CTM")
@@ -135,6 +153,8 @@ def basic_consume_loop(consumer, topics, action="file", job_duration=10, cycle_t
     finally:
         # Close down consumer to commit final offsets.
         consumer.close()
+    
+    return retcode
 
 def shutdown():
     '''
@@ -210,3 +230,74 @@ def loop_duration ():
     print(f'Job Duration is set to {job_duration}')
 
     return job_duration
+
+def create_new_topics(names: Union[str, list], partitions: int = 1, replication: int = 1):
+    retcode = 0
+    if isinstance(names, str):
+        names = names.split(',')
+    new_topics = [NewTopic(name, partitions, replication) for name in names]
+    
+    # Accessing admin create_topics via admin client 
+    client = AdminClient(conf_admin)
+    
+    fs = client.create_topics(new_topics, validate_only=False)
+
+    for topic, f in fs.items():
+        try:
+            f.result()  # The result itself is None
+            print(f"Topic {topic} created")
+        except KafkaException as e:
+            k_e = e.args[ 0 ]
+            print(f"Failed to create topic {topic}: {e}")    
+            retcode = 10
+            if k_e.code() == KafkaError.TOPIC_ALREADY_EXISTS:
+                print(f"Topic '{topic}' already exists, skipping creation.")
+            elif k_e.code() == KafkaError.BROKER_NOT_AVAILABLE:
+                print(f"Failed to create topic '{topic}' due to unavailable broker: {e}")
+            
+    return retcode
+
+
+def write_messages(messages: Union[str, list], topic):
+    """Produce messages to a Kafka topic."""
+    def error_cb(err):
+        """Error callback for Kafka producer."""
+        print(f"Error: {err}")
+
+    def delivery_report(err, msg):
+        """Delivery report callback for Kafka producer."""
+        if err is not None:
+            print(f"Message delivery failed: {err}")
+        else:
+            print(f"Message {msg.value()} delivered to {msg.topic()} [{msg.partition()}] at offset {msg.offset()}")
+
+    def topic_exists(admin_client, topic_name):
+        """Checks if a Kafka topic exists."""
+        cluster_metadata = admin_client.list_topics()
+        return topic_name in cluster_metadata.topics
+
+        
+    admin_client = AdminClient(conf_admin)
+    conf_admin["error_cb"] = error_cb  # Set the error callback
+    producer = Producer(conf_admin)
+
+    retcode = 0
+    if isinstance(messages, str):
+        messages = messages.split(',')
+
+    if not topic_exists(admin_client, topic):
+        retcode = 15
+        print(f"Topic '{topic}' does not exist. Cannot produce messages. Exiting with error {retcode}.")
+        print(f"Create the topic '{topic}' first using the 'create_new_topics' function or ensure it exists.")
+    else:
+        for message in messages:
+            try:
+                producer.produce(topic, value=message, callback=delivery_report)
+                producer.poll(0)  # Trigger delivery reports and handle errors
+            except KafkaError as e:
+                retcode = 11
+                print(f"Error producing message: {e}")
+
+        producer.flush()  # Ensure all messages are delivered
+            
+    return retcode

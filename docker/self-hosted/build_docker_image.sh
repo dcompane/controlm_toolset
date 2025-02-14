@@ -35,20 +35,29 @@
 
 set -x
 
+#Docker parameters
 cd image
 SRC_DIR=.
 IMG_TAG="controlmonprem"
 
-AAPI_ENDPOINT=192.168.4.35
+#AAPI Parameters
+AAPI_ENDPOINT=AAPI_WEB_SERVER
 AAPI_TOKEN="b25QcmVtOmM5ZDVhZmMwLTE5YTAtNGVkMi1iOTkyLTAyZGExZmZhYjM1ZA=="
-AAPI_ENVIRONMENT=$1
+
+#CTM Parameters
+CTM_SERVER=CTM_SERVER_NAME
+CTM_HOSTGROUP=CTM_HOSTGROUP_NAME
+CTM_HOST_TAG=CTM_HOST_TAG
+
 
 startdate=`date`
 
 sudo docker build --progress=plain --tag=$IMG_TAG $1\
   --build-arg AAPI_ENDPOINT=$AAPI_ENDPOINT \
-  --build-arg AAPI_ENVIRONMENT=$AAPI_ENVIRONMENT \
   --build-arg AAPI_TOKEN=$AAPI_TOKEN \
+  --build-arg CTM_SERVER=$CTM_SERVER \
+  --build-arg CTM_HOSTGROUP=$CTM_HOSTGROUP \
+  --build-arg CTM_HOST_TAG=$CTM_HOST_TAG \
   $SRC_DIR
 
 echo $startdate `date`
