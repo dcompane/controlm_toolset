@@ -9,10 +9,10 @@
 
 ## Contributions
 
-| Date       | Who             | What                                            |
-| ---------- | --------------- | ----------------------------------------------- |
-| 2025-02-13 | Wendel Bordelon | Provided the base development of the ssh plugin |
-|            |                 |                                                 |
+| Date       | Who             | What                                        |
+| ---------- | --------------- | ------------------------------------------- |
+| 2025-02-13 | Wendel Bordelon | Provided the base development of the plugin |
+|            |                 |                                             |
 
 ## Short description
 
