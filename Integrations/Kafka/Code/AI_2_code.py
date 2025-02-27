@@ -1,5 +1,6 @@
+python -u <<EOF 
 """
-(c) 2020 - 2024 Daniel Companeetz, BMC Software, Inc.
+(c) 2020 - 2025 Daniel Companeetz, BMC Software, Inc.
 All rights reserved.
 
 BSD 3-Clause License
@@ -36,7 +37,7 @@ For information on SDPX, https://spdx.org/licenses/BSD-3-Clause.html
 Change Log
 Date (YMD)    Name                  What
 --------      ------------------    ------------------------
-20241029      Daniel Companeetz     Initial work
+20241029      Daniel Companeetz     Initial work started
 
 """
 
@@ -46,12 +47,14 @@ from os import getenv
 import sys
 import json
 from typing import Union
+from pprint import pprint
+
+# Imports from Confluent Kafka
 from confluent_kafka.admin import AdminClient, NewTopic
-from confluent_kafka import Producer, Consumer
+from confluent_kafka import Consumer, Producer
 from confluent_kafka import KafkaError, KafkaException
 
-from consumer_platform import conf, conf_admin
-
+#github.com/dcompane/control-py.git
 import controlm_py as ctm
 from controlm_py.rest import ApiException
 from aapi_conn import SaaSConnection
@@ -59,14 +62,86 @@ from aapi_conn import SaaSConnection
 #Import AAPI connection parameters
 from ctm_platform import ctmcli
 
-def basic_consume_loop(topics, action="file", job_duration=10, cycle_time=5):
+############################################################
+# AAPI Connection
+############################################################
+
+from urllib3 import disable_warnings
+from urllib3.exceptions import NewConnectionError, MaxRetryError, InsecureRequestWarning
+
+
+class SaaSConnection(object):
+    """
+    Implements persistent connectivity for the Control-M Automation API
+    :property api_client Implements the connection to the Control-M AAPI endpoint
+    """
+    logged_in = True
+
+    def __init__(self, host='', port='', endpoint='/automation-api',
+                 aapi_token='', ssl=True, verify_ssl=False,
+                 additional_login_header={}):
+        """
+        Initializes the CtmConnection object and provides the Automation API client.
+
+        :param host: str: Control-M web server host name (preferred fqdn) serving the Automation API.
+                               Could be a load balancer or API Gateway
+        :param port: str: Control-M web server port serving the Automation API.
+        :param endpoint: str: The serving point for the AAPI (default='/automation-api')
+        :param ssl: bool: If the web server uses https (default=True)
+        :param user: str: Login user
+        :param password: str: Password for the login user
+        :param verify_ssl: bool: If the web server uses self signed certificates (default=False)
+        :param additionalLoginHeader: dict: login headers to be added to the AAPI headers
+        :return None
+        """
+        #
+        rc = 0
+        configuration = ctm.Configuration()
+        if ssl:
+            configuration.host = 'https://'
+            # Only use verify_ssl = False if the cert is self-signed.
+            configuration.verify_ssl = verify_ssl
+            if not verify_ssl:
+                # This urllib3 function disables warnings when certs are self-signed
+                disable_warnings(InsecureRequestWarning)
+        else:
+            configuration.host = 'http://'
+
+        configuration.host = configuration.host + host + ':' + port + endpoint
+
+        self.api_client = ctm.api_client.ApiClient(configuration=configuration)
+        # self.session_api = controlm_client.api.session_api.SessionApi(api_client=self.api_client)
+        # credentials = controlm_client.models.LoginCredentials(username=user, password=password)
+
+        if additional_login_header is not None:
+            for header in additional_login_header.keys():
+                self.api_client.set_default_header(header, additional_login_header[header])
+
+        try:
+            #api_token = self.session_api.do_login(body=credentials)
+            self.api_client.default_headers.setdefault('x-api-key', aapi_token)
+            self.logged_in = True
+            pass
+        except (NewConnectionError, MaxRetryError, ctm.rest.ApiException) as aapi_error:
+            print("Some connection error occurred: " + str(aapi_error))
+            sys.exit(42)
+
+############################################################
+# END OF  AAPI Connection
+############################################################
+
+############################################################
+# Kafka loop
+############################################################
+
+def basic_consume_loop(conf, topics, action="file", job_duration=10, cycle_time=5):
     '''
     basic loop for the consumer
     '''
         # Set start time
     start_time = time()
 
-    retcode = 0
+    rc = 0
     msg_number = 0
     running = True
 
@@ -77,10 +152,12 @@ def basic_consume_loop(topics, action="file", job_duration=10, cycle_time=5):
 
         # loop on the messages
         while running:
-            # if there are no messages timeout is 1 second
+            # if there are no messages, rety in 1 second
             msg = consumer.poll(timeout=1.0)
             # if no messages
             if msg is None:
+                # start_time is in seconds
+                # Job duration is in seconds
                 if get_out_time(start_time,job_duration):
                     # comment next shutdown line to read again (endless loop?)
                     #   or leave uncommented to exit the loop and the program
@@ -100,13 +177,13 @@ def basic_consume_loop(topics, action="file", job_duration=10, cycle_time=5):
                     print(f"INFO: Topic: {msg.topic()} Partition: {msg.partition()} reached end at offset {msg.offset()}")
                 elif msg.error().code() == KafkaError.UNKNOWN_TOPIC_OR_PART:
                     # Topic is not available
-                    retcode = 5
+                    rc = 5
                     print(f"ERROR: Topic {msg.topic()} or partition {msg.partition()} is not available to read or does not exist.")
-                    print(f"Extiting with rc={retcode}.")
+                    print(f"Extiting with rc={rc}.")
                     running = shutdown()
                 elif msg.error():
                     # Unexpected error occured
-                    retcode=6
+                    rc=6
                     print(f"ERROR: Unexpected error {msg.error()} occurred.")
                     running = shutdown()
             else:
@@ -133,10 +210,10 @@ def basic_consume_loop(topics, action="file", job_duration=10, cycle_time=5):
                             msg_2_send = json.loads(msg_decoded)
                         except json.decoder.JSONDecodeError as e:
                             # Should never reach here!
+                            rc=99
                             print(f'THISMESSAGE: Error with the event: {msg_decoded}. Event not sent to Control-M. Exiting.')
                             print( '   The event must a json formatted string that starts with a "{" at the beginning of the string.')
-                            print(f'Error: {e}')
-                            print('Error encountered: exiting')
+                            print(f'ERROR: Error {e} encountered. Exiting with rc={rc}')
                             running=shutdown()
 
                     else:
@@ -154,7 +231,7 @@ def basic_consume_loop(topics, action="file", job_duration=10, cycle_time=5):
         # Close down consumer to commit final offsets.
         consumer.close()
     
-    return retcode
+    return rc
 
 def shutdown():
     '''
@@ -163,14 +240,16 @@ def shutdown():
     shut = False
     return shut
 
+############################################################
+# get_out_time function
+
 def get_out_time(start_time, job_duration):
     '''
     docstring
     '''
     now_time = time()
     get_out = False
-    if now_time > (start_time + job_duration * 60):
-        # print (now_time, start_time + job_duration)
+    if now_time > (start_time + job_duration):
         get_out = True
     return get_out
 
@@ -179,8 +258,7 @@ def msg_process(number,message):
     docstring
     '''
     # Write the message (already string) to a file
-    directory = f"{getenv('USERPROFILE')}\\Downloads"
-    file_name = path.join(directory, f'file_{number}.txt')
+    file_name = path.join("{{file_path}}", f"{{file_name_prefix}}_{{file_name_body}}_{number}.{{file_extension}}")
     with open(file_name, 'w', encoding="utf-8") as file:
         file.write(message)
         print(f'Message number {number} was written to {file_name}')
@@ -192,6 +270,16 @@ def send_evt_2ctm(message):
     '''
     # Send the message to CTM
     # The message is a consumer object and must be string or dict
+
+    ctmcli = { 
+        "ctmhost": "{{ControlMHost}}",
+        "ctmport": "{{ControlMPort}}",
+        "ctmtoken": "{{ControlMToken}}",
+        "ctmssl": True,
+        "ctm_verify_ssl": False
+        }
+
+
     if isinstance(message, dict):
         evt = message["event"]
         odate = message["date"]
@@ -199,7 +287,7 @@ def send_evt_2ctm(message):
     else: 
         #Must be strings
         evt, odate, server = message.split(':')
-    
+
     body = {"name": f"{evt}","date": f"{odate}"}
 
     aapi_client = SaaSConnection(host=ctmcli['ctmhost'], port=ctmcli['ctmport'], 
@@ -232,7 +320,7 @@ def loop_duration ():
     return job_duration
 
 def create_new_topics(names: Union[str, list], partitions: int = 1, replication: int = 1):
-    retcode = 0
+    rc = 0
     if isinstance(names, str):
         names = names.split(',')
     new_topics = [NewTopic(name, partitions, replication) for name in names]
@@ -249,13 +337,13 @@ def create_new_topics(names: Union[str, list], partitions: int = 1, replication:
         except KafkaException as e:
             k_e = e.args[ 0 ]
             print(f"Failed to create topic {topic}: {e}")    
-            retcode = 10
+            rc = 10
             if k_e.code() == KafkaError.TOPIC_ALREADY_EXISTS:
                 print(f"Topic '{topic}' already exists, skipping creation.")
             elif k_e.code() == KafkaError.BROKER_NOT_AVAILABLE:
                 print(f"Failed to create topic '{topic}' due to unavailable broker: {e}")
             
-    return retcode
+    return rc
 
 
 def write_messages(messages: Union[str, list], topic):
@@ -281,13 +369,13 @@ def write_messages(messages: Union[str, list], topic):
     conf_admin["error_cb"] = error_cb  # Set the error callback
     producer = Producer(conf_admin)
 
-    retcode = 0
+    rc = 0
     if isinstance(messages, str):
         messages = messages.split(',')
 
     if not topic_exists(admin_client, topic):
-        retcode = 15
-        print(f"Topic '{topic}' does not exist. Cannot produce messages. Exiting with error {retcode}.")
+        rc = 15
+        print(f"Topic '{topic}' does not exist. Cannot produce messages. Exiting with error {rc}.")
         print(f"Create the topic '{topic}' first using the 'create_new_topics' function or ensure it exists.")
     else:
         for message in messages:
@@ -295,9 +383,55 @@ def write_messages(messages: Union[str, list], topic):
                 producer.produce(topic, value=message, callback=delivery_report)
                 producer.poll(0)  # Trigger delivery reports and handle errors
             except KafkaError as e:
-                retcode = 11
+                rc = 11
                 print(f"Error producing message: {e}")
 
         producer.flush()  # Ensure all messages are delivered
             
-    return retcode
+    return rc
+
+
+############################################################
+# MAIN STARTS HERE
+############################################################
+
+if __name__ == "__main__":
+
+    conf_admin = {'bootstrap.servers': '{{bootstrap_server}}:{{bootstrap_port}}'}
+
+    conf = {'bootstrap.servers': '{{bootstrap_server}}:{{bootstrap_port}}'}
+    conf['group.id'] = '{{group_id}}'
+    conf['auto.offset.reset'] = 'smallest'
+
+    #define the topics list
+    topics = "{{topic}}"
+    action = "{{JobAction}}"
+    #  action = "Topic"
+    #  action = "Write"
+    #  action = "Read"
+    #  action = "File"
+
+    if action == "Topic":
+        # Topic: Create a new topic in the Kafka queue
+        retcode = create_new_topics(topics)
+
+    elif action == "Write":
+        # Write: Write a message to the topic
+        messages = "{{Messages}}"
+        retcode = write_messages(messages=messages, topic=topics)
+
+    elif action == "Read" or action == "File":
+        # Read and File are loops
+        retcode = basic_consume_loop(conf=conf, topics=topics, action=action, job_duration={{job_duration}}, cycle_time=5)
+
+        if retcode == 0:
+            print("Event reading cycle completed successfully")
+
+    else:
+        # Should never get here
+        retcode = 13
+        print(f"Action: {action} - Invalid action. Exiting with error {retcode}.")
+
+    sys.exit(retcode)
+
+EOF
