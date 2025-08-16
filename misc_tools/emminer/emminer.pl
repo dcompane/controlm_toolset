@@ -1,23 +1,41 @@
 #!/bin/perl
 #use strict;
 
-# Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
-# documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
-# rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit
-# persons to whom the Software is furnished to do so, subject to the following conditions:
- 
-# The above copyright notice and this permission notice (including the next paragraph) shall be included in all copies or
-# substantial portions of the Software.
- 
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-# WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-# COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-# OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-# https://opensource.org/licenses/MIT
+# BSD 3-Clause License
+# 
+# Copyright (c) 2025, BMC Software, Inc.; Daniel Companeetz
+# All rights reserved.
+# 
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+# 
+# 1. Redistributions of source code must retain the above copyright notice, this
+#    list of conditions and the following disclaimer.
+# 
+# 2. Redistributions in binary form must reproduce the above copyright notice,
+#    this list of conditions and the following disclaimer in the documentation
+#    and/or other materials provided with the distribution.
 
+# 3. Neither the name of the copyright holder nor the names of its
+#    contributors may be used to endorse or promote products derived from
+#    this software without specific prior written permission.
 
-$emminer_version="2.09";             	# used in verifying current version and in displays
-$emminer_version_date="Jun 2024";
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# 
+# SPDX-License-Identifier: BSD-3-Clause
+# For information on SDPX, https://spdx.org/licenses/BSD-3-Clause.html
+
+$emminer_version="2.10";             	# used in verifying current version and in displays
+$emminer_version_date="Aug 2025";
 $emailcontact="nonegiven";  # email address for emminer.pl routine comments/issues
 $thispgm="EMminer";                   	# variable holds the name of this routine
  
@@ -26,6 +44,7 @@ print "\n\n";							# when routine starts, just skip a couple of lines for reada
 print "-----------------------------------------------------\n";
 print "Routine: EMminer\n";
 print "Author: Terry Cannon\n";
+print "Maintainer: Daniel Companeetz\n";
 print "\n";
 print "Version: $emminer_version\n";
 print "Revision date: $emminer_version_date\n";
@@ -58,6 +77,9 @@ print "\n";
 #  
 
 # updates
+#Aug 2025 v2.10
+#           -	(dc) Added report on Agents and app/subapp and hostgroup and type.
+#           -	(dc) Added report on App/Subapp
 #Jun 2024 v2.09
 #           -	(dc) Fixing an issue with Pauser(3355)
 #Feb 2024 v2.08
@@ -620,15 +642,31 @@ sub dbqueries
 	  			putsheet();								# create the excel tab
 		 	}
 	  
-# Agent	  
-	  
-	    $current_sheet="Agent";
-	    $sqlquery1 = "select count(*) ${mycountq1}#Jobs per agent       $mycountq2,$sep01,NODE_ID from DEF_JOB $nolock GROUP BY NODE_ID ORDER BY NODE_ID";
-	    #$sqlquery1 = "select count(*) ${mycountq1}#Jobs per agent       $mycountq2,$sep01,NODE_ID from DEF_JOB $nolock GROUP BY NODE_ID ORDER BY ${mycountq1}#Jobs per agent       $mycountq2 DESC";
-	    $tot_agt_count = dosql(1);						# execute the sql and capture total number of agents
-		#commented out the IP resolution.  If someone wanted it, it could be turned back on
-	    #if ($resolveip) { parseagping();}     			# optionally enrich each row to show the results of a ping
-	    putsheet();										# create the excel tab
+# Agent-Jobs
+
+            $current_sheet="Agent-Jobs";
+            $sqlquery1 = "select count(*) ${mycountq1}#Jobs per agent       $mycountq2,$sep01,NODE_ID from DEF_JOB $nolock GROUP BY NODE_ID ORDER BY NODE_ID";
+            $tot_agt_count = dosql(1);                  # execute the sql and capture total number of agents
+            #commented out the IP resolution.  If someone wanted it, it could be turned back on
+            #if ($resolveip) { parseagping();}  # optionally enrich each row to show the results of a ping
+            putsheet();                         # create the excel tab
+
+# Agents
+
+            $current_sheet="Agents";
+            $sqlquery1  = "select a.NODE_ID Agent, $sep01, a.application App, $sep02, a.group_name SubApp, $sep03, ".
+                          "(case when a.NODE_ID = c.nodeid then c.data_center else b.data_center end) ctm_server, $sep04, ".
+                          "(case when b.GRPNAME = a.NODE_ID then b.appltype else '' end) NodeGrpApp " .
+                          "from DEF_JOB a ".
+                          "left join NODE_GROUP b on a.NODE_ID = b.GRPNAME ".
+                          "left join NODE_ID c on a.NODE_ID = c.nodeid ".
+                          "where a.NODE_ID is not NULL ".
+                          "GROUP BY NODE_ID, a.application, a.group_name, c.nodeid, b.data_center, ".
+                          "c.data_center, b.GRPNAME, b.appltype ORDER BY NODE_ID, b.GRPNAME;";
+
+            $tot_agt_count = dosql(1);  # execute the sql and capture total number of agents
+            putsheet();                         # create the excel tab
+
 	
 # EM Users
 	    $current_sheet="EM Users";
