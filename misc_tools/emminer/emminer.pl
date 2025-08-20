@@ -653,7 +653,7 @@ sub dbqueries
                           "left join NODE_ID c on a.NODE_ID = c.nodeid ".
                           "where a.NODE_ID is not NULL ".
                           "GROUP BY NODE_ID, a.application, a.group_name, c.nodeid, b.data_center, ".
-                          "c.data_center, b.GRPNAME, b.appltype ORDER BY NODE_ID, b.GRPNAME;";
+                          "c.data_center, b.GRPNAME, b.appltype ORDER BY NODE_ID, b.GRPNAME";
 
             $tot_agt_count = dosql(1);  # execute the sql and capture total number of agents
             putsheet();                         # create the excel tab
