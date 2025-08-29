@@ -48,6 +48,78 @@ from requests.exceptions import RequestException
 from urllib3 import disable_warnings
 from urllib3.exceptions import InsecureRequestWarning
 
+
+class AAPIConnection(object):
+    """
+    Implements persistent connectivity for the Control-M Automation API
+    :property api_client Implements the connection to the Control-M AAPI endpoint
+    """
+    logged_in = True
+
+    def __init__(self, host='', port='', endpoint='/automation-api',
+                 aapi_token='', ssl=True, verify_ssl=False,
+                 additional_login_header={}):
+        """
+        Initializes the CtmConnection object and provides the Automation API client.
+
+        :param host: str: Control-M web server host name (preferred fqdn) serving the Automation API.
+                               Could be a load balancer or API Gateway
+        :param port: str: Control-M web server port serving the Automation API.
+        :param endpoint: str: The serving point for the AAPI (default='/automation-api')
+        :param ssl: bool: If the web server uses https (default=True)
+        :param user: str: Login user
+        :param password: str: Password for the login user
+        :param verify_ssl: bool: If the web server uses self signed certificates (default=False)
+        :param additionalLoginHeader: dict: login headers to be added to the AAPI headers
+        :return None
+        """
+        #
+        rc = 0
+        configuration = {}
+        if ssl:
+            self.configuration[host] = 'https://'
+        else:
+            self.configuration[host] = 'http://'
+
+        self.configuration[host] += f'{host}:{port}{endpoint}'
+
+        self.configuration[verify_ssl] = verify_ssl
+
+        self.configuration[headers] = {
+                'x-api-key': f'{aapi_token}',
+                'Accept': 'application/json'
+                }
+
+        for key, value in additional_login_header.items():
+            self.configuration[headers] = {key: value}
+
+        # create an instance of the API class
+        api_client = ctm.ApiClient(configuration)
+        self.api_client = ctm.AutomationApi(api_client=api_client)
+
+    def CallAAPI(self, method="GET", AAPIClient=None, service=None, body=None, headers=None):
+        """
+        Calls the Control-M Automation API
+        :param method: str: The method to be called
+        :param body: dict: The body of the request
+        :param headers: dict: The headers of the request
+        :return: dict: The response from the API
+        """
+        # create an instance of the API class
+        api_instance = AAPIClient(self.api_client)
+        try:
+            if body is None:
+                api_response, status_code, api_headers = getattr(api_instance, method)().to_dict()
+            else:
+                api_response, status_code, api_headers = getattr(api_instance, method)(body=body).to_dict()
+        except ctm.rest.ApiException as e:
+            print("Exception when calling AutomationApi->%s: %s\n" % (method, e))
+            raise SystemExit(e) from e
+
+        return api_response
+        
+
+
 if __name__ == "__main__":
 
     disable_warnings(InsecureRequestWarning)
