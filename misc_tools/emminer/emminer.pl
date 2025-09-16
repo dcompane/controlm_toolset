@@ -3592,11 +3592,11 @@ sub getconfig
                    if ($fld eq "dbty:") { $dbtype="$val";  }
                    if ($fld eq "rdir:") { $rptdir="$val";  }
                    if ($fld eq "dbpt:") { $dbport="$val";  }
-                   if ($fld eq "pass:")
-                      {
-                      $empass="$val";
-                      if ($dbtype eq "P") { $ENV{PGPASSWORD} = "$empass"; }
-                      }
+                   # if ($fld eq "pass:")
+                   #    {
+                   #    $empass="$val";
+                   #    if ($dbtype eq "P") { $ENV{PGPASSWORD} = "$empass"; }
+                   #    }
                    if ($fld eq "dbnm:") { $dbname="$val";  }
                   }
              close CONFIG;
@@ -3826,7 +3826,7 @@ sub updconfig
       print CONFIG "dbnm:$dbname\n";
       print CONFIG "emvr:$emver\n";
       print CONFIG "dbpt:$dbport\n";
-      print CONFIG "pass:$empass\n";
+      # print CONFIG "pass:$empass\n";
       close CONFIG;
 }
 
