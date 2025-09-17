@@ -1,4 +1,5 @@
 .gitignore
+private
 PAKAI*
 .git
 .vscode

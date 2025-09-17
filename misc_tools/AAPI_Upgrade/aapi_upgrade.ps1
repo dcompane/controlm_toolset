@@ -37,33 +37,58 @@ param ([int] $myversion=9, [int] $myrelease=20, [int] $fix)
 #NOTE: Do not forget to change the versions
 
 # Comment next line if no debug information is required
-Set-PSDebug -Trace 1
+# Set-PSDebug -Trace 1
+Set-PSDebug -Trace 0
 
+<<<<<<< Updated upstream
 #From <https://www.red-gate.com/simple-talk/sysadmin/powershell/how-to-use-parameters-in-powershell/>
 param ( $myversion, [int] $myrelease, [int] $fix)
 
 # This is to run as see if the user isLocalAdmin
+=======
+# This will check if there is an upgrade to be made.
+# Allows to run the script under the emuser to automate the AAPI update.
+$hostname = hostname
+$version = Invoke-WebRequest -Uri "https://$(hostname):8443/automation-api/build_time.txt"  -SkipCertificateCheck
+$build = [version]$version.content.Substring(17)
+$version = Invoke-WebRequest -Uri "https://controlm-appdev.s3.us-west-2.amazonaws.com/release/latest/version.txt"  -SkipCertificateCheck
+$latest = [version]$version.content.trimend()
+write-host "Current version: $build"
+write-host "Latest version: $latest"
+if ($build -ge $latest) {
+    write-host "Nothing to do. Latest version less or equal to current. Exiting (rc=98)."
+    Set-PSDebug -Trace 0
+    exit 98
+} else {
+# param ($version='9', $release='20', $fix)
+    $version = [int]$latest.Major
+    $release = [int]$latest.Minor
+    $fix = [int]$latest.Build
+}
+
+
+# This is to run as see if the user isLocalAdmin in Windows
+>>>>>>> Stashed changes
 If($isWindows) {
-    $outpath = $env:TEMP+"\padev_current.exe"
+    $outpath = $env:TEMP+"padev_current.exe"
     $thisOS = "Windows"
-    $thisArch="windows_x86_64"
+    $thisArch="Windows_x86_64"
     $thisExt=".exe"
     $currentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
     if(-Not $currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
-        write-host "This needs to be executed by an administrator. Exiting (rc=99)."
+        write-host This needs to be executed by an administrator. Exiting (rc=99).
         exit 99
     }
-} elseif ($isLinux) {
-    #No validation if Linux. Assumes it is the EM User
+}
+
+If($isLinux) {
     $outpath = "/tmp/padev_current.exe"
     $thisOS = "Unix"
     $thisArch="Linux-x86_64"
     $thisExt="_INSTALL.BIN"
-} else {
-    #it is not Windows nor Linux. Exit with error
-    exit 98
 }
 
+<<<<<<< Updated upstream
 if ($null -eq $fix -and $myversion -ne "latest") {
     write-host "Please enter a fix pack. Assuming $myversion.$myrelease. Exiting (rc=42)."
     exit 42
@@ -83,6 +108,21 @@ if ($null -eq $fix -and $myversion -ne "latest") {
     $file_to_download="PADEV."+$fileversion+"_"+$thisArch+$thisExt
     $url = "https://controlm-appdev.s3-us-west-2.amazonaws.com/release/v"+$dirversion+"/output/"+$thisOS+"/"+$file_to_download
     #https://controlm-appdev.s3-us-west-2.amazonaws.com/release/v9.21.5/output/Windows/PADEV.9.0.20.005_windows_x86_64.exe
+=======
+if ($fix -eq -1) {
+    # if a version.build is not added to the latest it will report -1 (such as 9.22 instead of 9.22.0)
+    write-host "Please enter a fix pack. Assuming $version.$release. Exiting (rc=42)."
+    Set-PSDebug -Trace 0
+    exit 42
+} else {
+    write-host "============================"
+    write-host "============================"
+    write-host "============================"
+    # enclosing in quotes to cast to string
+    $fixpack = "$fix".PadLeft(3,'0')
+    $file_to_download="PADEV.$version.0.$release.$fixpack"+"_"+$thisArch+$thisExt
+    $url = "https://controlm-appdev.s3-us-west-2.amazonaws.com/release/v"+$version+"."+$release+"."+$fix+"/output/"+$thisOS+"/"+$file_to_download
+>>>>>>> Stashed changes
     write-host "Downloading from $url"
     Invoke-WebRequest -Uri $url -OutFile $outpath -SkipCertificateCheck
     write-host "Downloaded from $url"
@@ -90,7 +130,12 @@ if ($null -eq $fix -and $myversion -ne "latest") {
     write-host "Starting installation of $outpath"
     Start-Process -Wait -Filepath "$outpath" -ArgumentList "-s -v"
     write-host "Completed installation of $outpath"
+    <# comments
+        multilines
+        # Start-Process -Filepath "$outpath" -ArgumentList "-s -v" -wait
+    #>
 }
+
 # Debuggone
 Set-PSDebug -Trace 0
 exit 0
