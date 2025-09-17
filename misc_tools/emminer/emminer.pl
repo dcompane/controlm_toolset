@@ -59,29 +59,29 @@ print "\n";
 #
 
 # updates
-#Aug 2025 v2.10
+# Aug 2025 v2.10
 #           -   (dc) Adding Agent-App tab
 #           -   (dc) Adding App-SubApp tab
 #           -   (dc) removed the serialization of the password to the config file.
-#Jun 2024 v2.09
+# Jun 2024 v2.09
 #           -   (dc) Fixing an issue with Pauser(3355)
-#Feb 2024 v2.08
+# Feb 2024 v2.08
 #           -   (dc) added some additional character replacements (search for "# Character replacements") and generic line to remove any non-printable chars (ascii over 127) after the initial replacements
 #                       -       (dc) added $nolock to reports query for standardization (although not really needed)
-#Jan 2024 v2.07
+# Jan 2024 v2.07
 #                       -(jc) Added Reports tab to the workbook which returns Report Name, Description, Last Used Time, Last Update Time and User who created the report.
-#Jan 2024       v2.06
+# Jan 2024       v2.06
 #                       -(jc) Change MSSQL string from "2005 or 2008" to "2005 or greater" (search for "2005 or" to see the line changes)
 #           -(dc) Fixed issue with MSSQL non standard port request syntax (-S $server:$port to -S "$server,$port")
 #
-#Nov 2023       v2.05
+# Nov 2023       v2.05
 #                       -(dc) changed password acceptance behavior to resolve double enter bug
 #
-#feb 2023       v2.04
+# Feb 2023       v2.04
 #                       -(jc) changed CAL by DC sheet to reflect CalType instead of Periodic
 #                       - (jc) added comment to CalType in CAL by DC sheet to note that 0=Regular, 1=Periodic, 2=Rule Based Calendar
 #
-#aug 2020 v2.03
+# aug 2020 v2.03
 #
 # apr 2020  v2.01
 #               -       (tc) added feature that the DBO password doesn't display when being typed

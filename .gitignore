@@ -1,4 +1,7 @@
 .gitignore
+z*
+xx*
+xxctm_python
 private
 PAKAI*
 .git
@@ -16,9 +19,7 @@ tktvars_dco.json
 tktvars.json
 tktvars copy.json
 SNOW ids.txt
-xx*
 Jira
-xxctm_python
 sendAlarmToScript/Python/Helix ITSM/resources/Windows/README.md
 *.ori
 #no push stuf
