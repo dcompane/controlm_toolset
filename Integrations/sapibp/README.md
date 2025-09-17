@@ -1,15 +1,17 @@
 # Control-M SAP IBP plugin
 
+See note on the integrations page related to the Output Rules.
+
 ## Changes on this version
 
-| Date       | Who               | What                                                                                        |
-| ---------- | ----------------- | ------------------------------------------------------------------------------------------- |
-| 2022-01-19 | Daniel Companeetz | First release                                                                               |
-| 2022-02-03 | Daniel Companeetz | First upload with this changelog. Multiple changes since first release.                     |
-| 2022-02-08 | Daniel Companeetz | README.md: Fixed wget for download                                                          |
-| 2022-03-08 | Daniel Companeetz | 1. Change handling of SAPIBP url to add numbers`<br>` 2. Added StartJob script to GitHub. |
-| 2022-03-16 | Daniel Companeetz | Minor updates to README                                                                     |
-| 2022-06-14 | Daniel Companeetz | Minor updates to README                                                                     |
+| Date       | Who               | What                                                                                         |
+| ---------- | ----------------- | -------------------------------------------------------------------------------------------- |
+| 2022-01-19 | Daniel Companeetz | First release                                                                                |
+| 2022-02-03 | Daniel Companeetz | First upload with this changelog. Multiple changes since first release.                      |
+| 2022-02-08 | Daniel Companeetz | README.md: Fixed wget for download                                                           |
+| 2022-03-08 | Daniel Companeetz | 1. Change handling of SAPIBP url to add numbers `<br>` 2. Added StartJob script to GitHub. |
+| 2022-03-16 | Daniel Companeetz | Minor updates to README                                                                      |
+| 2022-06-14 | Daniel Companeetz | Minor updates to README                                                                      |
 
 ## Contributions
 

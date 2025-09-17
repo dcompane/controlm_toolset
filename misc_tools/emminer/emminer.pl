@@ -59,6 +59,10 @@ print "\n";
 #
 
 # updates
+#Aug 2025 v2.10
+#           -   (dc) Adding Agent-App tab
+#           -   (dc) Adding App-SubApp tab
+#           -   (dc) removed the serialization of the password to the config file.
 #Jun 2024 v2.09
 #           -   (dc) Fixing an issue with Pauser(3355)
 #Feb 2024 v2.08
