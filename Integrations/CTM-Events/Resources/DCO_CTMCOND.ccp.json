@@ -1,0 +1,10 @@
+{
+  "DCO_CTMCOND": {
+    "Type": "ConnectionProfile:ApplicationIntegrator:AI ControlM Condition",
+    "AI-API_TOKEN": "*****",
+    "AI-Port": "8443",
+    "AI-Host": "dc01",
+    "Description": "",
+    "Centralized": true
+  }
+}

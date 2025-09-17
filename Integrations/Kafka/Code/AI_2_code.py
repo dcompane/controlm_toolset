@@ -1,5 +1,6 @@
+python -u <<EOF 
 """
-(c) 2020 - 2024 Daniel Companeetz, BMC Software, Inc.
+(c) 2020 - 2025 Daniel Companeetz, BMC Software, Inc.
 All rights reserved.
 
 BSD 3-Clause License
@@ -36,7 +37,7 @@ For information on SDPX, https://spdx.org/licenses/BSD-3-Clause.html
 Change Log
 Date (YMD)    Name                  What
 --------      ------------------    ------------------------
-20241029      Daniel Companeetz     Initial work
+20241029      Daniel Companeetz     Initial work started
 
 """
 
@@ -125,7 +126,13 @@ class SaaSConnection(object):
             print("Some connection error occurred: " + str(aapi_error))
             sys.exit(42)
 
+############################################################
+# END OF  AAPI Connection
+############################################################
 
+############################################################
+# Kafka loop
+############################################################
 
 def basic_consume_loop(conf, topics, action="file", job_duration=10, cycle_time=5):
     '''
@@ -145,10 +152,12 @@ def basic_consume_loop(conf, topics, action="file", job_duration=10, cycle_time=
 
         # loop on the messages
         while running:
-            # if there are no messages timeout is 1 second
+            # if there are no messages, rety in 1 second
             msg = consumer.poll(timeout=1.0)
             # if no messages
             if msg is None:
+                # start_time is in seconds
+                # Job duration is in seconds
                 if get_out_time(start_time,job_duration):
                     # comment next shutdown line to read again (endless loop?)
                     #   or leave uncommented to exit the loop and the program
@@ -209,7 +218,7 @@ def basic_consume_loop(conf, topics, action="file", job_duration=10, cycle_time=
 
                     else:
                         #It's a string!
-                        msg_2_send = msg_decode
+                        msg_2_send = msg_decoded
 
                     send_evt_2ctm(msg_2_send)
                     print("Event sent to CTM")
@@ -231,14 +240,16 @@ def shutdown():
     shut = False
     return shut
 
+############################################################
+# get_out_time function
+
 def get_out_time(start_time, job_duration):
     '''
     docstring
     '''
     now_time = time()
     get_out = False
-    if now_time > (start_time + job_duration * 60):
-        # print (now_time, start_time + job_duration)
+    if now_time > (start_time + job_duration):
         get_out = True
     return get_out
 
@@ -247,8 +258,7 @@ def msg_process(number,message):
     docstring
     '''
     # Write the message (already string) to a file
-    directory = f"{getenv('USERPROFILE')}\\Downloads"
-    file_name = path.join(directory, f'file_{number}.txt')
+    file_name = path.join("{{file_path}}", f"{{file_name_prefix}}_{{file_name_body}}_{number}.{{file_extension}}")
     with open(file_name, 'w', encoding="utf-8") as file:
         file.write(message)
         print(f'Message number {number} was written to {file_name}')
@@ -260,6 +270,16 @@ def send_evt_2ctm(message):
     '''
     # Send the message to CTM
     # The message is a consumer object and must be string or dict
+
+    ctmcli = { 
+        "ctmhost": "{{ControlMHost}}",
+        "ctmport": "{{ControlMPort}}",
+        "ctmtoken": "{{ControlMToken}}",
+        "ctmssl": True,
+        "ctm_verify_ssl": False
+        }
+
+
     if isinstance(message, dict):
         evt = message["event"]
         odate = message["date"]
@@ -267,7 +287,7 @@ def send_evt_2ctm(message):
     else: 
         #Must be strings
         evt, odate, server = message.split(':')
-    
+
     body = {"name": f"{evt}","date": f"{odate}"}
 
     aapi_client = SaaSConnection(host=ctmcli['ctmhost'], port=ctmcli['ctmport'], 
@@ -377,15 +397,15 @@ def write_messages(messages: Union[str, list], topic):
 
 if __name__ == "__main__":
 
-    conf_admin = {'bootstrap.servers': 'dc01:9092'}
+    conf_admin = {'bootstrap.servers': '{{bootstrap_server}}:{{bootstrap_port}}'}
 
-    conf = {'bootstrap.servers': 'dc01:9092'}
-    conf['group.id'] = 'test'
+    conf = {'bootstrap.servers': '{{bootstrap_server}}:{{bootstrap_port}}'}
+    conf['group.id'] = '{{group_id}}'
     conf['auto.offset.reset'] = 'smallest'
 
     #define the topics list
-    topics = "test43456, test42345"
-    action = "Topic"
+    topics = "{{topic}}"
+    action = "{{JobAction}}"
     #  action = "Topic"
     #  action = "Write"
     #  action = "Read"
@@ -397,12 +417,12 @@ if __name__ == "__main__":
 
     elif action == "Write":
         # Write: Write a message to the topic
-        messages = ["test1", "test2"]
+        messages = "{{Messages}}"
         retcode = write_messages(messages=messages, topic=topics)
 
     elif action == "Read" or action == "File":
         # Read and File are loops
-        retcode = basic_consume_loop(conf=conf, topics=topics, action=action, job_duration=300, cycle_time=5)
+        retcode = basic_consume_loop(conf=conf, topics=topics, action=action, job_duration={{job_duration}}, cycle_time=5)
 
         if retcode == 0:
             print("Event reading cycle completed successfully")
@@ -413,3 +433,5 @@ if __name__ == "__main__":
         print(f"Action: {action} - Invalid action. Exiting with error {retcode}.")
 
     sys.exit(retcode)
+
+EOF

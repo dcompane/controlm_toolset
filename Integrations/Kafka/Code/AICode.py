@@ -45,34 +45,29 @@ from os import path
 from os import getenv
 import sys
 import json
-from typing import Union
-from confluent_kafka.admin import AdminClient, NewTopic
-from confluent_kafka import Producer, Consumer
 from confluent_kafka import KafkaError, KafkaException
-
-from consumer_platform import conf, conf_admin
 
 import controlm_py as ctm
 from controlm_py.rest import ApiException
-from aapi_conn import SaaSConnection
+# from aapi_conn import SaaSConnection
 
 #Import AAPI connection parameters
-from ctm_platform import ctmcli
+#from ctm_platform import ctmcli
 
-def basic_consume_loop(topics, action="file", job_duration=10, cycle_time=5):
+def basic_consume_loop(consumer, topics, action="file", job_duration=10, cycle_time=5):
     '''
     basic loop for the consumer
     '''
         # Set start time
     start_time = time()
+    print(f"Job duration is {{job_duration}} seconds")
 
-    retcode = 0
     msg_number = 0
     running = True
+    file_list=[]
 
     try:
         # Subscribe to the topic
-        consumer = Consumer(conf)
         consumer.subscribe(topics)
 
         # loop on the messages
@@ -81,7 +76,7 @@ def basic_consume_loop(topics, action="file", job_duration=10, cycle_time=5):
             msg = consumer.poll(timeout=1.0)
             # if no messages
             if msg is None:
-                if get_out_time(start_time,job_duration):
+                if get_out_time(start_time, job_duration):
                     # comment next shutdown line to read again (endless loop?)
                     #   or leave uncommented to exit the loop and the program
                     print(f'No messages available in topic {topics} . ' +
@@ -97,18 +92,12 @@ def basic_consume_loop(topics, action="file", job_duration=10, cycle_time=5):
                 # End of Partition message is ok. Just record it and continue
                 if msg.error().code() == KafkaError._PARTITION_EOF:
                     # End of partition event
-                    print(f"INFO: Topic: {msg.topic()} Partition: {msg.partition()} reached end at offset {msg.offset()}")
-                elif msg.error().code() == KafkaError.UNKNOWN_TOPIC_OR_PART:
-                    # Topic is not available
-                    retcode = 5
-                    print(f"ERROR: Topic {msg.topic()} or partition {msg.partition()} is not available to read or does not exist.")
-                    print(f"Extiting with rc={retcode}.")
-                    running = shutdown()
+                    #sys.stderr.write('%% %s [%d] reached end at offset %d\n' %
+                    #                 (msg.topic(), msg.partition(), msg.offset()))
+                    sys.stderr.write(f"% {msg.topic()} {msg.partition()} reached end at offset {msg.offset()}\n")
                 elif msg.error():
                     # Unexpected error occured
-                    retcode=6
-                    print(f"ERROR: Unexpected error {msg.error()} occurred.")
-                    running = shutdown()
+                    raise KafkaException(msg.error())
             else:
                 # there is at least one message
                 msg_number += 1
@@ -118,14 +107,14 @@ def basic_consume_loop(topics, action="file", job_duration=10, cycle_time=5):
                 # The message is a consumer object
                 msg_decoded = msg.value().decode('UTF-8')
 
-                # Action to be performed
-                # File: Write a message to a file
+                # FILE procedure starts
                 if action == "File":
                     # Write the message to a file
-                    msg_process(msg_number,msg_decoded)
+                    file_sent = msg_process(msg_number,msg_decoded)
+                    file_list.append(file_sent)
                     print("File created")
 
-                # Read: Read the topic and post anything that comes as an event
+                # READ procedure starts
                 elif action == "Read":
                     if msg_decoded[0] == "{":
                         #if the first char is a "{",  it must be a dict
@@ -133,12 +122,9 @@ def basic_consume_loop(topics, action="file", job_duration=10, cycle_time=5):
                             msg_2_send = json.loads(msg_decoded)
                         except json.decoder.JSONDecodeError as e:
                             # Should never reach here!
-                            print(f'THISMESSAGE: Error with the event: {msg_decoded}. Event not sent to Control-M. Exiting.')
-                            print( '   The event must a json formatted string that starts with a "{" at the beginning of the string.')
+                            print(f'Error with the event: {msg_decoded}. Event not sent to Control-M.')
+                            print( '   The event must a json formatted string and start with a "{" at the beginning of the string.')
                             print(f'Error: {e}')
-                            print('Error encountered: exiting')
-                            running=shutdown()
-
                     else:
                         #It's a string!
                         msg_2_send = msg_decoded
@@ -146,15 +132,23 @@ def basic_consume_loop(topics, action="file", job_duration=10, cycle_time=5):
                     send_evt_2ctm(msg_2_send)
                     print("Event sent to CTM")
 
+                # Topic procedure starts
+                elif action == "Topic":
+
+
+
             if get_out_time(start_time, job_duration):
                 print ("Max job duration reached. Exiting. rc=0")
                 running=shutdown()
 
+            continue
+
     finally:
         # Close down consumer to commit final offsets.
         consumer.close()
-    
-    return retcode
+        if action == "File":
+                 print("Files", *file_list, sep =': ')
+
 
 def shutdown():
     '''
@@ -169,22 +163,24 @@ def get_out_time(start_time, job_duration):
     '''
     now_time = time()
     get_out = False
-    if now_time > (start_time + job_duration * 60):
-        # print (now_time, start_time + job_duration)
+    if now_time > start_time + job_duration:
+        #print (now_time, start_time + job_duration)
         get_out = True
     return get_out
 
 def msg_process(number,message):
-    '''
-    docstring
-    '''
-    # Write the message (already string) to a file
-    directory = f"{getenv('USERPROFILE')}\\Downloads"
-    file_name = path.join(directory, f'file_{number}.txt')
-    with open(file_name, 'w', encoding="utf-8") as file:
+    # Write the message to a file
+    # The message is a consumer object
+    #message = message.value().decode('UTF-8')
+    # The text encased in double { } are Control-M Application Integrator parameters. 
+    directory = r'{{file_path}}'
+    file_name = path.join(directory, f'{{file_name_prefix}}_{{file_name_body}}_{number}.{{file_extension}}')
+    with open(file_name, 'w') as file:
         file.write(message)
         print(f'Message number {number} was written to {file_name}')
     file.close()
+
+    return file_name
 
 def send_evt_2ctm(message):
     '''
@@ -202,102 +198,104 @@ def send_evt_2ctm(message):
     
     body = {"name": f"{evt}","date": f"{odate}"}
 
-    aapi_client = SaaSConnection(host=ctmcli['ctmhost'], port=ctmcli['ctmport'], 
-                            aapi_token=ctmcli['ctmtoken'], ssl=ctmcli['ctmssl'], verify_ssl=ctmcli['ctm_verify_ssl'],
+    aapi_client = SaaSConnection(host=f'{{ControlMHost}}', port=f'{{ControlMPort}}', 
+                            aapi_token=f'{{ControlMToken}}', ssl=True, verify_ssl=False,
                             additional_login_header={'Accept': 'application/json'})
 
     run = ctm.api.run_api.RunApi(api_client=aapi_client.api_client)
+    print("Writing event to Control-M")
     run.add_event(body=body, server=server)
     
-def loop_duration ():
-    '''
-    docstring
-    '''
-    #the job duration will be different for the 1st run
-    duration = 0
-    runcount = getenv('RUNCOUNT')
-    if runcount is None or runcount != 0:
-        #the environment variable does not exist (should not be ever the case)
-        #if it is a re-run (not the first run)
-        duration = 15 * 60 
-
-    # max duration is 23:59
-    if duration == 0:
-        job_duration = (23 * 60 + 59) * 60 # 23:59 hours in seconds.
-    else:
-        job_duration = duration
-
-    print(f'Job Duration is set to {job_duration}')
-
-    return job_duration
-
-def create_new_topics(names: Union[str, list], partitions: int = 1, replication: int = 1):
-    retcode = 0
-    if isinstance(names, str):
-        names = names.split(',')
-    new_topics = [NewTopic(name, partitions, replication) for name in names]
-    
-    # Accessing admin create_topics via admin client 
-    client = AdminClient(conf_admin)
-    
-    fs = client.create_topics(new_topics, validate_only=False)
-
-    for topic, f in fs.items():
-        try:
-            f.result()  # The result itself is None
-            print(f"Topic {topic} created")
-        except KafkaException as e:
-            k_e = e.args[ 0 ]
-            print(f"Failed to create topic {topic}: {e}")    
-            retcode = 10
-            if k_e.code() == KafkaError.TOPIC_ALREADY_EXISTS:
-                print(f"Topic '{topic}' already exists, skipping creation.")
-            elif k_e.code() == KafkaError.BROKER_NOT_AVAILABLE:
-                print(f"Failed to create topic '{topic}' due to unavailable broker: {e}")
-            
-    return retcode
+def Create_Topic(TopicName);
 
 
-def write_messages(messages: Union[str, list], topic):
-    """Produce messages to a Kafka topic."""
-    def error_cb(err):
-        """Error callback for Kafka producer."""
-        print(f"Error: {err}")
+import json
+from sys import exit
+from urllib3 import disable_warnings
+from urllib3.exceptions import NewConnectionError, MaxRetryError, InsecureRequestWarning
+from pprint import pprint
 
-    def delivery_report(err, msg):
-        """Delivery report callback for Kafka producer."""
-        if err is not None:
-            print(f"Message delivery failed: {err}")
+#github.com/dcompane/control-py.git
+import controlm_py as controlm_client
+
+class SaaSConnection(object):
+    """
+    Implements persistent connectivity for the Control-M Automation API
+    :property api_client Implements the connection to the Control-M AAPI endpoint
+    """
+    logged_in = True
+
+    def __init__(self, host='', port='', endpoint='/automation-api',
+                 aapi_token='', ssl=True, verify_ssl=False,
+                 additional_login_header={}):
+        """
+        Initializes the CtmConnection object and provides the Automation API client.
+
+        :param host: str: Control-M web server host name (preferred fqdn) serving the Automation API.
+                               Could be a load balancer or API Gateway
+        :param port: str: Control-M web server port serving the Automation API.
+        :param endpoint: str: The serving point for the AAPI (default='/automation-api')
+        :param ssl: bool: If the web server uses https (default=True)
+        :param user: str: Login user
+        :param password: str: Password for the login user
+        :param verify_ssl: bool: If the web server uses self signed certificates (default=False)
+        :param additionalLoginHeader: dict: login headers to be added to the AAPI headers
+        :return None
+        """
+        #
+        configuration = controlm_client.Configuration()
+        if ssl:
+            configuration.host = 'https://'
+            # Only use verify_ssl = False if the cert is self-signed.
+            configuration.verify_ssl = verify_ssl
+            if not verify_ssl:
+                # This urllib3 function disables warnings when certs are self-signed
+                disable_warnings(InsecureRequestWarning)
         else:
-            print(f"Message {msg.value()} delivered to {msg.topic()} [{msg.partition()}] at offset {msg.offset()}")
+            configuration.host = 'http://'
 
-    def topic_exists(admin_client, topic_name):
-        """Checks if a Kafka topic exists."""
-        cluster_metadata = admin_client.list_topics()
-        return topic_name in cluster_metadata.topics
+        configuration.host = configuration.host + host + ':' + port + endpoint
 
-        
-    admin_client = AdminClient(conf_admin)
-    conf_admin["error_cb"] = error_cb  # Set the error callback
-    producer = Producer(conf_admin)
+        self.api_client = controlm_client.api_client.ApiClient(configuration=configuration)
+        # self.session_api = controlm_client.api.session_api.SessionApi(api_client=self.api_client)
+        # credentials = controlm_client.models.LoginCredentials(username=user, password=password)
 
-    retcode = 0
-    if isinstance(messages, str):
-        messages = messages.split(',')
+        if additional_login_header is not None:
+            for header in additional_login_header.keys():
+                self.api_client.set_default_header(header, additional_login_header[header])
 
-    if not topic_exists(admin_client, topic):
-        retcode = 15
-        print(f"Topic '{topic}' does not exist. Cannot produce messages. Exiting with error {retcode}.")
-        print(f"Create the topic '{topic}' first using the 'create_new_topics' function or ensure it exists.")
-    else:
-        for message in messages:
-            try:
-                producer.produce(topic, value=message, callback=delivery_report)
-                producer.poll(0)  # Trigger delivery reports and handle errors
-            except KafkaError as e:
-                retcode = 11
-                print(f"Error producing message: {e}")
+        try:
+            #api_token = self.session_api.do_login(body=credentials)
+            self.api_client.default_headers.setdefault('x-api-key', aapi_token)
+            print(f"Connected to Control-M {host}:{port}")
+            self.logged_in = True
+            pass
+        except (NewConnectionError, MaxRetryError, controlm_client.rest.ApiException) as aapi_error:
+            print("Some connection error occurred: " + str(aapi_error))
+            exit(42)
 
-        producer.flush()  # Ensure all messages are delivered
-            
-    return retcode
+
+########### M A I N  S T A R T S  H E R E ###########
+
+from confluent_kafka import Consumer
+# import consumer_cloud
+# from consumer_platform import conf
+# from consumer_loop_functions import basic_consume_loop
+
+if __name__ == "__main__":
+    #Initialize the consumer object
+
+    conf = {'bootstrap.servers': '{{bootstrap_server}}:{{bootstrap_port}}',
+        'group.id': '{{group_id}}',
+        'auto.offset.reset': 'earliest'
+        }
+
+    consumer = Consumer(conf)
+
+    #define the topics list
+    topics = ["{{topic}}"]
+
+    # invoke the consumer loop[]
+    basic_consume_loop(consumer, topics, action="{{JobAction}}", job_duration={{job_duration}}, cycle_time=5)
+
+    print("Event reading cycle completed successfully") 

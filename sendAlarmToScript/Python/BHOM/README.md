@@ -1,8 +1,4 @@
-# THIS IS WORK IN PROGRES
-# YOU CAN CHECK BUT DO NOT ASK QUESTIONS YET
-
-
-
+# THIS IS WORK IN PROGRES, but it is functional!
 
 # Helix Control-M Alerts to BHOM
 
@@ -27,7 +23,7 @@ Helix Control-M Alerts to BHOM (NO UPDATES HAVE BEEN MADE BELOW HERE)
    ```
 
    Control-M Python Client documentation is available at [https://controlm.github.io/ctm-python-client/](https://controlm.github.io/ctm-python-client/)
-3. Other packages
+2. Other packages
 
    * dotenv
 
