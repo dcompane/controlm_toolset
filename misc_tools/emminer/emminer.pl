@@ -1,23 +1,42 @@
 #!/bin/perl
 #use strict;
 
-# Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
-# documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
-# rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit
-# persons to whom the Software is furnished to do so, subject to the following conditions:
+# BSD 3-Clause License
 
-# The above copyright notice and this permission notice (including the next paragraph) shall be included in all copies or
-# substantial portions of the Software.
+# Copyright (c) 2021, 2025, BMC Software, Inc.; Daniel Companeetz
+# All rights reserved.
 
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-# WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-# COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-# OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-# https://opensource.org/licenses/MIT
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+
+# 1. Redistributions of source code must retain the above copyright notice, this
+#    list of conditions and the following disclaimer.
+
+# 2. Redistributions in binary form must reproduce the above copyright notice,
+#    this list of conditions and the following disclaimer in the documentation
+#    and/or other materials provided with the distribution.
+
+# 3. Neither the name of the copyright holder nor the names of its
+#    contributors may be used to endorse or promote products derived from
+#    this software without specific prior written permission.
+
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+# SPDX-License-Identifier: BSD-3-Clause
+# For information on SDPX, https://spdx.org/licenses/BSD-3-Clause.html
 
 
-$emminer_version="2.10";                # used in verifying current version and in displays
-$emminer_version_date="08 Aug 2025";
+$emminer_version="2.11";                # used in verifying current version and in displays
+$emminer_version_date="09 Sep 2025";
 $emailcontact="nonegiven";  # email address for emminer.pl routine comments/issues
 $thispgm="EMminer";                     # variable holds the name of this routine
 
@@ -59,6 +78,11 @@ print "\n";
 #
 
 # updates
+# Sept 2025 v2.11
+#           -   (dc) Moved Components tab after Datacenters
+#           -   (dc) Moving temp files to the EM temp directory
+#           -   (dc) Cleanup remaining temp files
+#           -   (dc) Updated License to BSD-3-Clause (https://spdx.org/licenses/BSD-3-Clause.html)
 # Aug 2025 v2.10
 #           -   (dc) Adding Agent-App tab
 #           -   (dc) Adding App-SubApp tab
@@ -596,6 +620,17 @@ sub dbqueries
             dosql(1);                                                                           # execute the sql selects
             putsheet();                                                                         # create the excel tab
 
+# Components
+
+            $current_sheet="Components";
+            $sqlquery1 = "select CURRENT_STATE ${mycountq1}Current$mycountq2,$sep01,DESIRED_STATE ${mycountq1}Desired$mycountq2,$sep02,";
+            #$sqlquery1 .= "$mysubstr(PROCESS_NAME,1,25) ${mycountq1}Process$mycountq2,$sep03,$mysubstr(MACHINE_NAME,1,25) ${mycountq1}Machine$mycountq2,$sep04,";
+            $sqlquery1 .= "$mysubstr(MACHINE_NAME,1,25) ${mycountq1}Machine$mycountq2,$sep04,";
+            $sqlquery1 .= "$mysubstr(PROCESS_COMMAND,1,80) ${mycountq1}Command$mycountq2,$sep05,";
+            $sqlquery1 .= "$mysubstr(ADDITIONAL_PARAMS,1,25) ${mycountq1}Additional parms$mycountq2,$sep06,MACHINE_TYPE from CONFREG $nolock";
+            dosql(1);
+            putsheet();
+
 # Jobs in Archive AJF
 
             $current_sheet="Jobs in $Archive{$v8term} AJF";
@@ -615,16 +650,6 @@ sub dbqueries
             parsejobcount();                                                            # parce the returned information
             putsheet();                                                                         # create the excel tab
 
-# Components
-
-            $current_sheet="Components";
-            $sqlquery1 = "select CURRENT_STATE ${mycountq1}Current$mycountq2,$sep01,DESIRED_STATE ${mycountq1}Desired$mycountq2,$sep02,";
-            #$sqlquery1 .= "$mysubstr(PROCESS_NAME,1,25) ${mycountq1}Process$mycountq2,$sep03,$mysubstr(MACHINE_NAME,1,25) ${mycountq1}Machine$mycountq2,$sep04,";
-            $sqlquery1 .= "$mysubstr(MACHINE_NAME,1,25) ${mycountq1}Machine$mycountq2,$sep04,";
-            $sqlquery1 .= "$mysubstr(PROCESS_COMMAND,1,80) ${mycountq1}Command$mycountq2,$sep05,";
-            $sqlquery1 .= "$mysubstr(ADDITIONAL_PARAMS,1,25) ${mycountq1}Additional parms$mycountq2,$sep06,MACHINE_TYPE from CONFREG $nolock";
-            dosql(1);
-            putsheet();
 
 # Job Hist by Day
 
@@ -3811,6 +3836,8 @@ sub Cleanup
                   if (-e "$sqloutfile") {system "$oserase $sqloutfile > $bitbucket";}
                   if (-e "$sqloutfileb") {system "$oserase $sqloutfileb ";}
                   if (-e "$sqlinfile")  {system "$oserase $sqlinfile";}
+                  if (-e "$new")  {system "$oserase $new";}
+                  if (-e "$bitbucket")  {system "$oserase $bitbucket";}
 
         }
 
@@ -4661,7 +4688,8 @@ sub osvars
         # set all OS specific commands to Unix type then reset if this is a Windows OS
 
                 $slash="/";
-                $tempdir="/tmp";            # or /var/tmp?
+                $tempdir="$ENV{EM_HOME}/../tmp";            # ~/ctm_em/../temp
+                # $tempdir="$ENV{USER}/tmp";            # ~/tmp (comment prior and uncomment this if erroring in finding tempdir. adjust as needed (/var/tmp?))
                 $oscopy="cp";
                 $ostype="cat";
                 $osclear="clear";

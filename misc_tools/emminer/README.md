@@ -3,16 +3,20 @@
 - Run this on all your prod and non-prod environments.
 - The XML output can be opened as an MS-Excel worksheet. (use Open with, if needed))
 
-## [1.     Produce the **EMMiner** output for all your EMs]()
+## [Produce the **EMMiner** output for all your EMs]()
 
-1. You can find the EMMiner [here](emminer.pl)
-   1. Run the emminer as the Linux `<emuser>`
-   2. Windows: Run as a user that has access to the Enterprise Manager
-2. You can open the resulting XML file with Excel.
+You can find the EMMiner [here](emminer.pl)
 
-### [Troubleshooting the EMMiner run]()
+1. Run the emminer as the Linux `<emuser>`
+1. Windows: Run as a user that has access to the Enterprise Manager
 
-1. You may need to run the emminer by prefacing it with em
+NOTE: The credentials (user and password) the program asks for are the DBO ones
+
+You can open the resulting XML file with Excel.
+
+## [Troubleshooting the EMMiner run]()
+
+### You may need to run the emminer by prefacing it with em
 
 ```bash
 em ./emminer.pl
@@ -32,7 +36,7 @@ For Windows
 C:\Program Files\BMC Server\Control-M Common\bmcperl\bmcperl_V1>perl c:\Users\dcompane1\Documents\emminer2.08.pl
 ```
 
-2. For Oracle Users: If you receive a database error when connecting to the database, please try using the Oracle Service Name instead of  the database server. The Oracle Service Name can be found in the DBUStatus command.
+### For Oracle Users: If you receive a database error when connecting to the database, please try using the Oracle Service Name instead of  the database server. The Oracle Service Name can be found in the DBUStatus command.
 
 ```vim
 % em DBUStatus
@@ -51,4 +55,6 @@ DB Server Version=19.0.0.0.0
 DB Client Version=18.0.0.0.0
 ```
 
-3. Some files may be written to /tmp. Please check and protect as needed as they may contain confidential information.
+### Security issue (fixed in v2.11)
+
+Some files may be written to /tmp. Please check and protect as needed as they may contain the password in clear text and other information.
