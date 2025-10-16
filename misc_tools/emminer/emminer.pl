@@ -35,8 +35,8 @@
 # For information on SDPX, https://spdx.org/licenses/BSD-3-Clause.html
 
 
-$emminer_version="2.11";                # used in verifying current version and in displays
-$emminer_version_date="09 Sep 2025";
+$emminer_version="2.12";                # used in verifying current version and in displays
+$emminer_version_date="15 Oct 2025";
 $emailcontact="nonegiven";  # email address for emminer.pl routine comments/issues
 $thispgm="EMminer";                     # variable holds the name of this routine
 
@@ -78,6 +78,9 @@ print "\n";
 #
 
 # updates
+# Oct 2025 v2.12
+#           -   (dc) OSQL is deprecated in newer MS-SQLL after 2005. Replaced with SQLCMD and adapted labels
+#           -   (dc) Agents tab would see failures on MS-SQL. Fixed.
 # Sept 2025 v2.11
 #           -   (dc) Moved Components tab after Datacenters
 #           -   (dc) Moving temp files to the EM temp directory
@@ -674,15 +677,15 @@ sub dbqueries
 # Agents
 
             $current_sheet="Agents";
-            $sqlquery1  = "select a.NODE_ID Agent, $sep01, a.application App, $sep02, a.group_name SubApp, $sep03, ".
-                          "(case when a.NODE_ID = c.nodeid then c.data_center else b.data_center end) ctm_server, $sep04, ".
-                          "(case when b.GRPNAME = a.NODE_ID then b.appltype else '' end) NodeGrpApp " .
+            $sqlquery1  = "select a.NODE_ID Agent, $sep01, a.APPLICATION App, $sep02, a.GROUP_NAME SubApp, $sep03, ".
+                          "(case when a.NODE_ID = c.NODEID then c.DATA_CENTER else b.DATA_CENTER end) ctm_server, $sep04, ".
+                          "(case when b.GRPNAME = a.NODE_ID then b.APPLTYPE else '' end) NodeGrpApp " .
                           "from DEF_JOB a ".
                           "left join NODE_GROUP b on a.NODE_ID = b.GRPNAME ".
-                          "left join NODE_ID c on a.NODE_ID = c.nodeid ".
+                          "left join NODE_ID c on a.NODE_ID = c.NODEID ".
                           "where a.NODE_ID is not NULL ".
-                          "GROUP BY NODE_ID, a.application, a.group_name, c.nodeid, b.data_center, ".
-                          "c.data_center, b.GRPNAME, b.appltype ORDER BY NODE_ID, b.GRPNAME";
+                          "GROUP BY NODE_ID, a.APPLICATION, a.GROUP_NAME, c.NODEID, b.DATA_CENTER, ".
+                          "c.DATA_CENTER, b.GRPNAME, b.APPLTYPE ORDER BY NODE_ID, b.GRPNAME";
 
             $tot_agt_count = dosql(1);  # execute the sql and capture total number of agents
             putsheet();                         # create the excel tab
@@ -3702,8 +3705,8 @@ getdbtype:
    if (lc($dbtype) eq "p") {$pdbpointer="-->";$dbabbrev="p";}
    if (lc($dbtype) eq "o") {$odbpointer="-->";$dbabbrev="o";}
 
-   print "    ---> DB type  $mdbpointer m=MSSQL 2000\n";
-   print "                  $edbpointer e=MSSQL 2005 or higher\n";
+   print "    ---> DB type  $mdbpointer m=MSSQL\n";
+   print "                  $edbpointer e=MSSQL up to 2005\n";
    print "                  $sdbpointer s=SYBASE\n";
    print "                  $pdbpointer p=PostgreSQL\n";
    print "                  $odbpointer o=ORACLE\n";
@@ -4435,20 +4438,21 @@ sub initdbclient
   $dosql_count=0;
   $nolock=" with (NOLOCK)";         # have set this to null for now
   $nolock="";
-  if (lc($dbtype) eq  "m") {$dbtypename="MSsql 2000";}
-  elsif (lc($dbtype) eq  "e") {$dbtypename="MSsql 2005 or higher";}
+  if (lc($dbtype) eq  "m") {$dbtypename="MSsql";}
+  elsif (lc($dbtype) eq  "e") {$dbtypename="MSsql up to 2005";}
   elsif (lc($dbtype) eq  "s") {$dbtypename="Sybase";}
   elsif (lc($dbtype) eq  "p") {$dbtypename="PostgreSQL";}
   elsif (lc($dbtype) eq  "o") {$dbtypename="Oracle";}
 
   if (($dbtype eq "M") || ($dbtype eq "S") || ($dbtype eq "E"))     # make needed Sybase/msde/Mssql assignments
     {
-      $sqlcmd = "isql";
+      $sqlcmd = "sqlcmd";
       if ($dbtype eq "E") { $sqlcmd ="osql"; }                  # adjust for msde support of osql
           $origsqlcmd=$sqlcmd;
           if ($dbport ne "")
                   {
-                     $sqlcmd = $origsqlcmd . " -w 9000 -n -U $emuser -P $empass -S \"$server,$dbport\" ";
+					# Original line $sqlcmd = $origsqlcmd . " -w 9000 -N -U $emuser -P $empass -S \"$server,$dbport\" ";
+                    $sqlcmd = $origsqlcmd . " -w 9000 -U $emuser -P $empass -S \"$server,$dbport\" ";
                          print "Since a non-default port was requested, attempting connection with $origsqlcmd -w 9000 -n -Uxxxxxxx -Pxxxxxx -S$server:$dbport\n";
                      print "Paused, hit enter to continue...";
                      $nop=<STDIN>;
@@ -4456,8 +4460,9 @@ sub initdbclient
                   }
           else
               {
-                          $sqlcmd = $origsqlcmd . " -w 9000 -n -U $emuser -P $empass -S $server ";
-                  }
+				  # Original line $sqlcmd = $origsqlcmd . " -w 9000 -N -U $emuser -P $empass -S $server ";
+                $sqlcmd = $origsqlcmd . " -w 9000 -U $emuser -P $empass -S $server ";                 
+				}
 
       $sqlio = "-i $sqlinfile -o $sqloutfile";
       #$calio = "-i $calsql -o $calsqlout";
