@@ -45,7 +45,7 @@ print "\n\n";                                                   # when routine s
 print "-----------------------------------------------------\n";
 print "Routine: EMminer\n";
 print "Author: Terry Cannon\n";
-print "Current manintainer: Daniel Companeetz\n";
+print "Current maintainer: Daniel Companeetz\n";
 print "\n";
 print "Version: $emminer_version\n";
 print "Revision date: $emminer_version_date\n";
