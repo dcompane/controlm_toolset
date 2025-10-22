@@ -56,7 +56,7 @@ Download the new Control-M Zone 1 certificates (depending what you need) from:
 
 ~/sslctm/intCA/certs/ctmchainCA.crt
 
-Import these into your browser or client system to avoid certificate warnings, and use the AddCerts2Stores.ps1 script to add them to Windows CertStore or other cacerts if needed.
+Import these into your browser or client system to avoid certificate warnings, and use the AddCerts2Stores.ps1 script to add them to Windows CertStore or other cacerts if needed. Note that your browser may need to be restarted for it to read the new certs.
 
 > ***NOTE: if you recreate the Root and Intermediate CA, you will need to restart procedures.***
 
