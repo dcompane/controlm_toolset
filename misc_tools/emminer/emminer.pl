@@ -35,8 +35,8 @@
 # For information on SDPX, https://spdx.org/licenses/BSD-3-Clause.html
 
 
-$emminer_version="2.12";                # used in verifying current version and in displays
-$emminer_version_date="15 Oct 2025";
+$emminer_version="2.13";                # used in verifying current version and in displays
+$emminer_version_date="23 Oct 2025";
 $emailcontact="nonegiven";  # email address for emminer.pl routine comments/issues
 $thispgm="EMminer";                     # variable holds the name of this routine
 
@@ -78,6 +78,8 @@ print "\n";
 #
 
 # updates
+# Oct 2025 v2.13
+#           -   (dc) Fix test for $temp directory existence (prior code tested for file existence (-e) rather than directory existence (-d))
 # Oct 2025 v2.12
 #           -   (dc) OSQL is deprecated in newer MS-SQLL after 2005. Replaced with SQLCMD and adapted labels
 #           -   (dc) Agents tab would see failures on MS-SQL. Fixed.
@@ -3598,7 +3600,7 @@ sub getconfig
         {
          if ($debug) {print " --- getconfig routine\n";}
 
-         if (-e "$tempdir")     #verify that a temp directory exist or create it
+         if (-d "$tempdir")     #verify that a temp directory exist or create it
             {
                 #its already there if I take the IF
                 if ($debug) {print "      temp dir $tempdir exist\n";}
