@@ -3608,7 +3608,9 @@ sub getconfig
            else
             {
                 if ($debug) {print "      making needed temp dir --> $tempdir \n";}
-                system "$osmkdir $tempdir > $bitbucket";
+                if ($debug) {print "      $osmkdir -p $tempdir \n";}
+                system "$osmkdir -p $tempdir";
+
             }
 
          if (-e "$configfile")
