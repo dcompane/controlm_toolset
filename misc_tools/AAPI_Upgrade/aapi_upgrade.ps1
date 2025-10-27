@@ -1,4 +1,5 @@
 #! /bin/pwsh
+param ($debug='n', $hostport=8443)
 
 # (c) 2020 - 2022 Daniel Companeetz, BMC Software, Inc.
 # All rights reserved.
@@ -33,17 +34,57 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # For information on SDPX, https://spdx.org/licenses/BSD-3-Clause.html
 
-# Comment next line if no debug information is required
-Set-PSDebug -Trace 1
+#NOTE: Do not forget to change the versions
 
-#From <https://www.red-gate.com/simple-talk/sysadmin/powershell/how-to-use-parameters-in-powershell/>
-param ( $myversion, [int] $myrelease, [int] $fix)
+# Comment second line if no debug information is required
+if ($debug -eq "y") {
+    Set-PSDebug -Trace 1
+} else {
+    Set-PSDebug -Trace 0
+}
+
+$hostname = hostname
+$version = Invoke-WebRequest -Uri "https://$(hostname):$hostport/automation-api/build_time.txt"  -SkipCertificateCheck
+$build = [version]$version.content.Substring(17)
+if ($debug -eq "y") {
+    echo $version
+    echo $version.Content
+    echo $build
+}
+
+$version = Invoke-WebRequest -Uri "https://controlm-appdev.s3.us-west-2.amazonaws.com/release/latest/version.txt"  -SkipCertificateCheck
+$content = [string]$version.Content
+$latest = [version]$content
+if ($debug -eq "y") {
+    echo $version
+    echo $version.Content
+    echo $content
+    echo $latest
+}
+
+if ($build -ge $latest) {
+    write-host "Nothing to do. Latest version less or equal to current. Exiting (rc=98)."
+    write-host "Current version: $build"
+    write-host "Latest version: $latest"
+    Set-PSDebug -Trace 0
+    exit 98
+} else {
+ #   $version = $latest.substring(0, $dot1)
+    write-host "Upgrading. Latest version higher than current."
+    write-host "Current version: $build"
+    write-host "Latest version: $latest"
+}
+
+$version = [int]$latest.Major
+$release = [int]$latest.Minor
+$fix = [int]$latest.Build
 
 # This is to run as see if the user isLocalAdmin
+
 If($isWindows) {
     $outpath = $env:TEMP+"padev_current.exe"
     $thisOS = "Windows"
-    $thisArch="Windows_x86_64"
+    $thisArch="windows_x86_64"
     $thisExt=".exe"
     $currentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
     if(-Not $currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
@@ -57,36 +98,30 @@ If($isLinux) {
     $thisOS = "Unix"
     $thisArch="Linux-x86_64"
     $thisExt="_INSTALL.BIN"
-} else {
-    #it is not Windows nor Linux. Exit with error
-    exit 98
 }
 
-if ($null -eq $fix -and $myversion -ne "latest") {
-    write-host "Please enter a fix pack. Assuming $myversion.$myrelease. Exiting (rc=42)."
+if ($fix -eq $null) {
+    write-host "Please enter a fix pack. Assuming $version.$release. Exiting (rc=42)."
+    Set-PSDebug -Trace 0
     exit 42
 } else {
-    # the URL is also available as latest
-    # https://controlm-appdev.s3.us-west-2.amazonaws.com/release/latest/output/Unix/PADEV.latest_Linux-x86_64_INSTALL.BIN
-    # https://controlm-appdev.s3.us-west-2.amazonaws.com/release/latest/output/Windows/PADEV.latest_windows_x86_64.exe
-    if ($myversion -eq "latest") {
-        $dirversion = "latest"
-        $fileversion = "latest"
-    } else {
-        $fixpack = $fix.PadLeft(3,'0')
-        $dirversion = $myversion+"."+$myrelease+"."+$fix
-        $fileversion = $myversion+".0."+$myrelease+"."+$fixpack
-    }
-    
-    $file_to_download="PADEV."+$fileversion+"_"+$thisArch+$thisExt
-    $url = "https://controlm-appdev.s3-us-west-2.amazonaws.com/release/v"+$dirversion+"/output/"+$thisOS+"/"+$file_to_download
-    #https://controlm-appdev.s3-us-west-2.amazonaws.com/release/v9.21.5/output/Windows/PADEV.9.0.20.005_windows_x86_64.exe
+    write-host "============================"
+    write-host "============================"
+    write-host "============================"
+    $fixpack = "$fix".PadLeft(3,'0')
+    $file_to_download="PADEV.$version.0.$release.$fixpack"+"_"+$thisArch+$thisExt
+    $url = "https://controlm-appdev.s3-us-west-2.amazonaws.com/release/v"+$version+"."+$release+"."+$fix+"/output/"+$thisOS+"/"+$file_to_download
     write-host "Downloading from $url"
     Invoke-WebRequest -Uri $url -OutFile $outpath -SkipCertificateCheck
     write-host "Downloaded from $url"
     chmod 755 $outpath
     write-host "Starting installation of $outpath"
-    Start-Process -Wait -Filepath "$outpath" -ArgumentList "-s -v"
+
+    $option = ""
+    if ($debug -eq "y") {
+        $option = "-v"
+    }
+    Start-Process -Wait -Filepath "$outpath" -ArgumentList "-s $option"
     write-host "Completed installation of $outpath"
     <# comments
         multilines
@@ -94,6 +129,6 @@ if ($null -eq $fix -and $myversion -ne "latest") {
     #>
 }
 
-# Debuggone
+# Debuggone (setting back to 0 just in case)
 Set-PSDebug -Trace 0
 exit 0
