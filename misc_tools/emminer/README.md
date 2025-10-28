@@ -8,7 +8,7 @@
 You can find the EMMiner [here](emminer.pl)
 
 1. Run the emminer as the Linux `<emuser>`
-1. Windows: Run as a user that has access to the Enterprise Manager
+2. Windows: Run as a user that has access to the Enterprise Manager
 
 NOTE: The credentials (user and password) the program asks for are the DBO ones
 
@@ -36,7 +36,11 @@ For Windows
 C:\Program Files\BMC Server\Control-M Common\bmcperl\bmcperl_V1>perl c:\Users\dcompane1\Documents\emminer2.08.pl
 ```
 
-### For Oracle Users: If you receive a database error when connecting to the database, please try using the Oracle Service Name instead of  the database server. The Oracle Service Name can be found in the DBUStatus command.
+### For Oracle Users
+
+If you receive a database error when connecting to the database, please try using the Oracle Service Name instead of  the database server. 
+
+The Oracle Service Name can be found in the DBUStatus command.
 
 ```vim
 % em DBUStatus
