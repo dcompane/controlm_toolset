@@ -620,7 +620,7 @@ sub dbqueries
 
             $current_sheet="Data Centers";
             $sqlquery1 = "select DATA_CENTER,$sep01,PLATFORM,$sep02,CONTROL_M_VER,$sep03,TIME_ZONE,$sep04,CTM_DAILY_TIME,";
-            $sqlquery1 .= "$sep05,CTM_ODATE,$sep06,CTM_HOST_NAME,$sep07,CTM_PORT_NUMBER,$sep08,DESCRIPTION from COMM";
+            $sqlquery1 .= "$sep05,CTM_ODATE,$sep06,CTM_HOST_NAME,$sep07,PROTOCOL,$sep08,CTM_PORT_NUMBER,$sep09,DESCRIPTION from COMM";
             $sqlquery1 .= " $nolock where ENABLED = ${myquote}1$myquote ";
             dosql(1);                                                                           # execute the sql selects
             putsheet();                                                                         # create the excel tab
