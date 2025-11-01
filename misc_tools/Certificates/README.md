@@ -76,4 +76,14 @@ Use script 11.ctm_em_tomcat.sh to create and deploy the certificate store.
 
 ## Zone 2 and 3
 
-This is work in progress
+### Zone 2
+
+Use the scripts 20.ctm_srv_zone2_cert.sh and 21.ctm_srv_keystore.sh22 to create the keystores
+
+Use the 22* scripts to deploy to the Control-M Server, EM server and CTM server local agent.
+
+Note: Technically, the local agent is Zone 3, but who is counting...)
+
+### Zone 3
+
+Work in progress, with the new AAPI approach.

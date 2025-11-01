@@ -33,6 +33,13 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # For information on SDPX, https://spdx.org/licenses/BSD-3-Clause.html
 
+# Change Log
+# Date (YMD)    Name                  What
+# --------      ------------------    ------------------------
+# 20251031      Daniel Companeetz     Initial release
+
+
+
 
 # See https://openssl-ca.readthedocs.io/en/latest/create-the-intermediate-pair.html
 
