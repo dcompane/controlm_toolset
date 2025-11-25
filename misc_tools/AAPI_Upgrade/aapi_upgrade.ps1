@@ -1,5 +1,5 @@
 #! /bin/pwsh
-param ($debug='n', $hostport=8443)
+param ($debug='n')
 
 # (c) 2020 - 2022 Daniel Companeetz, BMC Software, Inc.
 # All rights reserved.
@@ -44,6 +44,7 @@ if ($debug -eq "y") {
 }
 
 $hostname = hostname
+$hostport = 8444
 $version = Invoke-WebRequest -Uri "https://$(hostname):$hostport/automation-api/build_time.txt"  -SkipCertificateCheck
 $build = [version]$version.content.Substring(17)
 if ($debug -eq "y") {
