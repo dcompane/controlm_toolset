@@ -1,32 +1,18 @@
-1. **Create the user database (keyring): use the list keys command**
+**1. Create the user database (keyring): use the list keys command**
 
-```bash
-gpg -k
-```
+**gpg** -k
 
-gpg: /home/ctmagent/.gnupg/trustdb.gpg: trustdb created
+**gpg**: /home/**ctmagent**/.**gnupg**/**trustdb.gpg**: **trustdb** created
 
-1. **Show the database is empty of keys**
+**2. Show the database is empty of keys**
 
 **gpg** -k (list public keys)
 
-1. **List public keys**
+**gpg** -K (list private keys)
 
-**gpg** -**kv**
+**3. Create a key pair (you may use different options for other cyphers or key lengths)**
 
-1. **List private keys**
-
-```bash
-gpg -Kv
-```
-
-**NOTE: Empty responses show nothing in the keyring**
-
-1. **Create a key pair (you may use different options for other cyphers or key lengths)**
-
-```bash
-gpg -v  --pinentry-mode loopback --quick-generate-key ctmagent@dc01 RSA
-```
+**gpg** -v  --**pinentry**-mode loopback --quick-generate-key ctmagent@dc01 RSA
 
 **gpg**: Note: RFC4880bis features are enabled.
 
@@ -76,11 +62,11 @@ gpg -v  --pinentry-mode loopback --quick-generate-key ctmagent@dc01 RSA
 
 **gpg** -**kv**
 
-**gpg: Note: RFC4880bis features are enabled.**
+**gpg**: Note: RFC4880bis features are enabled.
 
-**gpg: using pgp trust model**
+**gpg**: using **pgp** trust model
 
-**/home/ctmagent/.gnupg/pubring.kbx**
+**/home/**ctmagent**/.**gnupg**/**pubring.kbx
 
 **---------------------------------**
 
@@ -88,7 +74,7 @@ gpg -v  --pinentry-mode loopback --quick-generate-key ctmagent@dc01 RSA
 
 **      E7DDFAE0CAD43FC39C27FEC1288CB14B71CF7113**
 
-**uid           [ultimate] ctmagent@dc01**
+**uid**           [ultimate] ctmagent@dc01
 
 **4.2 list private keys**
 
@@ -112,11 +98,11 @@ gpg -v  --pinentry-mode loopback --quick-generate-key ctmagent@dc01 RSA
 
 **Note: always use armored (ascii) format**
 
-**gpg -v -a --export ctmagent@dc01**
+**gpg** -v -a --export ctmagent@dc01
 
-**gpg: Note: RFC4880bis features are enabled.**
+**gpg**: Note: RFC4880bis features are enabled.
 
-**gpg: writing to stdout**
+**gpg**: writing to **stdout**
 
 **-----BEGIN PGP PUBLIC KEY BLOCK-----**
 
@@ -148,35 +134,35 @@ gpg -v  --pinentry-mode loopback --quick-generate-key ctmagent@dc01 RSA
 
 **tBPDcAEMbujEeiGTE32KmOtKlFNaQT3AZzGsO4u2N2FX+Y9Pgn4GIBdUtbL5IVr4**
 
-**J+fatoWGkomcI10xI6u2YYQiO7YTh1GhCCS1R8yM7G/iL0nKa79aTirP//xQBDLU**
+**J+fatoWGkomcI10xI6u2YYQiO7YTh1GhCCS1R8yM7G/iL0nKa79aTirP//**xQBDLU
 
 **ZNXln368Opx+2dGRogSFoTmJxn8ImsFjjIwOEaQ9TYl0O0YbvpOPAAufghEHp+5w**
 
-**a72XowWhlwDWHWIinGwjG+gV56KcJ+cowWua1SsY/zDkQB7+m8gpWh/lRAZHFsQv**
+**a72XowWhlwDWHWIinGwjG+gV56KcJ+cowWua1SsY/zDkQB7+m8gpWh/**lRAZHFsQv
 
 **I/Who7DqzOdXDR3E5hzdDjsbHu7KFNdasARt2jccZHNB7SNmGNWJ6km3In2pljCx**
 
 **9x/e9r3Wvk85Se+Kx4DlrazsRnbxTVtwkGw=**
 
-**=lXEx**
+**=**lXEx
 
 **-----END PGP PUBLIC KEY BLOCK-----**
 
 **6. Import client public key**
 
-**cat DanielCompaneetz_0xE08F3A71_public.asc | gpg -v -a --import --pinentry-mode loopback**
+**cat DanielCompaneetz_0xE08F3A71_public.asc | **gpg** -v -a --import --**pinentry**-mode loopback**
 
 **7. Show the database keys (again)**
 
 **7.1 list public keys**
 
-**gpg -kv**
+**gpg** -**kv**
 
-**gpg: Note: RFC4880bis features are enabled.**
+**gpg**: Note: RFC4880bis features are enabled.
 
-**gpg: using pgp trust model**
+**gpg**: using **pgp** trust model
 
-**/home/ctmagent/.gnupg/pubring.kbx**
+**/home/**ctmagent**/.**gnupg**/**pubring.kbx
 
 **---------------------------------**
 
@@ -184,25 +170,25 @@ gpg -v  --pinentry-mode loopback --quick-generate-key ctmagent@dc01 RSA
 
 **      E7DDFAE0CAD43FC39C27FEC1288CB14B71CF7113**
 
-**uid           [ultimate] ctmagent@dc01**
+**uid**           [ultimate] ctmagent@dc01
 
 **pub**   rsa2048 2020-03-18 [SCA]
 
 **      32E362FD8B8F17818980E72E0C94B052E08F3A71**
 
-**uid           [ unknown] Daniel Companeetz <dcompane@gmail.com>**
+**uid**           [ unknown] Daniel **Companeetz** <dcompane@gmail.com>
 
 **sub   rsa2048 2020-03-18 [E]4.2 list private keys**
 
-**gpg -Kv**
+**gpg** -**Kv**
 
 **Note: No changes in the private Keys**
 
-**gpg: Note: RFC4880bis features are enabled.**
+**gpg**: Note: RFC4880bis features are enabled.
 
-**gpg: using pgp trust model**
+**gpg**: using **pgp** trust model
 
-**/home/ctmagent/.gnupg/pubring.kbx**
+**/home/**ctmagent**/.**gnupg**/**pubring.kbx
 
 **---------------------------------**
 
@@ -210,4 +196,4 @@ gpg -v  --pinentry-mode loopback --quick-generate-key ctmagent@dc01 RSA
 
 **      E7DDFAE0CAD43FC39C27FEC1288CB14B71CF7113**
 
-**uid           [ultimate] ctmagent@dc01**
+**uid**           [ultimate] ctmagent@dc01
