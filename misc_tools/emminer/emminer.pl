@@ -692,6 +692,17 @@ sub dbqueries
             $tot_agt_count = dosql(1);  # execute the sql and capture total number of agents
             putsheet();                         # create the excel tab
 
+# CCP
+
+            $current_sheet="CCP";
+            $sqlquery1  = "SELECT distinct a.name, $sep01, a.type, $sep02, a.sub_type, $sep03, ".
+                          "case when a.sub_type = b.appl_type ".
+		          "then (select count(*) from public.def_job where appl_type = a.sub_type) ".
+                          "else 0 end as Used ".
+                          "FROM public.def_conf_items a left join public.def_job b on a.sub_type=b.appl_type ".
+                          "ORDER BY a.name ASC";
+            dosql(1);               # execute the sql selects
+            putsheet();                         # create the excel tab
 # EM Users
             $current_sheet="EM Users";
             if ($emver ne "6.1.3")                                                      # this query for versions > 6.1.3
