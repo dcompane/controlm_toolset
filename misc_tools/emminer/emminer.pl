@@ -35,8 +35,8 @@
 # For information on SDPX, https://spdx.org/licenses/BSD-3-Clause.html
 
 
-$emminer_version="2.13";                # used in verifying current version and in displays
-$emminer_version_date="23 Oct 2025";
+$emminer_version="2.14";                # used in verifying current version and in displays
+$emminer_version_date="11 Dec 2025";
 $emailcontact="nonegiven";  # email address for emminer.pl routine comments/issues
 $thispgm="EMminer";                     # variable holds the name of this routine
 
@@ -78,6 +78,8 @@ print "\n";
 #
 
 # updates
+# Dec 2025 v2.14
+#           -   (dc) Added CCP tab
 # Oct 2025 v2.13
 #           -   (dc) Fix test for $temp directory existence (prior code tested for file existence (-e) rather than directory existence (-d))
 # Oct 2025 v2.12
