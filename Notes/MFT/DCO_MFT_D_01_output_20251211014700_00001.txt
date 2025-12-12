@@ -1,0 +1,85 @@
++ Job started at '1211 13:47:50:136' orderno - '003sn' runno - '00001' Number of transfers - 2, Job name - 'DCO_MFT_D_01'
++ Host1 'dc01' [Unix-SFTP] username 'ctmagent' - Host2 'localhost' [Unix-Local] username 'ctmagent'
+Local host is dc01
+Connection Profile 'DCO_SSH_ctmagt' is stored in EM database.
+Connection Profile 'DCO_LCL_ctmagt' is stored in EM database.
+
++********** Starting transfer #1 out of 2 **********
+Transfer #1 start time: 13:47:50
+Connection to SFTP server on host dc01 was established
+Connection to Local server on host localhost was established
+Transfer type: BINARY
+Open data connection to retrieve file /home/ctmagent/MFT_Art.txt.asc
+Open data connection to store file /home/ctmagent/MFT_Art.txt.dec
+Transfer #1 transferring
+Src file: '/home/ctmagent/MFT_Art.txt.asc' on host 'dc01'
+Dst file: '/home/ctmagent/MFT_Art.txt.dec' on host 'localhost'
+Transferred:            0   Elapsed:    0 sec   Percent:   0  Status: In Progress
+Transferred:          841   Elapsed:    0 sec   Percent: 100  Status: Ended OK
+Using PGP encryption, with Template Name: DCO_E_ctmem_dc01
+Execute PGP command: /usr/bin/gpg -v --batch -d --passphrase ******** --pinentry-mode loopback -o /home/ctmagent/ctm/cm/AFT/pgp_tmp\
+/PGP_134750496_339_11023109.pgp_aft /home/ctmagent/ctm/cm/AFT/pgp_tmp/PGP_134750494_339_65338705
+gpg: Note: RFC4880bis features are enabled.
+gpg: public key is 1161B9CC728A8E35
+gpg: using subkey 1161B9CC728A8E35 instead of primary key 993AD78C5C97A87C
+gpg: encrypted with rsa3072 key, ID 1161B9CC728A8E35, created 2025-12-11
+      "ctmagent <ctmagent@dc01>"
+gpg: no running gpg-agent - starting '/usr/bin/gpg-agent'
+gpg: waiting for the agent to come up ... (5s)
+gpg: connection to the agent established
+gpg: AES256.OCB encrypted data
+gpg: original file name='MFT_Art.txt'
+File transfer status: Ended OK
+
+Transfer #1 completed successfully
+
+---------- Transfer #1 Summary ----------
+Total transferred files: 1
+Total transferred size: 841.00 Bytes
+Total time: 622 ms
+-----------------------------------------
+
++********** Starting transfer #2 out of 2 **********
+Transfer #2 start time: 13:47:50
+Transfer type: BINARY
+Open data connection to retrieve file /home/ctmagent/MFT_Art.txt_signed.asc
+Open data connection to store file /home/ctmagent/MFT_Art.txt.dec.sig
+Transfer #2 transferring
+Src file: '/home/ctmagent/MFT_Art.txt_signed.asc' on host 'dc01'
+Dst file: '/home/ctmagent/MFT_Art.txt.dec.sig' on host 'localhost'
+Transferred:            0   Elapsed:    0 sec   Percent:   0  Status: In Progress
+Transferred:         1483   Elapsed:    0 sec   Percent: 100  Status: Ended OK
+Using PGP encryption, with Template Name: DCO_EnS_ctmem_dc01
+Execute PGP command: /usr/bin/gpg -v --batch -d --passphrase ******** --pinentry-mode loopback -o /home/ctmagent/ctm/cm/AFT/pgp_tmp\
+/PGP_134750771_339_23603758.pgp_aft /home/ctmagent/ctm/cm/AFT/pgp_tmp/PGP_134750766_339_87956064
+gpg: Note: RFC4880bis features are enabled.
+gpg: public key is 1161B9CC728A8E35
+gpg: using subkey 1161B9CC728A8E35 instead of primary key 993AD78C5C97A87C
+gpg: encrypted with rsa3072 key, ID 1161B9CC728A8E35, created 2025-12-11
+      "ctmagent <ctmagent@dc01>"
+gpg: AES256.OCB encrypted data
+gpg: original file name='MFT_Art.txt'
+gpg: Signature made Thu 11 Dec 2025 01:47:48 PM PST
+gpg:                using RSA key BDBDF06186EE4D1AFEDA6D9807E78D30D88AB58C
+gpg:                issuer "ctmem@dc01"
+gpg: using pgp trust model
+gpg: Good signature from "ctmem <ctmem@dc01>" [unknown]
+gpg: checking User ID "ctmem@dc01"
+gpg: WARNING: The key's User ID is not certified with a trusted signature!
+gpg:          There is no indication that the signature belongs to the owner.
+Primary key fingerprint: BDBD F061 86EE 4D1A FEDA  6D98 07E7 8D30 D88A B58C
+gpg: binary signature, digest algorithm SHA512, key algorithm rsa3072
+File transfer status: Ended OK
+
+Transfer #2 completed successfully
+
+---------- Transfer #2 Summary ----------
+Total transferred files: 1
+Total transferred size: 1.45 KB
+Total time: 258 ms
+-----------------------------------------
+
+Job executed successfully. Exiting.
+
+Job ended at '1211 13:47:51:018'
+Elapsed time [882 ms]

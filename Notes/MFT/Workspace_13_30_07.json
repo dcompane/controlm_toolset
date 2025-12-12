@@ -1,0 +1,320 @@
+{
+  "DCO_MFT_PGP" : {
+    "Type" : "Folder",
+    "ControlmServer" : "dc01",
+    "OrderMethod" : "Manual",
+    "ActiveRetentionPolicy" : "CleanEndedOK",
+    "SubApplication" : "DCO_MFT",
+    "CreatedBy" : "emuser",
+    "Application" : "DCO",
+    "When" : {
+      "RuleBasedCalendars" : {
+        "Included" : [ "EVERYDAY" ],
+        "EVERYDAY" : {
+          "Type" : "Calendar:RuleBased",
+          "When" : {
+            "DaysRelation" : "OR",
+            "WeekDays" : [ "NONE" ],
+            "MonthDays" : [ "ALL" ]
+          }
+        }
+      }
+    },
+    "DCO_MFT_D_01" : {
+      "Type" : "Job:FileTransfer",
+      "ConnectionProfileSrc" : "DCO_SSH_ctmagt",
+      "ConnectionProfileDest" : "DCO_LCL_ctmagt",
+      "SubApplication" : "DCO_MFT",
+      "Host" : "dc01-ctmagent",
+      "RunAs" : "DCO_SSH_ctmagt+DCO_LCL_ctmagt",
+      "CreatedBy" : "emuser",
+      "Application" : "DCO",
+      "Variables" : [ {
+        "FTP-LOSTYPE" : "Unix"
+      }, {
+        "FTP-CONNTYPE1" : "SFTP"
+      }, {
+        "FTP-LHOST" : "dc01"
+      }, {
+        "FTP-LUSER" : "ctmagent"
+      }, {
+        "FTP-HOMEDIR1" : "/home/ctmagent/"
+      }, {
+        "FTP-ROSTYPE" : "Unix"
+      }, {
+        "FTP-CONNTYPE2" : "File System"
+      }, {
+        "FTP-RHOST" : "<Agent Host>"
+      }, {
+        "FTP-RUSER" : "ctmagent"
+      }, {
+        "FTP-CM_VER" : "9.0.21.300"
+      }, {
+        "FTP-COMPRESSION11" : "0"
+      }, {
+        "FTP-COMPRESSION21" : "0"
+      }, {
+        "FTP-OVERRIDE_WATCH_INTERVAL1" : "0"
+      }, {
+        "FTP-POSTCMD_ON_FAILURE1" : "0"
+      }, {
+        "FTP-SYNC_DIR_NO_DEL1" : "0"
+      }, {
+        "FTP-COMPRESSION12" : "0"
+      }, {
+        "FTP-COMPRESSION22" : "0"
+      }, {
+        "FTP-OVERRIDE_WATCH_INTERVAL2" : "0"
+      }, {
+        "FTP-POSTCMD_ON_FAILURE2" : "0"
+      }, {
+        "FTP-SYNC_DIR_NO_DEL2" : "0"
+      } ],
+      "FileTransfers" : [ {
+        "TransferType" : "Binary",
+        "TransferOption" : "SrcToDest",
+        "Src" : "/home/ctmagent/MFT_Art.txt.asc",
+        "Dest" : "/home/ctmagent/MFT_Art.txt.dec",
+        "SRC_PATTERN" : "Wildcard",
+        "ABSTIME" : "0",
+        "TIMELIMIT" : "0",
+        "UNIQUE" : "0",
+        "SRCOPT" : "0",
+        "IF_EXIST" : "0",
+        "DSTOPT" : "0",
+        "ContinueOnFailure" : false,
+        "DeleteFileOnDestIfFails" : false,
+        "FailJobOnDestActionFailure" : false,
+        "FailJobOnSourceCommandFailure" : false,
+        "FailJobOnDestCommandFailure" : false,
+        "RECURSIVE" : "0",
+        "EXCLUDE_WILDCARD" : "0",
+        "TRIM" : "1",
+        "NULLFLDS" : "0",
+        "VERNUM" : "0",
+        "CASEIFS" : "0",
+        "PgpEncryption" : {
+          "PgpEnabled" : true,
+          "KeepEncryptedFiles" : false,
+          "PgpTemplateName" : "DCO_E_ctmem_dc01"
+        },
+        "FileWatcherOptions" : {
+          "MinDetectedSizeInBytes" : "0",
+          "UnitsOfTimeLimit" : "Minutes",
+          "SkipToNextFileIfCriteriaNotMatch" : false
+        },
+        "IncrementalTransfer" : {
+          "IncrementalTransferEnabled" : false,
+          "MaxModificationAgeForFirstRunEnabled" : false,
+          "MaxModificationAgeForFirstRunInHours" : "1"
+        },
+        "SimultaneousTransfer" : {
+          "TransferMultipleFilesSimultaneously" : false
+        }
+      }, {
+        "TransferType" : "Binary",
+        "TransferOption" : "SrcToDest",
+        "Src" : "/home/ctmagent/MFT_Art.txt_signed.asc",
+        "Dest" : "/home/ctmagent/MFT_Art.txt.dec.sig",
+        "SRC_PATTERN" : "Wildcard",
+        "ABSTIME" : "0",
+        "TIMELIMIT" : "0",
+        "UNIQUE" : "0",
+        "SRCOPT" : "0",
+        "IF_EXIST" : "0",
+        "DSTOPT" : "0",
+        "ContinueOnFailure" : false,
+        "DeleteFileOnDestIfFails" : false,
+        "FailJobOnDestActionFailure" : false,
+        "FailJobOnSourceCommandFailure" : false,
+        "FailJobOnDestCommandFailure" : false,
+        "RECURSIVE" : "0",
+        "EXCLUDE_WILDCARD" : "0",
+        "TRIM" : "1",
+        "NULLFLDS" : "0",
+        "VERNUM" : "0",
+        "CASEIFS" : "0",
+        "PgpEncryption" : {
+          "PgpEnabled" : true,
+          "KeepEncryptedFiles" : false,
+          "PgpTemplateName" : "DCO_EnS_ctmem_dc01"
+        },
+        "FileWatcherOptions" : {
+          "MinDetectedSizeInBytes" : "0",
+          "UnitsOfTimeLimit" : "Minutes",
+          "SkipToNextFileIfCriteriaNotMatch" : false
+        },
+        "IncrementalTransfer" : {
+          "IncrementalTransferEnabled" : false,
+          "MaxModificationAgeForFirstRunEnabled" : false,
+          "MaxModificationAgeForFirstRunInHours" : "1"
+        },
+        "SimultaneousTransfer" : {
+          "TransferMultipleFilesSimultaneously" : false
+        }
+      } ],
+      "When" : {
+        "WeekDays" : [ "NONE" ],
+        "MonthDays" : [ "ALL" ],
+        "DaysRelation" : "OR"
+      },
+      "eventsToWaitFor" : {
+        "Type" : "WaitForEvents",
+        "Events" : [ {
+          "Event" : "DCO_MFT_E_01-TO-DCO_MFT_E_02"
+        } ]
+      },
+      "eventsToDelete" : {
+        "Type" : "DeleteEvents",
+        "Events" : [ {
+          "Event" : "DCO_MFT_E_01-TO-DCO_MFT_E_02"
+        } ]
+      }
+    },
+    "DCO_MFT_E_01" : {
+      "Type" : "Job:FileTransfer",
+      "ConnectionProfileSrc" : "DCO_LCL_ctmem",
+      "ConnectionProfileDest" : "DCO_SSH_ctmagt",
+      "SubApplication" : "DCO_MFT",
+      "Host" : "dc01",
+      "RunAs" : "DCO_LCL_ctmem+DCO_SSH_ctmagt",
+      "CreatedBy" : "emuser",
+      "Application" : "DCO",
+      "Variables" : [ {
+        "FTP-LOSTYPE" : "Unix"
+      }, {
+        "FTP-CONNTYPE1" : "File System"
+      }, {
+        "FTP-LHOST" : "<Agent Host>"
+      }, {
+        "FTP-LUSER" : "ctmem"
+      }, {
+        "FTP-ROSTYPE" : "Unix"
+      }, {
+        "FTP-CONNTYPE2" : "SFTP"
+      }, {
+        "FTP-RHOST" : "dc01"
+      }, {
+        "FTP-RUSER" : "ctmagent"
+      }, {
+        "FTP-HOMEDIR2" : "/home/ctmagent/"
+      }, {
+        "FTP-CM_VER" : "9.0.21.300"
+      }, {
+        "FTP-COMPRESSION11" : "0"
+      }, {
+        "FTP-COMPRESSION21" : "0"
+      }, {
+        "FTP-OVERRIDE_WATCH_INTERVAL1" : "0"
+      }, {
+        "FTP-POSTCMD_ON_FAILURE1" : "0"
+      }, {
+        "FTP-SYNC_DIR_NO_DEL1" : "0"
+      }, {
+        "FTP-COMPRESSION12" : "0"
+      }, {
+        "FTP-COMPRESSION22" : "0"
+      }, {
+        "FTP-OVERRIDE_WATCH_INTERVAL2" : "0"
+      }, {
+        "FTP-POSTCMD_ON_FAILURE2" : "0"
+      }, {
+        "FTP-SYNC_DIR_NO_DEL2" : "0"
+      } ],
+      "FileTransfers" : [ {
+        "TransferType" : "Binary",
+        "TransferOption" : "SrcToDest",
+        "Src" : "/home/ctmem/MFT_Art.txt",
+        "Dest" : "/home/ctmagent/MFT_Art.txt.asc",
+        "SRC_PATTERN" : "Wildcard",
+        "ABSTIME" : "0",
+        "TIMELIMIT" : "0",
+        "UNIQUE" : "0",
+        "SRCOPT" : "0",
+        "IF_EXIST" : "0",
+        "DSTOPT" : "0",
+        "ContinueOnFailure" : false,
+        "DeleteFileOnDestIfFails" : false,
+        "FailJobOnDestActionFailure" : false,
+        "FailJobOnSourceCommandFailure" : false,
+        "FailJobOnDestCommandFailure" : false,
+        "RECURSIVE" : "0",
+        "EXCLUDE_WILDCARD" : "0",
+        "TRIM" : "1",
+        "NULLFLDS" : "0",
+        "VERNUM" : "0",
+        "CASEIFS" : "0",
+        "PgpEncryption" : {
+          "PgpEnabled" : true,
+          "KeepEncryptedFiles" : false,
+          "PgpTemplateName" : "DCO_E_ctmagent_dc01"
+        },
+        "FileWatcherOptions" : {
+          "MinDetectedSizeInBytes" : "0",
+          "UnitsOfTimeLimit" : "Minutes",
+          "SkipToNextFileIfCriteriaNotMatch" : false
+        },
+        "IncrementalTransfer" : {
+          "IncrementalTransferEnabled" : false,
+          "MaxModificationAgeForFirstRunEnabled" : false,
+          "MaxModificationAgeForFirstRunInHours" : "1"
+        },
+        "SimultaneousTransfer" : {
+          "TransferMultipleFilesSimultaneously" : false
+        }
+      }, {
+        "TransferType" : "Binary",
+        "TransferOption" : "SrcToDest",
+        "Src" : "/home/ctmem/MFT_Art.txt",
+        "Dest" : "/home/ctmagent/MFT_Art.txt_signed.asc",
+        "SRC_PATTERN" : "Wildcard",
+        "ABSTIME" : "0",
+        "TIMELIMIT" : "0",
+        "UNIQUE" : "0",
+        "SRCOPT" : "0",
+        "IF_EXIST" : "0",
+        "DSTOPT" : "0",
+        "ContinueOnFailure" : false,
+        "DeleteFileOnDestIfFails" : false,
+        "FailJobOnDestActionFailure" : false,
+        "FailJobOnSourceCommandFailure" : false,
+        "FailJobOnDestCommandFailure" : false,
+        "RECURSIVE" : "0",
+        "EXCLUDE_WILDCARD" : "0",
+        "TRIM" : "1",
+        "NULLFLDS" : "0",
+        "VERNUM" : "0",
+        "CASEIFS" : "0",
+        "PgpEncryption" : {
+          "PgpEnabled" : true,
+          "KeepEncryptedFiles" : false,
+          "PgpTemplateName" : "DCO_EnS_ctmagent_dc01"
+        },
+        "FileWatcherOptions" : {
+          "MinDetectedSizeInBytes" : "0",
+          "UnitsOfTimeLimit" : "Minutes",
+          "SkipToNextFileIfCriteriaNotMatch" : false
+        },
+        "IncrementalTransfer" : {
+          "IncrementalTransferEnabled" : false,
+          "MaxModificationAgeForFirstRunEnabled" : false,
+          "MaxModificationAgeForFirstRunInHours" : "1"
+        },
+        "SimultaneousTransfer" : {
+          "TransferMultipleFilesSimultaneously" : false
+        }
+      } ],
+      "When" : {
+        "WeekDays" : [ "NONE" ],
+        "MonthDays" : [ "ALL" ],
+        "DaysRelation" : "OR"
+      },
+      "eventsToAdd" : {
+        "Type" : "AddEvents",
+        "Events" : [ {
+          "Event" : "DCO_MFT_E_01-TO-DCO_MFT_E_02"
+        } ]
+      }
+    }
+  }
+}

@@ -1,0 +1,52 @@
+ctm deploy connectionprofiles:centralized::get -s "type=FileTransfer&name=DCO_LCL*,DCO_SSH*"
+{
+  "DCO_LCL_ctmagt": {
+    "Type": "ConnectionProfile:FileTransfer:Local",
+    "VerifyBytes": true,
+    "User": "ctmagent",
+    "Password": "*****",
+    "Description": "",
+    "Centralized": true
+  },
+  "DCO_LCL_ctmem": {
+    "Type": "ConnectionProfile:FileTransfer:Local",
+    "VerifyBytes": true,
+    "User": "ctmem",
+    "Password": "*****",
+    "Description": "",
+    "Centralized": true
+  },
+  "DCO_SSH_ctmagt": {
+    "Type": "ConnectionProfile:FileTransfer:SFTP",
+    "VerifyBytes": true,
+    "SSHCompression": true,
+    "User": "ctmagent",
+    "HostName": "dc01",
+    "HomeDirectory": "/home/ctmagent/",
+    "Password": "*****",
+    "Description": "",
+    "Centralized": true
+  },
+  "DCO_SSH_ctmem": {
+    "Type": "ConnectionProfile:FileTransfer:SFTP",
+    "VerifyBytes": true,
+    "SSHCompression": true,
+    "User": "ctmem",
+    "HostName": "dc01",
+    "HomeDirectory": "/home/ctmem/",
+    "Password": "*****",
+    "Description": "",
+    "Centralized": true
+  },
+  "DCO_SSH_dco1": {
+    "Type": "ConnectionProfile:FileTransfer:SFTP",
+    "VerifyBytes": true,
+    "SSHCompression": true,
+    "User": "dcompane1",
+    "HostName": "dc01",
+    "HomeDirectory": "/home/dcompane1/",
+    "Password": "*****",
+    "Description": "",
+    "Centralized": true
+  }
+}

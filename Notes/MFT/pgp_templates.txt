@@ -1,0 +1,42 @@
+dc01% ctm config server:agent:mft:pgptemplates::get dc01 dc01-ctmagent -s "name=DCO*"
+[
+  {
+    "name": "DCO_E_ctmem_dc01",
+    "executableFullPath": "/usr/bin/gpg",
+    "exitCode": 0,
+    "passphrase": "*****",
+    "recipient": "ctmem",
+    "encryptionAttributes": "-v --batch -a -e -r $$PGP_RECIPIENT$$ -o $$PGP_OUTPUT_FILE$$ $$PGP_INPUT_FILE$$",
+    "decryptionAttributes": "-v --batch -d --passphrase $$PGP_PASSPHRASE$$ --pinentry-mode loopback -o $$PGP_OUTPUT_FILE$$ $$PGP_INPUT_FILE$$"
+  },
+  {
+    "name": "DCO_EnS_ctmem_dc01",
+    "executableFullPath": "/usr/bin/gpg",
+    "exitCode": 0,
+    "passphrase": "*****",
+    "recipient": "ctmem",
+    "encryptionAttributes": "-v --batch -a -e -r $$PGP_RECIPIENT$$ -s --local-user ctmagent@dc01 --passphrase $$PGP_PASSPHRASE$$ -o $$PGP_OUTPUT_FILE$$ $$PGP_INPUT_FILE$$",
+    "decryptionAttributes": "-v --batch -d --passphrase $$PGP_PASSPHRASE$$ --pinentry-mode loopback -o $$PGP_OUTPUT_FILE$$ $$PGP_INPUT_FILE$$"
+  }
+]
+dc01% ctm config server:agent:mft:pgptemplates::get dc01 dc01 -s "name=DCO*"
+[
+  {
+    "name": "DCO_EnS_ctmagent_dc01",
+    "executableFullPath": "/usr/bin/gpg",
+    "exitCode": 0,
+    "passphrase": "*****",
+    "recipient": "ctmagent@dc01",
+    "encryptionAttributes": "-v --batch --yes -a -e -r $$PGP_RECIPIENT$$ -s --local-user ctmem@dc01 --passphrase $$PGP_PASSPHRASE$$ --pinentry-mode loopback -o $$PGP_OUTPUT_FILE$$ $$PGP_INPUT_FILE$$",
+    "decryptionAttributes": "-d --batch --passphrase $$PGP_PASSPHRASE$$ --pinentry-mode loopback -o $$PGP_OUTPUT_FILE$$ $$PGP_INPUT_FILE$$"
+  },
+  {
+    "name": "DCO_E_ctmagent_dc01",
+    "executableFullPath": "/usr/bin/gpg",
+    "exitCode": 0,
+    "passphrase": "*****",
+    "recipient": "ctmagent@dc01",
+    "encryptionAttributes": "-v --batch -a -e -r $$PGP_RECIPIENT$$ -o $$PGP_OUTPUT_FILE$$ $$PGP_INPUT_FILE$$",
+    "decryptionAttributes": "-v -d --batch --passphrase $$PGP_PASSPHRASE$$ --pinentry-mode loopback -o $$PGP_OUTPUT_FILE$$ $$PGP_INPUT_FILE$$"
+  }
+]

@@ -1,0 +1,58 @@
++ Job started at '1211 13:47:46:864' orderno - '003sm' runno - '00001' Number of transfers - 2, Job name - 'DCO_MFT_E_01'
++ Host1 'localhost' [Unix-Local] username 'ctmem' - Host2 'dc01' [Unix-SFTP] username 'ctmagent'
+Local host is dc01
+Connection Profile 'DCO_LCL_ctmem' is stored in EM database.
+Connection Profile 'DCO_SSH_ctmagt' is stored in EM database.
+
++********** Starting transfer #1 out of 2 **********
+Transfer #1 start time: 13:47:46
+Connection to Local server on host localhost was established
+Connection to SFTP server on host dc01 was established
+Transfer type: BINARY
+Open data connection to retrieve file /home/ctmem/MFT_Art.txt
+Using PGP encryption, with Template Name: DCO_E_ctmagent_dc01
+Execute PGP command: /usr/bin/gpg -v --batch -a -e -r ctmagent@dc01 -o /home/ctmem/ctm_agent/ctm/cm/AFT/pgp_tmp/PGP_134748194_377_7\
+2398599.pgp_aft /home/ctmem/MFT_Art.txt
+Open data connection to store file /home/ctmagent/MFT_Art.txt.asc
+Transfer #1 transferring
+Src file: '/home/ctmem/MFT_Art.txt' on host 'localhost'
+Dst file: '/home/ctmagent/MFT_Art.txt.asc' on host 'dc01'
+Transferred:            0   Elapsed:    0 sec   Percent:   0  Status: In Progress
+Transferred:          841   Elapsed:    0 sec   Percent: 100  Status: Ended OK
+File transfer status: Ended OK
+
+Transfer #1 completed successfully
+
+---------- Transfer #1 Summary ----------
+Total transferred files: 1
+Total transferred size: 841.00 Bytes
+Total time: 1 sec
+-----------------------------------------
+
++********** Starting transfer #2 out of 2 **********
+Transfer #2 start time: 13:47:48
+Transfer type: BINARY
+Open data connection to retrieve file /home/ctmem/MFT_Art.txt
+Using PGP encryption, with Template Name: DCO_EnS_ctmagent_dc01
+Execute PGP command: /usr/bin/gpg -v --batch --yes -a -e -r ctmagent@dc01 -s --local-user ctmem@dc01 --passphrase ******** --pinent\
+ry-mode loopback -o /home/ctmem/ctm_agent/ctm/cm/AFT/pgp_tmp/PGP_134748214_377_00195545.pgp_aft /home/ctmem/MFT_Art.txt
+Open data connection to store file /home/ctmagent/MFT_Art.txt_signed.asc
+Transfer #2 transferring
+Src file: '/home/ctmem/MFT_Art.txt' on host 'localhost'
+Dst file: '/home/ctmagent/MFT_Art.txt_signed.asc' on host 'dc01'
+Transferred:            0   Elapsed:    0 sec   Percent:   0  Status: In Progress
+Transferred:         1483   Elapsed:    0 sec   Percent: 100  Status: Ended OK
+File transfer status: Ended OK
+
+Transfer #2 completed successfully
+
+---------- Transfer #2 Summary ----------
+Total transferred files: 1
+Total transferred size: 1.45 KB
+Total time: 179 ms
+-----------------------------------------
+
+Job executed successfully. Exiting.
+
+Job ended at '1211 13:47:48:391'
+Elapsed time [1 sec]
