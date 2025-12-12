@@ -17,7 +17,17 @@ gpg -kv
 
 **Note:** Empty results without errors indicate an empty keyring
 
+```
+gpg -Kv
+```
+
 **3. Create a key pair (you may use different options for other cyphers or key lengths)**
+
+Use the `--full-gen-key option`. Uisng others like -`-quick-generate-key` will not create a signature subkey and may cause problems later.
+
+In that case you can use `--quick-add-key` to add the signing subkey. Not worth the time investigating if it can be done right the first time
+
+The` --pinentry-mode loopback` is needed for the passphrase request.
 
 ```
 gpg -v --pinentry-mode loopback --full-gen-key
@@ -115,7 +125,7 @@ ssb   rsa3072/FA43076C75D2D379 2025-12-11 [E]
 
 **5. Export the public key**
 
-**Note: always use armored (ascii) format**
+**Note: always use armored (ascii) format** (I prefer it to the default binary...)
 
 ```
 gpg -a --export dcompane@gmail.com
