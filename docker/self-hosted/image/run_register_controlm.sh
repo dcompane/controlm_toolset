@@ -33,8 +33,11 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # For information on SDPX, https://spdx.org/licenses/BSD-3-Clause.html
 
-# enabling the output for the log 
+# enabling the output for the log
 set -x
+start_time=$(date +%s)
+echo Started at $(date)
+
 
 function unused_port {
     local port=$(shuf -i 7000-8000 -n 1)
@@ -55,16 +58,16 @@ function sigtrapHandler() {
     echo '========================================================================'
     echo Received signal $signal at sigtrapHandler
     echo '========================================================================'
-    echo remove agent [$AGENT_NAME] from hostgroup [$CTM_HOSTGROUP] 
-    ctm config server:hostgroup:agent::delete $CTM_SERVER $CTM_HOSTGROUP $AGENT_NAME 
+    echo remove agent [$AGENT_NAME] from hostgroup [$CTM_HOSTGROUP]
+    ctm config server:hostgroup:agent::delete $CTM_SERVER $CTM_HOSTGROUP $AGENT_NAME
     if [ $? -ne 0 ]; then
         echo "Error deleting agent $AGENT_NAME from hostgroup $CTM_HOSTGROUP on $CTM_SERVER"
         echo "   Will not attempt to delete the agent. Exiting."
         getout=13
-        
+
     else
-        echo unregister controlm agent [$AGENT_NAME] from server IN01 
-        ctm config server:agent::delete $CTM_SERVER $AGENT_NAME 
+        echo unregister controlm agent [$AGENT_NAME] from server IN01
+        ctm config server:agent::delete $CTM_SERVER $AGENT_NAME
         if [ $? -ne 0 ]; then
             echo "Error deleting agent $AGENT_NAME from $CTM_SERVER"
             getout=14
@@ -87,8 +90,6 @@ echo $AGENT_NAME
 # This line only for on-prem
 unused_port
 
-# Adding some info to the docker log
-#   sudo docker inspect -f '{{.LogPath}}' $container_id from outside the container
 cd
 pwd
 env
@@ -99,7 +100,17 @@ echo "SUDO_ENABLED  Y"
 
 # AAPI commands tailored for on-prem
 
-echo Starting and registering Control-M agent [$AGENT_NAME] with Control-M/Server [$CTM_SERVER], using environment [$CTM_ENV] 
+# Register the agent on the server
+echo Adding the Agent to the Control-M server
+cat << EOF > ag_add.json
+{
+   "persistentConnection": true
+}
+EOF
+ctm config server:agent::add $CTM_SERVER $AGENT_NAME $CTM_AGENT_PORT -f ag_add.json
+
+
+echo Starting and registering Control-M agent [$AGENT_NAME] with Control-M/Server [$CTM_SERVER], using environment [$CTM_ENV]
 echo Please wait for actions
 echo run and register controlm agent [$AGENT_NAME] with controlm [$CTM_SERVER], environment [$CTM_ENV]
 ctm provision setup $CTM_SERVER $AGENT_NAME $CTM_AGENT_PORT -f agent-parameters.json
@@ -120,7 +131,7 @@ set_agent_mode -u controlm -o 3
 
 echo Adding or creating a Control-M hostgroup [$CTM_HOSTGROUP] with agent [$AGENT_NAME]
 echo Please wait for actions
-ctm config server:hostgroup:agent::add $CTM_SERVER $CTM_HOSTGROUP $AGENT_NAME 
+ctm config server:hostgroup:agent::add $CTM_SERVER $CTM_HOSTGROUP $AGENT_NAME
 if [ $? -ne 0 ]; then
     echo "Error adding agent $AGENT_NAME to agent host group $CTM_HOSTGROUP on $CTM_SERVER"
         exit 1
@@ -139,36 +150,27 @@ ctm config server:agent::ping $CTM_SERVER $AGENT_NAME
 echo "Done setting up"
 echo "Control-M Agent setup complete"
 echo "Agent Name: $AGENT_NAME"
-echo "---> May need to ping the agent from the server to have it become available<---"
 
-# Setting up test jobs
-# # # # UNCOMMENT AS NEEDED # # # # 
-# # # # deploy jobs to test the agent
-# sed -i "s/agent_name/$AGENT_NAME/" deploy_test_jobs.json
-# ctm deploy deploy_test_jobs.json
-# ctm run order $CTM_SERVER DCO_Docker DCO_Docker_Server2Agent_available > response.json
-# cat response.json
-# ctm run status $(cat response.json| grep runId | cut -d : -f2 | awk -F\" '{print $2}')
-# echo run test job
-# ctm run order $CTM_SERVER DCO_Docker DCO_Docker_Job > response.json
-# cat response.json
-# ctm run status $(cat response.json| grep runId | cut -d : -f2 | awk -F\" '{print $2}')
-# echo "Validations ran."
+# ctm config server:agents::get $CTM_SERVER -s "agent=control*"
+
 echo "Entering infinite loop..."
 echo "Thanks for your patience!"
 
 # loop forever until getout is different of 99
 getout=99
-set -     #removing the output for the loop 
+set -     #removing the output for the loop
 while [ $getout -eq 99  ]
 do
-  sleep 10
+   for i in {1..12}
+     do
+       sleep 10
+     done
+   ag_ping > ~/loop_ag_ping.log
 done
 
-# enabling the output for the log 
+# enabling the output for the log
 set -x
 
 echo finally getout = $getout
 
 exit $getout
-

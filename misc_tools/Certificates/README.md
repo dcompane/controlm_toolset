@@ -86,4 +86,14 @@ Note: Technically, the local agent is Zone 3, but who is counting...)
 
 ### Zone 3
 
-Work in progress, with the new AAPI approach.
+The 23.* script series deal with AAPI agent certificate deployment.
+
+23.ag_aapi.sh does the whole work as it gets the csr signed
+
+If you want to split the work, use the split ones as below
+
+23.0.ag_csr.sh create the csr and saves it a file
+23.1.ag_sign_csr.sh signs the created csr and stores the cert
+23.2.ag_deploy_cert.sh pushes the cert to the client and makes the needed changes.
+
+If the agent is not normally reachable, like in a container, the 23.3 script may cause the agent to become unavailable until it "phones home".

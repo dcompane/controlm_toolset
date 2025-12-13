@@ -1,6 +1,6 @@
 #---------------------------------------
 # Control-M/Agent docker container
-# Edited by 
+# Edited by
 #       Daniel Companeetz - BMC Software
 #---------------------------------------
 
@@ -41,6 +41,7 @@
 FROM almalinux:latest
 
 ARG AAPI_ENDPOINT
+ARG AAPI_PORT
 ARG AAPI_TOKEN
 ARG AAPI_ENVIRONMENT="endpoint"
 ENV aapi_env=$AAPI_ENVIRONMENT
@@ -60,14 +61,8 @@ RUN  dnf -y install unzip \
 # connect to container and use strace -p 1 to see signals arriving to process
 RUN  dnf -y install strace
 
-# install nodejs
 #RUN dnf -y install curl dnf-plugins-core \
 RUN dnf -y install dnf-plugins-core
-
-# install nodejs
-RUN dnf -y module install nodejs:22 \
-        && node -v \
-        && npm -v
 
 # Prep for new AAPI 9.22.0
 RUN dnf -y install python pip git
@@ -79,10 +74,10 @@ RUN dnf -y install java-21-openjdk-headless \
 
 # Install additiona dependencies
 #  Provides libcrypt.so.1
-RUN sudo dnf -y install libxcrypt-compat
+RUN dnf -y install libxcrypt-compat
 # Provides ps
-RUN sudo dnf -y install procps-ng
-# Provides libnsl.so 
+RUN dnf -y install procps-ng
+# Provides libnsl.so
 RUN  dnf -y install libnsl
 
 # add controlm user and root to sudoers list
@@ -90,17 +85,23 @@ RUN  useradd -d /home/controlm -p controlm -m controlm \
         && echo 'root ALL=(ALL) ALL' >> /etc/sudoers \
         && echo 'controlm ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
 
-     
+
 # install ctm-automation-api kit
 WORKDIR /root
+
+RUN echo $AAPI_ENDPOINT $LD_LIBRARY_PATH
+
 RUN mkdir /root/ctm-automation-api \
         && cd /root/ctm-automation-api \
         # next 2 lines specific for on-prem
-        && export LD_LIBRARY_PATH=/usr/lib64 \
+        # && export LD_LIBRARY_PATH=/usr/lib64 \
         # next line specific for on-prem
-        && curl --silent -k -O "https://$AAPI_ENDPOINT:8443/automation-api/ctm-cli.tgz" \
-        && npm install -g ctm-cli.tgz \
-        && rm ctm-cli.tgz \
+        && curl -k -O "https://$AAPI_ENDPOINT:$AAPI_PORT/automation-api/install_ctm_cli.py" \
+        && ls -la
+
+RUN cd /root/ctm-automation-api \
+        && python3 install_ctm_cli.py\
+        && rm install_ctm_cli.py \
         && ctm -v
 
 
@@ -109,7 +110,7 @@ USER controlm
 WORKDIR /home/controlm
 
 # next line specific for on-prem
-RUN ctm env add endpoint https://$AAPI_ENDPOINT:8443/automation-api $AAPI_TOKEN \
+RUN ctm env add endpoint https://$AAPI_ENDPOINT:$AAPI_PORT/automation-api $AAPI_TOKEN \
         && ctm env set endpoint \
         && export AAPI_TOKEN=""
 
@@ -127,16 +128,18 @@ RUN ctm env add endpoint https://$AAPI_ENDPOINT:8443/automation-api $AAPI_TOKEN 
 #}
 
 RUN cd \
-        && ctm provision image Agent.Linux 
-#       ; exit 0
+        && ctm provision image Agent.Linux  ; exit 0
+
+RUN cd \
+        && ctm env show
 
 # Uncomment the images for the plugins needed after validating the plugin descriptor names.
-# # # # # Check the name of the  plugins on your 
+# # # # # Check the name of the  plugins on your
 RUN set +x \
          && source /home/controlm/.bash_profile \
-         && ctm provision image GCP_Composer_plugin.Linux
+#         && ctm provision image GCP_Composer_plugin.Linux
 #         && ctm provision image Databases_plugin.Linux
-#         && ctm provision image MFT_plugin.Linux
+         && ctm provision image MFT_plugin.Linux
 
 # Keep the following SAP lines together. Uncomment if needed.
 #RUN set +x \
@@ -147,16 +150,16 @@ RUN set +x \
 #        && sudo chmod 775 /home/controlm/ctm/cm/SAP/exe/sapjco/sapjco3.jar
 
 # enable controlm agent utilities
-RUN echo "source /home/controlm/.bash_profile" >> /home/controlm/.bashrc 
+RUN echo "source /home/controlm/.bash_profile" >> /home/controlm/.bashrc
 
 ################ Specific for on-prem patches
-# # # # UNCOMMENT AS NEEDED # # # # 
+# # # # UNCOMMENT AS NEEDED # # # #
 # # # # Recommended to install the patches
 # # Add patches as needed.
 # COPY PAAIT.9.0.21.301_Linux-x86_64_INSTALL.BIN  /tmp
-# RUN sudo chmod 755 /tmp/PAAIT.9.0.21.301_Linux-x86_64_INSTALL.BIN 
+# RUN sudo chmod 755 /tmp/PAAIT.9.0.21.301_Linux-x86_64_INSTALL.BIN
 # COPY PAAIT.9.0.21.302_Linux-x86_64_INSTALL.BIN  /tmp
-# RUN sudo chmod 755 /tmp/PAAIT.9.0.21.302_Linux-x86_64_INSTALL.BIN 
+# RUN sudo chmod 755 /tmp/PAAIT.9.0.21.302_Linux-x86_64_INSTALL.BIN
 
 # RUN set +x \
 #          && source /home/controlm/.bash_profile \
@@ -166,15 +169,15 @@ RUN echo "source /home/controlm/.bash_profile" >> /home/controlm/.bashrc
 #          && source /home/controlm/.bash_profile \
 #          && /tmp/PAAIT.9.0.21.302_Linux-x86_64_INSTALL.BIN -s
 
-# RUN sudo rm -f /tmp/PAAIT* 
+# RUN sudo rm -f /tmp/PAAIT*
 
 
 
 # Adding some Python packages to the local agent repository
 #  This may need to be revised when v22 AAPI is released.
-# # # # UNCOMMENT AS NEEDED # # # # 
+# # # # UNCOMMENT AS NEEDED # # # #
 # # # # This needed to use the Python client or other features
-# RUN pip -v install ctm-python-client confluent-kafka 
+# RUN pip -v install ctm-python-client confluent-kafka
 # RUN pip install git+https://github.com/dcompane/controlm_py,git
 
 # Clean dnf cache to reduce image size
@@ -188,10 +191,10 @@ EXPOSE 7000-8000
 # Use next line to force a re-copy of the scripts or parameter files
 RUN echo Build almost done
 
-### Keep these lines just before the end in case changes to the 
+### Keep these lines just before the end in case changes to the
 ###    run and decomm scripts are needed, to avoid re-build.
 # copy run and register controlm agent script to container
-COPY ./run_register_controlm.sh /home/controlm 
+COPY ./run_register_controlm.sh /home/controlm
 COPY ./agent-parameters.json /home/controlm
 COPY ./deploy_test_jobs.json /home/controlm
 # give execute permissions to start/shut scripts
@@ -200,8 +203,8 @@ RUN  sudo chown controlm:controlm /home/controlm/*controlm.sh \
 
 # CMD in exec mode (using []) is needed for signaling to work
 # Signaling will ensure stopping the container deregister the agent
-# use 
-#  docker kill -s {SIGUSR1|SIGTERM} $container_id 
+# use
+#  docker kill -s {SIGUSR1|SIGTERM} $container_id
 #      NOTE: SIGKILL (untrappable) will terminate the agent and does not remove it from Control-M
 #      docker stop generates SIGTERM before timeout (see below)
 #  docker stop $container_id -t 60
