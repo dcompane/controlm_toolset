@@ -194,12 +194,17 @@ RUN echo Build almost done
 ### Keep these lines just before the end in case changes to the
 ###    run and decomm scripts are needed, to avoid re-build.
 # copy run and register controlm agent script to container
-COPY ./run_register_controlm.sh /home/controlm
 COPY ./agent-parameters.json /home/controlm
 COPY ./deploy_test_jobs.json /home/controlm
+
+RUN echo STOPPED > /home/controlm/ctm/data/ctm_agent_status.dat
+COPY ./cert_jobs.json        /home/controlm
+COPY ./run_register_controlm.sh /home/controlm
 # give execute permissions to start/shut scripts
 RUN  sudo chown controlm:controlm /home/controlm/*controlm.sh \
-        && sudo chmod 775 /home/controlm/*controlm.sh
+        && sudo chmod 775 /home/controlm/*controlm.sh         \
+    && sudo chown controlm:controlm /home/controlm/*.json     \
+        && sudo chmod 775 /home/controlm/*.json
 
 # CMD in exec mode (using []) is needed for signaling to work
 # Signaling will ensure stopping the container deregister the agent

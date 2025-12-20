@@ -38,6 +38,8 @@
 # --------      ------------------    ------------------------
 # 20251212      Daniel Companeetz     Initial release
 
+# See https://documents.bmc.com/supportu/9.0.22/en-US/Documentation/ctmkeytool.htm#Create
+
 set -x
 
 if [ x$1 == "x"  ] ; then
@@ -73,23 +75,21 @@ crt_file=$IntCA_dir/certs/$file_name.crt
 #Sign the CSR with the intermediate certificate
 #   This is normally done by the Security team or online.
 
-
 #Revoke existing certificate
-
 if [ -e "$crt_file" ];then
     openssl ca -revoke $crt_file \
         -config ${IntCA_dir}/opensslintCA.cnf \
         -passin file:${IntCA_dir}/private/.ctmintCA.key.passwd
 fi
 
+#Sign the CSR
 openssl ca -config ${IntCA_dir}/opensslintCA.cnf -extensions server_cert \
     -days 375 -notext -md sha256 \
     -in $csr_file \
     -out $crt_file -batch \
     -passin file:${IntCA_dir}/private/.ctmintCA.key.passwd
 
-#5 Verify the certificate
-
+# Verify the certificate
 openssl x509  -in $crt_file -text
 openssl verify -untrusted ${IntCA_dir}/certs/ctmintCA.crt \
         -CAfile ${IntCA_dir}/../rootCA/certs/ctmrootCA.crt \

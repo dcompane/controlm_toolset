@@ -49,40 +49,8 @@ if [ x$1 == "x"  ] ; then
 fi
 
 agent_logical=$1
-agent_short="dc01"
-agent_fqdn="dc01"
-agent_alias="dc01-ctmagent"
-agent_ip="192.168.4.35"
 agent_ctms="dc01"
 
-# This script is for the Control-M Agent Zone 3
-
-ctm_cn=$agent_logical
-base_dir=`pwd`
-base_dir="${base_dir}/.."
-
-IntCA_dir=${base_dir}/intCA
-
-dir=${CONTROLM}
-
-cd $dir
-
-file_name=$agent_logical-$agent_ctms
-crt_file=$IntCA_dir/certs/$file_name.crt
-
-# This will use the AAPI method.
-
-# see https://documents.bmc.com/supportu/API/Monthly/en-US/Documentation/API_Services_ConfigService_Agent.htm#config106
-ctm config server:agent::update $agent_ctms $agent_logical persistentConnection Y
-ctm config server:agent::update $agent_ctms $agent_logical allowAgentDisconnection N
-
-ctm config server:agent:crt::deploy $agent_ctms $agent_logical $crt_file ${IntCA_dir}/certs/ctmchainCA.pem
-
-ctm config server:agent::update $agent_ctms $agent_logical sslState Enabled
-
-echo When setting the sslState to Enabled, the agent will self-restart to apply the certificate.
-
-# To restart the agent after deploying the certificate, uncomment the following line:
-#ctm config item::recycle "CTMS:Agent:$agent_ctms:$agent_logical"
+ctm config server:agent:crt:expiration::get $agent_ctms $agent_logical
 
 exit

@@ -101,7 +101,7 @@ echo "SUDO_ENABLED  Y"
 # AAPI commands tailored for on-prem
 
 # Register the agent on the server
-echo Adding the Agent to the Control-M server
+echo Adding the Agent to the Control-M server.
 cat << EOF > ag_add.json
 {
    "persistentConnection": true
@@ -109,10 +109,61 @@ cat << EOF > ag_add.json
 EOF
 ctm config server:agent::add $CTM_SERVER $AGENT_NAME $CTM_AGENT_PORT -f ag_add.json
 
+echo Server $AGENT_NAME added. Running SSL jobs
 
-echo Starting and registering Control-M agent [$AGENT_NAME] with Control-M/Server [$CTM_SERVER], using environment [$CTM_ENV]
+# Run the SSL jobs
+echo Creating deploy descriptor
+cat << EOF > agt_logical_dd.json
+{
+   "DeployDescriptor": [
+      {
+         "Property": "$.Variables[*].*",
+         "Replace": [
+            {
+               "agent_not_set": "$AGENT_NAME"
+            },{
+               "user_not_set": "$(whoami)"
+            }
+         ]
+      },
+      {
+         "Property": "Host",
+         "Replace": [
+            {
+               "agent_not_set": "$AGENT_NAME"
+            }
+         ]
+      },
+      {
+         "Property": "RunAs",
+         "Replace": [
+            {
+               "user_not_set": "$(whoami)"
+            }
+         ]
+      },
+      {
+         "ApplyOn"     :  {"Type": "Job:SLAManagement"},
+         "Property" : "ServiceName",
+         "Replace" : [ {"DCO_SSL_Cert_4_Agent":"DCO_SSL_Cert_4_$AGENT_NAME"} ]
+      },
+      {
+         "ApplyOn"     :  {"Type": "Folder"},
+         "Property" : "@",
+         "Replace" : [ {"DCO_Set_SSL":"DCO_Set_SSL_4_$AGENT_NAME"} ]
+      }
+   ]
+}
+EOF
+
+# Job is ordered as soon as the agent is created in CTMS to measure the complete setup time
+## Use the folder start and end time for measurement.
+echo Running SSL certificate jobs for agent $AGENT_NAME
+echo see github.com/dcompane/controlm_toolset/misc_tools/Certificates/README.md for more info on SSL scripts
+ctm run ondemand cert_jobs.json agt_logical_dd.json
+
+echo Setting up and registering Control-M agent [$AGENT_NAME] with Control-M/Server [$CTM_SERVER]
 echo Please wait for actions
-echo run and register controlm agent [$AGENT_NAME] with controlm [$CTM_SERVER], environment [$CTM_ENV]
 ctm provision setup $CTM_SERVER $AGENT_NAME $CTM_AGENT_PORT -f agent-parameters.json
 if [ $? -ne 0 ]; then
     echo "Error registering agent $AGENT_NAME in Control-M/Server $CTM_SERVER"
@@ -137,6 +188,8 @@ if [ $? -ne 0 ]; then
         exit 1
 fi
 
+# Agent is started. SSL jobs will trigger as soon as the server sees the agent available.
+
 echo Testing utilities
 echo ag_ping
 ag_ping
@@ -145,27 +198,38 @@ shagent
 echo ag_diag_comm
 ag_diag_comm
 echo aapi agent ping
+# This ping also may set the agent as available on the server
+## SSL jobs will trigger at this point if not earlier.
 ctm config server:agent::ping $CTM_SERVER $AGENT_NAME
+
 
 echo "Done setting up"
 echo "Control-M Agent setup complete"
 echo "Agent Name: $AGENT_NAME"
 
-# ctm config server:agents::get $CTM_SERVER -s "agent=control*"
-
 echo "Entering infinite loop..."
 echo "Thanks for your patience!"
+echo "To unregister the agent, stop and remove the container using SIGTERM or SIGUSR1 to properly terminate the agent."
+echo "For example: docker --signal="SIGUSR1" <container_id>"
+echo "  or use the script signal_docker_container.sh"
 
 # loop forever until getout is different of 99
 getout=99
 set -     #removing the output for the loop
 while [ $getout -eq 99  ]
 do
+   # Since the agent is set to allow to initiate connection, this will keep the agent available
+   # ag_ping every 2 minutes 
+   ag_ping > ~/loop_ag_ping.log
+   # connect to container and check the timestamp and contents of the file to validate status
    for i in {1..12}
      do
+       if [ $getout -ne 99  ]; then
+         #if signal was received and getout changed,  exit the sleep loop
+         break
+       fi
        sleep 10
      done
-   ag_ping > ~/loop_ag_ping.log
 done
 
 # enabling the output for the log

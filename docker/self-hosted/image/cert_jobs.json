@@ -1,0 +1,313 @@
+{
+  "DCO_Set_SSL" : {
+    "Type" : "Folder",
+    "Variables" : [ {
+      "agt_user" : "user_not_set"
+    }, {
+      "agt_logical" : "agent_not_set"
+    } ],
+    "ControlmServer" : "dc01",
+    "OrderMethod" : "Manual",
+    "ActiveRetentionPolicy" : "CleanEndedOK",
+    "SubApplication" : "DCO_SET_SSL",
+    "CreatedBy" : "emuser",
+    "Application" : "DCO",
+    "When" : {
+      "RuleBasedCalendars" : {
+        "Included" : [ "EVERYDAY" ],
+        "EVERYDAY" : {
+          "Type" : "Calendar:RuleBased",
+          "When" : {
+            "DaysRelation" : "OR",
+            "WeekDays" : [ "NONE" ],
+            "MonthDays" : [ "ALL" ]
+          }
+        }
+      }
+    },
+    "DCO_0_Wait_4_Agent_Add" : {
+      "Type" : "Job:Command",
+      "SubApplication" : "DCO_SET_SSL",
+      "Host" : "agent_not_set",
+      "CreatedBy" : "emuser",
+      "RunAs" : "user_not_set",
+      "Application" : "DCO",
+      "Command" : "whoami",
+      "Variables" : [ {
+        "agt" : "%%agt_logical"
+      } ],
+      "When" : {
+        "WeekDays" : [ "NONE" ],
+        "MonthDays" : [ "ALL" ],
+        "DaysRelation" : "OR"
+      },
+      "eventsToAdd" : {
+        "Type" : "AddEvents",
+        "Events" : [ {
+          "Event" : "DCO_0_Wait_4_Agent_Add-TO-DCO_1_Create_Ag_CSR"
+        } ]
+      }
+    },
+    "DCO_1_Create_Ag_CSR" : {
+      "Type" : "Job:EmbeddedScript",
+      "Script" : "cd /home/ctmem/sslctm/scripts\\n./23.0.ag_csr.sh $agt",
+      "SubApplication" : "DCO_SET_SSL",
+      "FileName" : "DCO_Create_Ag_CSR.sh",
+      "Host" : "dc01",
+      "CreatedBy" : "emuser",
+      "RunAs" : "ctmem",
+      "Application" : "DCO",
+      "Variables" : [ {
+        "agt" : "%%agt_logical"
+      } ],
+      "When" : {
+        "WeekDays" : [ "NONE" ],
+        "MonthDays" : [ "ALL" ],
+        "DaysRelation" : "OR"
+      },
+      "eventsToWaitFor" : {
+        "Type" : "WaitForEvents",
+        "Events" : [ {
+          "Event" : "DCO_0_Wait_4_Agent_Add-TO-DCO_1_Create_Ag_CSR"
+        } ]
+      },
+      "eventsToAdd" : {
+        "Type" : "AddEvents",
+        "Events" : [ {
+          "Event" : "DCO_1_Create_Ag_CSR-TO-DCO_2_Sign_CSR"
+        } ]
+      },
+      "eventsToDelete" : {
+        "Type" : "DeleteEvents",
+        "Events" : [ {
+          "Event" : "DCO_0_Wait_4_Agent_Add-TO-DCO_1_Create_Ag_CSR"
+        } ]
+      }
+    },
+    "DCO_2_Sign_CSR" : {
+      "Type" : "Job:EmbeddedScript",
+      "Script" : "cd /home/ctmem/sslctm/scripts\\n./23.1.ag_sign_csr.sh $agt",
+      "SubApplication" : "DCO_SET_SSL",
+      "FileName" : "DCO_Sign_CSR.sh",
+      "Host" : "dc01",
+      "CreatedBy" : "emuser",
+      "RunAs" : "ctmem",
+      "Application" : "DCO",
+      "Variables" : [ {
+        "agt" : "%%agt_logical"
+      } ],
+      "When" : {
+        "WeekDays" : [ "NONE" ],
+        "MonthDays" : [ "ALL" ],
+        "DaysRelation" : "OR"
+      },
+      "eventsToWaitFor" : {
+        "Type" : "WaitForEvents",
+        "Events" : [ {
+          "Event" : "DCO_1_Create_Ag_CSR-TO-DCO_2_Sign_CSR"
+        } ]
+      },
+      "eventsToAdd" : {
+        "Type" : "AddEvents",
+        "Events" : [ {
+          "Event" : "DCO_2_Sign_CSR-TO-DCO_3_Deploy_Cert"
+        } ]
+      },
+      "eventsToDelete" : {
+        "Type" : "DeleteEvents",
+        "Events" : [ {
+          "Event" : "DCO_1_Create_Ag_CSR-TO-DCO_2_Sign_CSR"
+        } ]
+      }
+    },
+    "DCO_3_Deploy_Cert" : {
+      "Type" : "Job:EmbeddedScript",
+      "Script" : "cd /home/ctmem/sslctm/scripts\\n./23.2.ag_deploy_cert.sh $agt",
+      "SubApplication" : "DCO_SET_SSL",
+      "FileName" : "DCO_Deploy_Cert.sh",
+      "Host" : "dc01",
+      "CreatedBy" : "emuser",
+      "RunAs" : "ctmem",
+      "Application" : "DCO",
+      "Variables" : [ {
+        "agt" : "%%agt_logical"
+      } ],
+      "When" : {
+        "WeekDays" : [ "NONE" ],
+        "MonthDays" : [ "ALL" ],
+        "DaysRelation" : "OR"
+      },
+      "eventsToWaitFor" : {
+        "Type" : "WaitForEvents",
+        "Events" : [ {
+          "Event" : "DCO_2_Sign_CSR-TO-DCO_3_Deploy_Cert"
+        } ]
+      },
+      "eventsToAdd" : {
+        "Type" : "AddEvents",
+        "Events" : [ {
+          "Event" : "DCO_3_Deploy_Cert-TO-DCO_4_Wait_4_Agent_SSL"
+        } ]
+      },
+      "eventsToDelete" : {
+        "Type" : "DeleteEvents",
+        "Events" : [ {
+          "Event" : "DCO_2_Sign_CSR-TO-DCO_3_Deploy_Cert"
+        } ]
+      }
+    },
+    "DCO_4_Wait_4_Agent_SSL" : {
+      "Type" : "Job:Command",
+      "SubApplication" : "DCO_SET_SSL",
+      "Host" : "agent_not_set",
+      "CreatedBy" : "emuser",
+      "RunAs" : "user_not_set",
+      "Application" : "DCO",
+      "Command" : "whoami",
+      "Variables" : [ {
+        "agt" : "%%agt_logical"
+      } ],
+      "When" : {
+        "WeekDays" : [ "NONE" ],
+        "MonthDays" : [ "ALL" ],
+        "DaysRelation" : "OR"
+      },
+      "eventsToWaitFor" : {
+        "Type" : "WaitForEvents",
+        "Events" : [ {
+          "Event" : "DCO_3_Deploy_Cert-TO-DCO_4_Wait_4_Agent_SSL"
+        } ]
+      },
+      "eventsToAdd" : {
+        "Type" : "AddEvents",
+        "Events" : [ {
+          "Event" : "DCO_4_Wait_4_Agent_SSL-TO-DCO_5_Check_Cert"
+        } ]
+      },
+      "eventsToDelete" : {
+        "Type" : "DeleteEvents",
+        "Events" : [ {
+          "Event" : "DCO_3_Deploy_Cert-TO-DCO_4_Wait_4_Agent_SSL"
+        } ]
+      }
+    },
+    "DCO_5_Check_Cert" : {
+      "Type" : "Job:EmbeddedScript",
+      "Script" : "cd /home/ctmem/sslctm/scripts\\n./23.3.ag_check_cert.sh $agt",
+      "SubApplication" : "DCO_SET_SSL",
+      "FileName" : "DCO_Deploy_Cert.sh",
+      "Host" : "dc01",
+      "CreatedBy" : "emuser",
+      "RunAs" : "ctmem",
+      "Application" : "DCO",
+      "Variables" : [ {
+        "agt" : "%%agt_logical"
+      } ],
+      "When" : {
+        "WeekDays" : [ "NONE" ],
+        "MonthDays" : [ "ALL" ],
+        "DaysRelation" : "OR"
+      },
+      "eventsToWaitFor" : {
+        "Type" : "WaitForEvents",
+        "Events" : [ {
+          "Event" : "DCO_4_Wait_4_Agent_SSL-TO-DCO_5_Check_Cert"
+        } ]
+      },
+      "eventsToAdd" : {
+        "Type" : "AddEvents",
+        "Events" : [ {
+          "Event" : "DCO_5_Check_Cert-TO-DCO_6_SSL_Cert_Service"
+        } ]
+      },
+      "eventsToDelete" : {
+        "Type" : "DeleteEvents",
+        "Events" : [ {
+          "Event" : "DCO_4_Wait_4_Agent_SSL-TO-DCO_5_Check_Cert"
+        } ]
+      }
+    },
+    "DCO_6_SSL_Cert_Service" : {
+      "Type" : "Job:SLAManagement",
+      "ServiceActions" : {
+        "If:SLA:JobFailureOnServicePath_0" : {
+          "Type" : "If:SLA:JobFailureOnServicePath",
+          "Action:SLA:Notify_0" : {
+            "Type" : "Action:SLA:Notify",
+            "Severity" : "Urgent",
+            "Message" : "The service %%SERVICE_NAME contains failed job(s). The following job(s) are problematic: %%PROBLEMATIC_JOBS"
+          }
+        },
+        "If:SLA:JobRanTooLong_1" : {
+          "Type" : "If:SLA:JobRanTooLong",
+          "Action:SLA:Notify_0" : {
+            "Type" : "Action:SLA:Notify",
+            "Severity" : "Urgent",
+            "Message" : "The service %%SERVICE_NAME contains a job(s) that ran too long. The following job(s) are problematic: %%PROBLEMATIC_JOBS"
+          }
+        },
+        "If:SLA:ServiceEndedNotOK_2" : {
+          "Type" : "If:SLA:ServiceEndedNotOK",
+          "Action:SLA:Notify_0" : {
+            "Type" : "Action:SLA:Notify",
+            "Severity" : "Regular",
+            "Message" : "Service %%SERVICE_NAME ended NOT OK. The service deadline was  %%SERVICE_DUE_TIME and the service completed at %%SERVICE_EXPECTED_END_TIME"
+          }
+        },
+        "If:SLA:ServiceLatePastDeadline_3" : {
+          "Type" : "If:SLA:ServiceLatePastDeadline",
+          "Action:SLA:Notify_0" : {
+            "Type" : "Action:SLA:Notify",
+            "Severity" : "Regular",
+            "Message" : "Service %%SERVICE_NAME has passed its deadline at %%SERVICE_DUE_TIME. The service is estimated to complete at %%SERVICE_EXPECTED_END_TIME. The following job(s) are problematic: %%PROBLEMATIC_JOBS"
+          }
+        },
+        "If:SLA:JobFinishedTooQuickly_4" : {
+          "Type" : "If:SLA:JobFinishedTooQuickly",
+          "Action:SLA:Notify_0" : {
+            "Type" : "Action:SLA:Notify",
+            "Severity" : "Regular",
+            "Message" : "The service %%SERVICE_NAME contains a job(s) that ended too quickly. The following job(s) are problematic: %%PROBLEMATIC_JOBS"
+          }
+        },
+        "If:SLA:ServiceIsLate_5" : {
+          "Type" : "If:SLA:ServiceIsLate",
+          "Action:SLA:Notify_0" : {
+            "Type" : "Action:SLA:Notify",
+            "Severity" : "Regular",
+            "Message" : "Service %%SERVICE_NAME is projected to be late. The service deadline is %%SERVICE_DUE_TIME but it is estimated to complete at %%SERVICE_EXPECTED_END_TIME. The following job(s) are problematic: %%PROBLEMATIC_JOBS"
+          }
+        }
+      },
+      "ServicePriority" : "1",
+      "ServiceName" : "DCO_SSL_Cert_4_Agent",
+      "SubApplication" : "DCO_SET_SSL",
+      "Host" : "dc01-ctmagent",
+      "JobRunsDeviationsTolerance" : "3",
+      "CreatedBy" : "emuser",
+      "Description" : "The service should complete in under 9 minutes. Some false positives can occur as the default SLA estimate for each jobs is 5 minutes, until the estimated duration jobs are better calculated.",
+      "RunAs" : "DUMMYUSR",
+      "Application" : "DCO",
+      "CompleteIn" : {
+        "Time" : "0:9"
+      },
+      "When" : {
+        "WeekDays" : [ "NONE" ],
+        "MonthDays" : [ "ALL" ],
+        "DaysRelation" : "OR"
+      },
+      "eventsToWaitFor" : {
+        "Type" : "WaitForEvents",
+        "Events" : [ {
+          "Event" : "DCO_5_Check_Cert-TO-DCO_6_SSL_Cert_Service"
+        } ]
+      },
+      "eventsToDelete" : {
+        "Type" : "DeleteEvents",
+        "Events" : [ {
+          "Event" : "DCO_5_Check_Cert-TO-DCO_6_SSL_Cert_Service"
+        } ]
+      }
+    }
+  }
+}

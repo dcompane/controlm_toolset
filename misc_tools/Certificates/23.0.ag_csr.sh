@@ -38,6 +38,10 @@
 # --------      ------------------    ------------------------
 # 20251212      Daniel Companeetz     Initial release
 
+#! /bin/bash
+
+# See https://documents.bmc.com/supportu/9.0.22/en-US/Documentation/ctmkeytool.htm#Create
+
 set -x
 
 if [ x$1 == "x"  ] ; then
@@ -60,6 +64,7 @@ agent_ctms="dc01"
 
 
 # This script is for the Control-M Agent Zone 3
+# Assumes it starts as the EM user, after using the prior scripts to create the CA and IntCA 
 
 ctm_cn=$agent_logical
 base_dir=`pwd`
@@ -76,9 +81,8 @@ csr_file=$IntCA_dir/csr/$file_name.csr
 crt_file=$IntCA_dir/certs/$file_name.crt
 
 # This will use the AAPI method.
-
+# Ensure you change the values in the json file for your environment.
 cat <<EOF > csr_params.json
-
 {
    "organization": "DCO",
    "organizationUnit": "DCO CTM",
@@ -90,13 +94,10 @@ cat <<EOF > csr_params.json
 
 EOF
 
+echo Creating CSR for agent $agent_logical to be signed
 ctm config server:agent:csr::create $agent_ctms $agent_logical -f csr_params.json | tee $csr_file
 
-# Verify the CSR
-#LD_LIB=$LD_LIBRARY_PATH
-#LD_LIBRARY_PATH=/lib64
+echo Verify the CSR
 /bin/openssl req -verify -in $csr_file -text
-
-
 
 exit
