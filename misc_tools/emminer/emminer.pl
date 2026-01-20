@@ -35,8 +35,8 @@
 # For information on SDPX, https://spdx.org/licenses/BSD-3-Clause.html
 
 
-$emminer_version="2.14";                # used in verifying current version and in displays
-$emminer_version_date="11 Dec 2025";
+$emminer_version="2.15";                # used in verifying current version and in displays
+$emminer_version_date="08 Jan 2026";
 $emailcontact="nonegiven";  # email address for emminer.pl routine comments/issues
 $thispgm="EMminer";                     # variable holds the name of this routine
 
@@ -78,6 +78,8 @@ print "\n";
 #
 
 # updates
+# Jan 2026 v2.15
+#           -   (dc) Added Last_Update to the component table.
 # Dec 2025 v2.14
 #           -   (dc) Added CCP tab
 # Oct 2025 v2.13
@@ -633,8 +635,9 @@ sub dbqueries
             $sqlquery1 = "select CURRENT_STATE ${mycountq1}Current$mycountq2,$sep01,DESIRED_STATE ${mycountq1}Desired$mycountq2,$sep02,";
             #$sqlquery1 .= "$mysubstr(PROCESS_NAME,1,25) ${mycountq1}Process$mycountq2,$sep03,$mysubstr(MACHINE_NAME,1,25) ${mycountq1}Machine$mycountq2,$sep04,";
             $sqlquery1 .= "$mysubstr(MACHINE_NAME,1,25) ${mycountq1}Machine$mycountq2,$sep04,";
-            $sqlquery1 .= "$mysubstr(PROCESS_COMMAND,1,80) ${mycountq1}Command$mycountq2,$sep05,";
-            $sqlquery1 .= "$mysubstr(ADDITIONAL_PARAMS,1,25) ${mycountq1}Additional parms$mycountq2,$sep06,MACHINE_TYPE from CONFREG $nolock";
+            $sqlquery1 .= "last_update ${mycountq1}Last Update$mycountq2,$sep05,";
+            $sqlquery1 .= "$mysubstr(PROCESS_COMMAND,1,80) ${mycountq1}Command$mycountq2,$sep06,";
+            $sqlquery1 .= "$mysubstr(ADDITIONAL_PARAMS,1,25) ${mycountq1}Additional parms$mycountq2,$sep07,MACHINE_TYPE from CONFREG $nolock";
             dosql(1);
             putsheet();
 
@@ -780,7 +783,7 @@ sub dbqueries
             $sqlquery1 = "select $mysubstr(PNAME,1,80) ${mycountq1}PName$mycountq2,$sep01,$mysubstr(FAMILY,1,80) ${mycountq1}Family$mycountq2,";
             $sqlquery1 .= "$sep02,PVALUE ${mycountq1}Value$mycountq2   from PARAMS $nolock ";
             #$sqlquery1 .= "$sep02,$mysubstr(PVALUE,1,80) ${mycountq1}Value$mycountq2   from PARAMS $nolock "; substr truncates value so compare with default is problematic
-            $sqlquery1 .= " where PNAME=${myquote}ControlM_EM_Version$myquote ";
+            $sqlquery1 .= " where ( PNAME=${myquote}ControlM_EM_Version$myquote ";
             $sqlquery1 .= "    or PNAME=${myquote}UserAuditOn$myquote ";
             $sqlquery1 .= "    or PNAME=${myquote}UserAuditAnnotationOn$myquote ";
             $sqlquery1 .= "    or PNAME=${myquote}AuditHistoryDays$myquote ";
@@ -795,9 +798,7 @@ sub dbqueries
             $sqlquery1 .= "    or PNAME=${myquote}DirectoryServiceType$myquote ";
             $sqlquery1 .= "    or PNAME=${myquote}VMVersionsNumberToKeep$myquote ";
             $sqlquery1 .= "    or PNAME=${myquote}LogHistoryDays$myquote ";
-            $sqlquery1 .= "    or PNAME=${myquote}MaxDaysAlertRetained$myquote ";
-
-
+            $sqlquery1 .= "    or PNAME=${myquote}MaxDaysAlertRetained$myquote ) ";
 
             dosql(0);
             @holdtopparms=();
@@ -854,6 +855,7 @@ sub dbqueries
                           if (index($_,"VMVersionsNumberToKeep") > -1) {if ($debug) {print " -- skipping previously captured line: $_";}next;}
                           if (index($_,"LogHistoryDays") > -1) {if ($debug) {print " -- skipping previously captured line: $_";}next;}
                           if (index($_,"MaxDaysAlertRetained") > -1) {if ($debug) {print " -- skipping previously captured line: $_";}next;}
+                          if (index($_,"DirectorySearchUserPwd") > -1) {if ($debug) {print " -- skipping previously captured line: $_";}next;}                          
                           if ($debug) {print " -- passing into work file: $_";}
                           print TEMP "$_";
                           $|++;                                   # causes the perl print buffer to immediately flush
