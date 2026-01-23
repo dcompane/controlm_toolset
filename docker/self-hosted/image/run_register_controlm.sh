@@ -143,6 +143,15 @@ cat << EOF > agt_logical_dd.json
          ]
       },
       {
+         "Comment": "Add agent port to event name to avoid conflicts when multiple agents are set concurrently on same server",
+         "Property": "@[*].Events[*].Event",
+         "Replace": [
+            {
+              "(.*)": "\$1-$CTM_AGENT_PORT"
+            }
+         ]
+      },
+      {
          "ApplyOn"     :  {"Type": "Job:SLAManagement"},
          "Property" : "ServiceName",
          "Replace" : [ {"DCO_SSL_Cert_4_Agent":"DCO_SSL_Cert_4_$AGENT_NAME"} ]
