@@ -225,21 +225,29 @@ echo "  or use the script signal_docker_container.sh"
 # loop forever until getout is different of 99
 getout=99
 set -     #removing the output for the loop
-while [ $getout -eq 99  ]
-do
-   # Since the agent is set to allow to initiate connection, this will keep the agent available
-   # ag_ping every 2 minutes 
-   ag_ping > ~/loop_ag_ping.log
-   # connect to container and check the timestamp and contents of the file to validate status
-   for i in {1..12}
-     do
-       if [ $getout -ne 99  ]; then
-         #if signal was received and getout changed,  exit the sleep loop
-         break
-       fi
-       sleep 10
-     done
+while [ "$getout" -eq 99 ]; do
+   # sleep is not trappable, so we use a background sleep and wait
+    sleep 10 &
+    wait $!
+    for j in $(seq 1 180); do
+        for i in $(seq 1 12); do
+            if [ "$getout" -ne 99 ]; then
+                break
+            fi
+            # sleep is not trappable, so we use a background sleep and wait
+            sleep 10 &
+            wait $!
+        done
+        if [ "$getout" -ne 99 ]; then
+            break
+        fi
+        # Runs every 2 minutes (10*12 seconds)
+        ag_ping > ~/loop_ag_ping.log
+    done
+    # check if there is an AAPI update every 6 hours (10*12*180 seconds)
+    ctm -v > ~/loop_cli_check.log
 done
+
 
 # enabling the output for the log
 set -x
