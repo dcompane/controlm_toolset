@@ -50,11 +50,7 @@ fi
 
 
 agent_logical=$1
-agent_short="dc01"
-agent_fqdn="dc01"
-agent_alias="dc01-ctmagent"
-agent_ip="192.168.4.35"
-agent_ctms="dc01"
+agent_ctms="dc01" 
 
 # This script is for the Control-M Agent Zone 3
 
