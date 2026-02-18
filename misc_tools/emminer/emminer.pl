@@ -35,8 +35,8 @@
 # For information on SDPX, https://spdx.org/licenses/BSD-3-Clause.html
 
 
-$emminer_version="2.15";                # used in verifying current version and in displays
-$emminer_version_date="08 Jan 2026";
+$emminer_version="2.16";                # used in verifying current version and in displays
+$emminer_version_date="18 Feb 2026";
 $emailcontact="nonegiven";  # email address for emminer.pl routine comments/issues
 $thispgm="EMminer";                     # variable holds the name of this routine
 
@@ -78,6 +78,8 @@ print "\n";
 #
 
 # updates
+# Feb 2026 v2.16
+#           -   (dc) Fixing bug on CCP tab
 # Jan 2026 v2.15
 #           -   (dc) Added Last_Update to the component table.
 # Dec 2025 v2.14
@@ -85,7 +87,7 @@ print "\n";
 # Oct 2025 v2.13
 #           -   (dc) Fix test for $temp directory existence (prior code tested for file existence (-e) rather than directory existence (-d))
 # Oct 2025 v2.12
-#           -   (dc) OSQL is deprecated in newer MS-SQLL after 2005. Replaced with SQLCMD and adapted labels
+#           -   (dc) OSQL is deprecated in newer MS-SQL after 2005. Replaced with SQLCMD and adapted labels
 #           -   (dc) Agents tab would see failures on MS-SQL. Fixed.
 # Sept 2025 v2.11
 #           -   (dc) Moved Components tab after Datacenters
