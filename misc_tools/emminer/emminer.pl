@@ -77,9 +77,14 @@ print "\n";
 #           ~<control-m_user>/bmcperl/perl emminer.pl -silent
 #
 
-# updates
+# Future updates
+# UPDATE ADD A SYSOUT SIZE QUERY
+#    SELECT sysoutsize, memname, jobname, schedtab, 
+#              status, nodeid FROM cmr_runinf ORDER BY sysoutsize DESC
+#
 # Feb 2026 v2.16
 #           -   (dc) Fixing bug on CCP tab
+#           -   (dc) Added Outputs tab to find excessive output sizes  (See $sysoutsize = 2000000; to change the threshold)
 # Jan 2026 v2.15
 #           -   (dc) Added Last_Update to the component table.
 # Dec 2025 v2.14
@@ -702,7 +707,7 @@ sub dbqueries
 # CCP
 
             $current_sheet="CCP";
-            $sqlquery1  = "SELECT distinct a.NAME, a.TYPE, a.SUB_TYPE, ".
+            $sqlquery1  = "SELECT distinct a.NAME, $sep01, a.TYPE, $sep02, a.SUB_TYPE, $sep03, ".
                              "case when a.SUB_TYPE = b.APPL_TYPE ".
                                    "then (select count(*) from DEF_JOB where APPL_TYPE = a.SUB_TYPE) ".
 	                           "else 0 end as Used ".
@@ -710,6 +715,17 @@ sub dbqueries
             
             dosql(1);               # execute the sql selects
             putsheet();                         # create the excel tab
+
+# Output sizes
+
+            $current_sheet="Outputs";
+            $sysoutsize = 2000000; 
+            $sqlquery1  = "SELECT a.sysoutsize, $sep01, a.memname, $sep02, a.jobname, $sep03, a.schedtab, $sep04, 
+              a.status, $sep05, a.nodeid FROM cmr_runinf a WHERE a.sysoutsize > $sysoutsize ORDER BY a.sysoutsize DESC";
+            
+            dosql(1);               # execute the sql selects
+            putsheet();                         # create the excel tab
+
 # EM Users
             $current_sheet="EM Users";
             if ($emver ne "6.1.3")                                                      # this query for versions > 6.1.3
