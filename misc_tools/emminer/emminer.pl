@@ -77,14 +77,14 @@ print "\n";
 #           ~<control-m_user>/bmcperl/perl emminer.pl -silent
 #
 
-# Future updates
-# UPDATE ADD A SYSOUT SIZE QUERY
-#    SELECT sysoutsize, memname, jobname, schedtab, 
-#              status, nodeid FROM cmr_runinf ORDER BY sysoutsize DESC
+#FUTURE WORK
+# 1. Add CTMS database credentials request to enable additional queries (such as Outputs, Agents OS, and else).
+
 #
 # Feb 2026 v2.16
 #           -   (dc) Fixing bug on CCP tab
-#           -   (dc) Added Outputs tab to find excessive output sizes  (See $sysoutsize = 2000000; to change the threshold)
+#           -   (dc) Added (commented as model) Outputs tab to find excessive output sizes  (See $sysoutsize = 2000000; to change the threshold).
+#                        Needs ctmserver credentials for database.
 # Jan 2026 v2.15
 #           -   (dc) Added Last_Update to the component table.
 # Dec 2025 v2.14
@@ -717,14 +717,14 @@ sub dbqueries
             putsheet();                         # create the excel tab
 
 # Output sizes
-
-            $current_sheet="Outputs";
-            $sysoutsize = 2000000; 
-            $sqlquery1  = "SELECT a.sysoutsize, $sep01, a.memname, $sep02, a.jobname, $sep03, a.schedtab, $sep04, 
-              a.status, $sep05, a.nodeid FROM cmr_runinf a WHERE a.sysoutsize > $sysoutsize ORDER BY a.sysoutsize DESC";
-            
-            dosql(1);               # execute the sql selects
-            putsheet();                         # create the excel tab
+#
+#            $current_sheet="Outputs";
+#            $sysoutsize = 2000000; 
+#            $sqlquery1  = "SELECT a.sysoutsize, $sep01, a.memname, $sep02, a.jobname, $sep03, a.schedtab, $sep04, 
+#              a.status, $sep05, a.nodeid FROM cmr_runinf a WHERE a.sysoutsize > $sysoutsize ORDER BY a.sysoutsize DESC";
+#            
+#            dosql(1);               # execute the sql selects
+#            putsheet();                         # create the excel tab
 
 # EM Users
             $current_sheet="EM Users";
