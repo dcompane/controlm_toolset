@@ -32,17 +32,11 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # For information on SDPX, https://spdx.org/licenses/BSD-3-Clause.html
 
-# NOTE NOTE NOTE 
-#This is the result of converting a PowerShell script to Bash using Copilot. 
-# Some adaptations were needed, so the result may be cludgy and not very clean.
-# Please review and test before using this working sample.
-
 
 # Comment second line if no debug information is required
 
 if [ x$1 == "xy" ]; then
     set -x
-    debug=y
 fi
 
 host_name=`hostname -f`
@@ -75,46 +69,39 @@ pad3() {
   printf "%03d" "$1"
 }
 
-# --- End of Helpers ---
+# --- Debug toggle equivalent of Set-PSDebug -Trace ---
+# Already handled above with set -x
 
 HOSTNAME_VAL="$host_name"
 HOSTPORT="$host_port"
 
 # Fetch current build from local Automation API
-#Control-M LD libraries are not compatible with curl, so we set to /lib64 temporarily
+# PowerShell used Substring(17); replicate but fall back to regex if needed.
 oldldlib=$LD_LIBRARY_PATH
 LD_LIBRARY_PATH=/lib64
 build_time_txt=$(curl -ks "https://${HOSTNAME_VAL}:${HOSTPORT}/automation-api/build_time.txt")
 
 if [[ "$DEBUG" == "y" ]]; then
-  echo "Raw build_time.txt content:"
-  printf '%s\n' "$build_time_txt"
+  echo "DEBUG: Raw build_time.txt content: $build_time_txt"
 fi
 
-# Extract version from build string
+# Try fixed substring first (to mirror original behavior), then regex fallback
 current_build_raw="${build_time_txt:17}"
 current_build="$(extract_semver "$current_build_raw")"
-#if [[ -z "$current_build" ]]; then
+if [[ -z "$current_build" ]]; then
   current_build="$(extract_semver "$build_time_txt")"
 fi
-echo $current_build
 if [[ "$DEBUG" == "y" ]]; then
-  echo "Derived current build: $current_build"
+  echo "DEBUG: Derived current build: $current_build"
 fi
-exit
 
 # Fetch latest version from S3
 latest_txt="$(curl -ks "https://controlm-appdev.s3.us-west-2.amazonaws.com/release/latest/version.txt")"
 latest_version="$(extract_semver "$latest_txt")"
 
-echo $latest_txt
-echo $latest_version
-
-
 if [[ "$DEBUG" == "y" ]]; then
-  echo "Raw latest version content:"
-  printf '%s\n' "$latest_txt"
-  echo "Parsed latest version: $latest_version"
+  echo "DEBUG: Raw latest version content: $latest_txt"
+  echo "DEBUG: Parsed latest version: $latest_version"
 fi
 
 if [[ -z "$current_build" || -z "$latest_version" ]]; then
@@ -134,7 +121,12 @@ fi
 
 # Split latest into semver components
 IFS='.' read -r VERSION_MAJOR VERSION_MINOR VERSION_FIX <<< "$latest_txt"
-echo $VERSION_MAJOR $VERSION_MINOR $VERSION_FIX
+
+if [[ "$DEBUG" == "y" ]]; then
+  echo "DEBUG: Major: $VERSION_MAJOR"
+  echo "DEBUG: Minor:  $VERSION_MINOR"
+  echo "DEBUG: Fix:  $VERSION_FIX"
+fi
 
 # OS / Arch selection (Unix path)
 # PowerShell had separate Windows/Unix branches. Bash target = Unix/Linux.
@@ -172,3 +164,4 @@ fi
 "$OUTPATH" -s $OPTION
 
 echo "Completed installation of $OUTPATH"
+echo "Check log indicated above for details on completion"

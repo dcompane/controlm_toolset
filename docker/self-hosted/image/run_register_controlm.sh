@@ -223,6 +223,7 @@ echo "For example: docker --signal="SIGUSR1" <container_id>"
 echo "  or use the script signal_docker_container.sh"
 
 # loop forever until getout is different of 99
+python chkagent.py  &
 getout=99
 set -     #removing the output for the loop
 while [ "$getout" -eq 99 ]; do
