@@ -35,7 +35,7 @@
 # For information on SDPX, https://spdx.org/licenses/BSD-3-Clause.html
 
 
-$emminer_version="2.16";                # used in verifying current version and in displays
+$emminer_version="2.16a";                # used in verifying current version and in displays
 $emminer_version_date="18 Feb 2026";
 $emailcontact="nonegiven";  # email address for emminer.pl routine comments/issues
 $thispgm="EMminer";                     # variable holds the name of this routine
@@ -80,7 +80,9 @@ print "\n";
 #FUTURE WORK
 # 1. Add CTMS database credentials request to enable additional queries (such as Outputs, Agents OS, and else).
 
-#
+# Feb 2026 v2.16a
+#           -   (dc) Attempt to fix an issue with the Oracle password containing @.
+#               NOTE: Control-M documentation states that the password can only contain alphanumeric and "_", but not many RTFM. (F=Fantastic)
 # Feb 2026 v2.16
 #           -   (dc) Fixing bug on CCP tab
 #           -   (dc) Added (commented as model) Outputs tab to find excessive output sizes  (See $sysoutsize = 2000000; to change the threshold).
@@ -682,7 +684,7 @@ sub dbqueries
 # Agent-Jobs
 
             $current_sheet="Agent-Jobs";
-            $sqlquery1 = "select count(*) ${mycountq1}#Jobs per agent       $mycountq2,$sep01,NODE_ID from DEF_JOB $nolock GROUP BY NODE_ID ORDER BY NODE_ID";
+            $sqlquery1 = "select count(*) ${mycountq1}#Jobs per agent       ${mycountq2},$sep01,NODE_ID from DEF_JOB $nolock GROUP BY NODE_ID ORDER BY NODE_ID";
             $tot_agt_count = dosql(1);                  # execute the sql and capture total number of agents
             #commented out the IP resolution.  If someone wanted it, it could be turned back on
             #if ($resolveip) { parseagping();}  # optionally enrich each row to show the results of a ping
@@ -691,9 +693,9 @@ sub dbqueries
 # Agents
 
             $current_sheet="Agents";
-            $sqlquery1  = "select a.NODE_ID Agent, $sep01, a.APPLICATION App, $sep02, a.GROUP_NAME SubApp, $sep03, ".
-                          "(case when a.NODE_ID = c.NODEID then c.DATA_CENTER else b.DATA_CENTER end) ctm_server, $sep04, ".
-                          "(case when b.GRPNAME = a.NODE_ID then b.APPLTYPE else '' end) NodeGrpApp " .
+            $sqlquery1  = "select a.NODE_ID  ${mycountq1}Agent${mycountq2}, $sep01, a.APPLICATION ${mycountq1}App${mycountq2}, $sep02, a.GROUP_NAME ${mycountq1}SubApp${mycountq2}, $sep03, ".
+                          "(case when a.NODE_ID = c.NODEID then c.DATA_CENTER else b.DATA_CENTER end) ${mycountq1}ctm_server${mycountq2}, $sep04, ".
+                          "(case when b.GRPNAME = a.NODE_ID then b.APPLTYPE else '' end) ${mycountq1}NodeGrpApp${mycountq2} " .
                           "from DEF_JOB a ".
                           "left join NODE_GROUP b on a.NODE_ID = b.GRPNAME ".
                           "left join NODE_ID c on a.NODE_ID = c.NODEID ".
@@ -4550,7 +4552,9 @@ sub initdbclient
     }
   else                      # make needed Oracle assignments
     {
-      $sqlcmd = "sqlplus -L -S $emuser/$empass\@$server ";      # -L for single logon attempt
+      #$sqlcmd = "sqlplus -L -S $emuser/\'$empass\'\@$server ";      # -L for single logon attempt
+      $sqlcmd = "sqlplus -L -S $emuser/\"".$empass."\"\@$server ";      # -L for single logon attempt
+      # $sqlcmd = "sqlplus -L -S $emuser/$empass\@$server ";      # -L for single logon attempt
       $sqlio = "\@$sqlinfile > $sqloutfile";
       #$calio = "\@$calsql > $calsqlout";
       $go=";\n";
