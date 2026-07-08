@@ -36,7 +36,7 @@
 
 
 $emminer_version="2.16b";                # used in verifying current version and in displays
-$emminer_version_date="18 Feb 2026";
+$emminer_version_date="8 July 2026";
 $emailcontact="nonegiven";  # email address for emminer.pl routine comments/issues
 $thispgm="EMminer";                     # variable holds the name of this routine
 
@@ -610,6 +610,8 @@ sub dbqueries
             $emminer_endtime="$hour:$min:$sec";
             if ($debug) { print "end $today $emminer_endtime";}
             print NEWFL "   Endtime  $sep $emminer_endtime\n";
+            print NEWFL "  $sep \n";
+            print NEWFL " DBUStatus: $sep ".`echo $empass | em DBUStatus`."\n";
             print NEWFL "$myfooter";
             close NEWFL;
             system "$oscopy $new $sqloutfile > $bitbucket";
