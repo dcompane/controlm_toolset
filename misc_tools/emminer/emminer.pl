@@ -35,7 +35,7 @@
 # For information on SDPX, https://spdx.org/licenses/BSD-3-Clause.html
 
 
-$emminer_version="2.16a";                # used in verifying current version and in displays
+$emminer_version="2.16b";                # used in verifying current version and in displays
 $emminer_version_date="18 Feb 2026";
 $emailcontact="nonegiven";  # email address for emminer.pl routine comments/issues
 $thispgm="EMminer";                     # variable holds the name of this routine
@@ -80,7 +80,10 @@ print "\n";
 #FUTURE WORK
 # 1. Add CTMS database credentials request to enable additional queries (such as Outputs, Agents OS, and else).
 
-# Feb 2026 v2.16a
+# July 2026 v2.16b
+#           -   (dc) validate visually password not containing special chars other than "_"
+#           -   (dc) commented osclear after before processing the emminer
+# July 2026 v2.16a
 #           -   (dc) Attempt to fix an issue with the Oracle password containing @.
 #               NOTE: Control-M documentation states that the password can only contain alphanumeric and "_", but not many RTFM. (F=Fantastic)
 # Feb 2026 v2.16
@@ -392,7 +395,6 @@ else
 
 print ("emminer.pl the data miner is collecting needed info ... \n\n");
 
-
 &dbqueries;                             # run a series of selects against the EM db
 
 
@@ -600,6 +602,8 @@ sub dbqueries
             print NEWFL " emminer version $sep "."v$emminer_version\n";
             print NEWFL " emminer release date $sep "."$emminer_version_date\n";
             print NEWFL " run on $sep "."$emminer_host\n";
+            print NEWFL " DBO Password masked: $sep "."$emminer_masked\n";
+            print NEWFL " sqlcmd masked: $sep "."$sqlcmd_masked\n";
             print NEWFL "  $sep \n";
             print NEWFL " Starttime  $sep $emminer_starttime\n";
             &gettime();                    # reaccess the ending time of this routine and put it on the spreadsheet
@@ -3848,7 +3852,24 @@ getpswd:
    chomp $ans;                                  #remove carrage return
    if ("$ans" ne "" ) { $empass=$ans; }
    if ($dbtype eq "P") { $ENV{PGPASSWORD} = "$empass"; }
-   #if (!$debug) {system "$osclear";}                #clear screen to hide entered password
+   #validate that password does not contain any special characters that will cause problems with the command line sql calls
+   $empass_masked = $empass;
+   $empass_masked =~ s/[A-Za-z0-9]/_/g;
+
+   if ($empass =~ /[@&|><]/)
+   {
+      print "\n\n --- ERROR ---  The password you entered contains a special character that will cause problems with the command line sql calls.\n";
+      print " The password (masked alphanumerics) you entered was: $empass_masked\n";
+      print "                Please re-run EMminer and enter a password without any of these characters: & $ % * ! # . @ [ ] { } : ; \‘ \“ \` / \n";
+      print " We will try running EMMiner, but may not work correctly.\n";
+      # Maybe in the future we will just exit.
+      #        print "                Exiting EMminer now.\n\n";
+      #        exit;
+   }
+      # In case we want to print  for a passowrd with only special characters, we can use the following code to mask the password.  But for now, we will just display the password as entered.
+      #    $empass_masked = $empass;
+      #    $empass_masked =~ s/[A-Za-z0-9]/_/g;
+      #if (!$debug) {system "$osclear";}                #clear screen to hide entered password
    print "\n\n";
 
 
@@ -4297,8 +4318,8 @@ cf:
     {
 
       print "   --> DB access verified\n";
-
-      if (!$debug) {system "$osclear";}
+      # Removed the clear screen to see prior messages.
+      #if (!$debug) {system "$osclear";}
     }
 }  # end of testdb subroutine
 
@@ -4552,8 +4573,10 @@ sub initdbclient
     }
   else                      # make needed Oracle assignments
     {
-      #$sqlcmd = "sqlplus -L -S $emuser/\'$empass\'\@$server ";      # -L for single logon attempt
       $sqlcmd = "sqlplus -L -S $emuser/\"".$empass."\"\@$server ";      # -L for single logon attempt
+      $sqlcmd_masked = "sqlplus -L -S $emuser/\"".$empass_masked."\"\@$server ";      # -L for single logon attempt
+      print ("sqlcmd masked: $sqlcmd_masked\n\n");
+      #$sqlcmd = "sqlplus -L -S $emuser/\'$empass\'\@$server ";      # -L for single logon attempt
       # $sqlcmd = "sqlplus -L -S $emuser/$empass\@$server ";      # -L for single logon attempt
       $sqlio = "\@$sqlinfile > $sqloutfile";
       #$calio = "\@$calsql > $calsqlout";
