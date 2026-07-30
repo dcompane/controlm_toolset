@@ -112,7 +112,7 @@ fi
 # Compare versions
 echo "Current version: $current_build_raw"
 echo "Latest version:  $latest_txt"
-if (( $(awk "BEGIN {print ($current_build > $latest_version)}") )); then
+if (( $(awk "BEGIN {print ($current_build >= $latest_version)}") )); then
   echo "Nothing to do. Latest version less or equal to current. Exiting (rc=98)."
   exit 98
 else

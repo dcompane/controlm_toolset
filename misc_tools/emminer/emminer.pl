@@ -4974,272 +4974,272 @@ sub User_cntl_c_catcher
         }   # end of subroutine User_cntl_c_catcher
 
 
-#-----------------------------------
-# check for newer version of EMminer
-#-----------------------------------
+# #-----------------------------------
+# # check for newer version of EMminer
+# #-----------------------------------
 
-sub Versioncheck    # hit the internet site to see if this is the most recent version of this routine
-{
+# sub Versioncheck    # hit the internet site to see if this is the most recent version of this routine
+# {
 
-    close currentver;
-    if (-e "$bitbucket")     #verify that the file to be erased, exists
-        {                        # erasing the general junk file
+#     close currentver;
+#     if (-e "$bitbucket")     #verify that the file to be erased, exists
+#         {                        # erasing the general junk file
 
-            if (-e "emminer.version.txt")
-                  {
-                          if ($debug) {print " -- saving emminer.version.txt (emminer.version.previous.txt)\n";}
-                          system("$oscopy emminer.version.txt emminer.version.previous.txt > $bitbucket");
-                          if ($debug) {print " -- eraseing old version file, $oserase emminer.version.txt\n";}
-                      system("$oserase emminer.version.txt");
-                  }
-        }
+#             if (-e "emminer.version.txt")
+#                   {
+#                           if ($debug) {print " -- saving emminer.version.txt (emminer.version.previous.txt)\n";}
+#                           system("$oscopy emminer.version.txt emminer.version.previous.txt > $bitbucket");
+#                           if ($debug) {print " -- eraseing old version file, $oserase emminer.version.txt\n";}
+#                       system("$oserase emminer.version.txt");
+#                   }
+#         }
 
-    &Openordie("ftpcommands :: $ftpcommands :: > :: Cannot access temp file $ftpcommands Check file and directory permissions and ownership.\n");
-    print ftpcommands "anonymous\n";
-    print ftpcommands "emminer\n";
-    print ftpcommands "cd pub\n";
-    print ftpcommands "cd cannon\n";
-    print ftpcommands "get emminer.version.txt\n";
-    print ftpcommands "bye\n";
-    close ftpcommands;
-    if ($debug) {print "\nTrying to access internet site to check for more recent version.";}
-    close tempfile;
-    print "\nVerifying most recent version from internet ...\n";
-    if ($debug)
-       {
-           print "debug is on, showing ftp commands which will check new version\n";
-           print "-----------------------------------------------------------------\n";
-           print " ftpsite: $ftpversionsite\n";
-           system ("$ostype $ftpcommands");
-           print "-----------------------------------------------------------------\n";
-       }
-    system ("ftp -s:$ftpcommands $ftpversionsite > $tempfile");
+#     &Openordie("ftpcommands :: $ftpcommands :: > :: Cannot access temp file $ftpcommands Check file and directory permissions and ownership.\n");
+#     print ftpcommands "anonymous\n";
+#     print ftpcommands "emminer\n";
+#     print ftpcommands "cd pub\n";
+#     print ftpcommands "cd cannon\n";
+#     print ftpcommands "get emminer.version.txt\n";
+#     print ftpcommands "bye\n";
+#     close ftpcommands;
+#     if ($debug) {print "\nTrying to access internet site to check for more recent version.";}
+#     close tempfile;
+#     print "\nVerifying most recent version from internet ...\n";
+#     if ($debug)
+#        {
+#            print "debug is on, showing ftp commands which will check new version\n";
+#            print "-----------------------------------------------------------------\n";
+#            print " ftpsite: $ftpversionsite\n";
+#            system ("$ostype $ftpcommands");
+#            print "-----------------------------------------------------------------\n";
+#        }
+#     system ("ftp -s:$ftpcommands $ftpversionsite > $tempfile");
 
-    &Openordie("ftpresults:: $tempfile :: < :: Cannot access temp file $tempfile Check file and directory permissions and ownership.\n");
-    if ($debug)
-       {
-          print "-- here are the results from the ftp attempt\n";
-          system ("$ostype $tempfile");
-          &Pauser(4678);
-       }
-    while (<ftpresults>)
-       {
+#     &Openordie("ftpresults:: $tempfile :: < :: Cannot access temp file $tempfile Check file and directory permissions and ownership.\n");
+#     if ($debug)
+#        {
+#           print "-- here are the results from the ftp attempt\n";
+#           system ("$ostype $tempfile");
+#           &Pauser(4678);
+#        }
+#     while (<ftpresults>)
+#        {
 
-           if ((index($_,"Transfer OK") > -1) || (index($_,"Transfer complete") > -1))
-           {
-               if ($debug) {print " Done \n";}
-               goto ckver;
-           }
-       }
-       if ($debug) { print " -- user $username version check to internet site $ftpversionsite failed";}
-       if ($debug) {print " -- restoring pre ftp attempt emminer.version.txt\n";}
-       system("$osrename emminer.version.previous.txt emminer.version.txt");
-       print " Was unable to verify the version from internet site $ftpversionsite, sorry\n";
-       print " You could email $emailcontact to request or verify newest version.\n";
-       print " You are currently running $emminer_version.\n\n";
-       print " Also you could manually download the file by:\n";
-       print "     ftp $ftpversionsite\n";
-       print "     <use anonymous for the user>\n";
-       print "     <use your email name for the password>\n";
-       print "     cd pub\n";
-       print "     cd cannon\n";
-       print "     get emminer.pl      <-- if you want the perl source\n";
-       print "     bin\n";
-       print "     get emminer.exe     <-- if you want the Windows executable (PERL not required)\n";
-       print "     get emminer_user_guide.doc\n";
-       print "     bye\n\n";
-       $pauseneeded=1;
-       close ftpresults;
-       return;
-
-
-ckver:
-    close ftpresults;
-    &Openordie("currentver:: emminer.version.txt :: < :: Cannot access latest version file emminer.version.txt.\n");
-    &gettime;
-    if ($verbose)
-       {
-           print "--Checking this routines version of $emminer_version to latest at the ftp site\n";
-       }
-    while (<currentver>)
-    {
-        chomp;
-
-        @ver = split(/::/,"$_");
-        if ($verbose) {print "@ver[0]  @ver[1]\n";}
-        if ($debug) {print "-- internet ver=@ver[0]  @ver[1]  myversion=$emminer_version.\n";}
-
-        $tv=@ver[0];
-
-        $ltv=length($tv);
-        $tv=lc($tv);
-        $gotp1=0;
-        $gotp2=0;
-        $gotp3=0;
-        $p1=$p2=$p3="";
-        for ($sc=1;$sc <=$ltv;$sc++)
-            {
-                $nc=substr($tv,0,1);
-                $tv=substr($tv,1);
-                $nn="char";
-                if ($nc =~ /^-?\d/) {$nn="numeric";}
-                if ($nn eq "char") {$gotp1=1;}
-                if ($gotp1 == 0) {$p1="$p1$nc";next;}
-                if ($nc eq ".") {$gotp2=1;next;}
-                if ($gotp2 == 0) {$p2="$p2$nc";next;}
-                $p3="$p3$nc";
-            }
-        $mp1=$mp2=$mp3="";
-        $lmv=length($emminer_version);
-        $mv=lc($emminer_version);
-        $gotp1=0;
-        $gotp2=0;
-        $gotp3=0;
-        for ($sc=1;$sc <=$lmv;$sc++)
-            {
-                $nc=substr($mv,0,1);
-                $mv=substr($mv,1);
-                $nn="char";
-                if ($nc =~ /^-?\d/) {$nn="numeric";}
-                if ($nn eq "char") {$gotp1=1;}
-                if ($gotp1 == 0) {$mp1="$mp1$nc";next;}
-                if ($nc eq ".") {$gotp2=1;next;}
-                if ($gotp2 == 0) {$mp2="$mp2$nc";next;}
-                $mp3="$mp3$nc";
-            }
-
-        $newer=0;
-        if ($p1 > $mp1)
-           {
-               if ($debug) {print "-- part 1 of version is higher on internet version ($p1 > $mp1)\n";}
-               $newer=1;
-           }
-        if (($p1 eq $mp1) && ($p2 gt $mp2))
-           {
-               if ($debug) {print "-- part 1 equal but part 2 of version is higher on internet version (p1=$p1, mp2=$mp2, p2=$p2 > mp2=$mp2)\n";}
-               $newer=1;
-           }
-        if (($p1 eq $mp1) && ($p2 eq $mp2) && ($p3 > $mp3))
-           {
-               if ($debug) {print "-- part 1 & 2 equal but part 3 of version is higher on internet version ($p1=$mp1, $p2=$mp2, $p3=$p3 > $mp3=$mp3)\n";}
-               $newer=1;
-           }
-
-        if ($newer == 0)
-           {
-               print "Your version of EMminer is up to date\n\n";
-               return;
-           }
-        else
-           {
-wantnv:
-               print "A newer version (@ver[0]) of EMminer was released @ver[1], would you like it [ q, cancel, or (y/n)]? ";
-               $ans=<STDIN>; chomp($ans);$ans=lc($ans);
-                if (($ans eq "?") || ($ans eq "help"))
-                     {
-                     print "\nThe version of the EMminer routine your using has a new release that is available\n";
-                      print "for download.  Would you like to have it automatically downloaded for you?\n";
-                      goto wantnv;
-                     }
-               if ($ans ne "y")
-                  {
-                      $nop=1;
-                      return;
-                  }
-               else {goto updver;}
-           }
+#            if ((index($_,"Transfer OK") > -1) || (index($_,"Transfer complete") > -1))
+#            {
+#                if ($debug) {print " Done \n";}
+#                goto ckver;
+#            }
+#        }
+#        if ($debug) { print " -- user $username version check to internet site $ftpversionsite failed";}
+#        if ($debug) {print " -- restoring pre ftp attempt emminer.version.txt\n";}
+#        system("$osrename emminer.version.previous.txt emminer.version.txt");
+#        print " Was unable to verify the version from internet site $ftpversionsite, sorry\n";
+#        print " You could email $emailcontact to request or verify newest version.\n";
+#        print " You are currently running $emminer_version.\n\n";
+#        print " Also you could manually download the file by:\n";
+#        print "     ftp $ftpversionsite\n";
+#        print "     <use anonymous for the user>\n";
+#        print "     <use your email name for the password>\n";
+#        print "     cd pub\n";
+#        print "     cd cannon\n";
+#        print "     get emminer.pl      <-- if you want the perl source\n";
+#        print "     bin\n";
+#        print "     get emminer.exe     <-- if you want the Windows executable (PERL not required)\n";
+#        print "     get emminer_user_guide.doc\n";
+#        print "     bye\n\n";
+#        $pauseneeded=1;
+#        close ftpresults;
+#        return;
 
 
-    }
-return;  # don't know if this should ever be hit but to be safe I put it here
+# ckver:
+#     close ftpresults;
+#     &Openordie("currentver:: emminer.version.txt :: < :: Cannot access latest version file emminer.version.txt.\n");
+#     &gettime;
+#     if ($verbose)
+#        {
+#            print "--Checking this routines version of $emminer_version to latest at the ftp site\n";
+#        }
+#     while (<currentver>)
+#     {
+#         chomp;
 
-updver:
-                if (-e "emminer_user_guide.doc")
-                  {
-                      system("$oserase emminer_user_guide.doc");
-                  }
-        if ($debug) {print " -- user $username requested download of newer version";}
-&Openordie("ftpcommands:: $ftpcommands :: > :: Cannot access $ftpcommands\n");
-    print ftpcommands "anonymous\n";
-    print ftpcommands "emminer\n";
-    print ftpcommands "cd pub\n";
-    print ftpcommands "cd cannon\n";
-    print ftpcommands "get emminer.pl emminer.pl.newer\n";
-    print ftpcommands "bin\n";
-    print ftpcommands "get emminer.exe emminer.exe.newer\n";
-    print ftpcommands "get emminer_user_guide.doc.newer\n";
-    print ftpcommands "bye\n";
-    close ftpcommands;
-    print "\naccessing site to download the newer version ... ";
-    if ($verbose)
-       {
-           print "verbose is on, showing ftp commands which will download the new version\n";
-           print "-----------------------------------------------------------------\n";
-           print " ftpsite: $ftpversionsite\n";
-           system ("$ostype $ftpcommands");
-           print "-----------------------------------------------------------------\n";
-       }
-    system ("ftp -s:$ftpcommands $ftpversionsite > $tempfile");
-    if (($debug) || ($verbose))
-       {
-          print "debug here are the results from the ftp attempt\n";
-          system ("$ostype $tempfile");
-          &Pauser(4842);
-       }
-    &Openordie("ftpresults:: $tempfile :: < :: Cannot access $tempfile\n");
-    while (<ftpresults>)
-       {
-           if ((index($_,"Transfer OK") > -1) || (index($_,"Transfer complete")))
-           {
-               if ($debug) {print "user $username new version downloaded successfully";}
-               print " Done \n";
-               print "Now activating newer version...\n";
-                   $|++;                                    # causes the perl print buffer to immediately flush
+#         @ver = split(/::/,"$_");
+#         if ($verbose) {print "@ver[0]  @ver[1]\n";}
+#         if ($debug) {print "-- internet ver=@ver[0]  @ver[1]  myversion=$emminer_version.\n";}
 
-               sleep 2;
-               &Openordie("tempfile:: emminer.activate.newversion.pl :: < :: Cannot access emminer.activate.newversion.pl for new version activation\n");
-               print tempfile ("sleep 2;\n");
-               print tempfile ("system $dq$osrename emminer.pl emminer.pl.olderversion.$emminer_version.txt $dq;\n");
-               print tempfile ("system $dq$osrename emminer.exe emminer.exe.olderversion.$emminer_version.txt $dq;\n");
-               print tempfile ("system $dq$osrename emminer.pl.newer emminer.pl$dq;\n");
-               print tempfile ("system $dq$osrename emminer.exe.newer emminer.exe$dq;\n");
-               print tempfile ("system $dq$osrename emminer_user_guide.doc.newer emminer_user_guide.doc$dq;\n");
-#              print tempfile ("system $dq start emminer.pl$dq;\n");
-               close tempfile;
-               print "Hit enter to exit the active program, then just rerun emminer for the new version ...";
-               $nop=<STDIN>;
-               if ($iwin > -1)  # this is a windows machine
-                  {
-                    system("start perl emminer.activate.newversion.pl");
-                  }
-               else
-                  {
-                    system("emminer.activate.newversion.pl");
-                  }
-               exit 0;
+#         $tv=@ver[0];
 
-           }
-       }
-       close ftpresults;
-       if ($debug) {print " -- user $username download of newer version failed";}
+#         $ltv=length($tv);
+#         $tv=lc($tv);
+#         $gotp1=0;
+#         $gotp2=0;
+#         $gotp3=0;
+#         $p1=$p2=$p3="";
+#         for ($sc=1;$sc <=$ltv;$sc++)
+#             {
+#                 $nc=substr($tv,0,1);
+#                 $tv=substr($tv,1);
+#                 $nn="char";
+#                 if ($nc =~ /^-?\d/) {$nn="numeric";}
+#                 if ($nn eq "char") {$gotp1=1;}
+#                 if ($gotp1 == 0) {$p1="$p1$nc";next;}
+#                 if ($nc eq ".") {$gotp2=1;next;}
+#                 if ($gotp2 == 0) {$p2="$p2$nc";next;}
+#                 $p3="$p3$nc";
+#             }
+#         $mp1=$mp2=$mp3="";
+#         $lmv=length($emminer_version);
+#         $mv=lc($emminer_version);
+#         $gotp1=0;
+#         $gotp2=0;
+#         $gotp3=0;
+#         for ($sc=1;$sc <=$lmv;$sc++)
+#             {
+#                 $nc=substr($mv,0,1);
+#                 $mv=substr($mv,1);
+#                 $nn="char";
+#                 if ($nc =~ /^-?\d/) {$nn="numeric";}
+#                 if ($nn eq "char") {$gotp1=1;}
+#                 if ($gotp1 == 0) {$mp1="$mp1$nc";next;}
+#                 if ($nc eq ".") {$gotp2=1;next;}
+#                 if ($gotp2 == 0) {$mp2="$mp2$nc";next;}
+#                 $mp3="$mp3$nc";
+#             }
 
-       print " failed, sorry\n";
-cmgs:  print "\nWould you like to see the messages back from the attempt (y/n)?\n";
-       $ans=<STDIN>; $ans=lc($ans);
-       if ($ans eq "y")
-          {
-              system ("$ostype $tempfile");
-              print "\nHit enter to continue ...";
-              $nop=<STDIN>;
-          }
-       if (($ans eq "?") || ($ans eq "help"))
-         {
-             print "\nLooks like the attempt to connect to the Internet to access the new version of\n";
-             print "this routine has failed.  If you like, I will display the messages from the attempt.\n";
-             goto cmgs;
-         }
+#         $newer=0;
+#         if ($p1 > $mp1)
+#            {
+#                if ($debug) {print "-- part 1 of version is higher on internet version ($p1 > $mp1)\n";}
+#                $newer=1;
+#            }
+#         if (($p1 eq $mp1) && ($p2 gt $mp2))
+#            {
+#                if ($debug) {print "-- part 1 equal but part 2 of version is higher on internet version (p1=$p1, mp2=$mp2, p2=$p2 > mp2=$mp2)\n";}
+#                $newer=1;
+#            }
+#         if (($p1 eq $mp1) && ($p2 eq $mp2) && ($p3 > $mp3))
+#            {
+#                if ($debug) {print "-- part 1 & 2 equal but part 3 of version is higher on internet version ($p1=$mp1, $p2=$mp2, $p3=$p3 > $mp3=$mp3)\n";}
+#                $newer=1;
+#            }
 
-}
+#         if ($newer == 0)
+#            {
+#                print "Your version of EMminer is up to date\n\n";
+#                return;
+#            }
+#         else
+#            {
+# wantnv:
+#                print "A newer version (@ver[0]) of EMminer was released @ver[1], would you like it [ q, cancel, or (y/n)]? ";
+#                $ans=<STDIN>; chomp($ans);$ans=lc($ans);
+#                 if (($ans eq "?") || ($ans eq "help"))
+#                      {
+#                      print "\nThe version of the EMminer routine your using has a new release that is available\n";
+#                       print "for download.  Would you like to have it automatically downloaded for you?\n";
+#                       goto wantnv;
+#                      }
+#                if ($ans ne "y")
+#                   {
+#                       $nop=1;
+#                       return;
+#                   }
+#                else {goto updver;}
+#            }
+
+
+#     }
+# return;  # don't know if this should ever be hit but to be safe I put it here
+
+# updver:
+#                 if (-e "emminer_user_guide.doc")
+#                   {
+#                       system("$oserase emminer_user_guide.doc");
+#                   }
+#         if ($debug) {print " -- user $username requested download of newer version";}
+# &Openordie("ftpcommands:: $ftpcommands :: > :: Cannot access $ftpcommands\n");
+#     print ftpcommands "anonymous\n";
+#     print ftpcommands "emminer\n";
+#     print ftpcommands "cd pub\n";
+#     print ftpcommands "cd cannon\n";
+#     print ftpcommands "get emminer.pl emminer.pl.newer\n";
+#     print ftpcommands "bin\n";
+#     print ftpcommands "get emminer.exe emminer.exe.newer\n";
+#     print ftpcommands "get emminer_user_guide.doc.newer\n";
+#     print ftpcommands "bye\n";
+#     close ftpcommands;
+#     print "\naccessing site to download the newer version ... ";
+#     if ($verbose)
+#        {
+#            print "verbose is on, showing ftp commands which will download the new version\n";
+#            print "-----------------------------------------------------------------\n";
+#            print " ftpsite: $ftpversionsite\n";
+#            system ("$ostype $ftpcommands");
+#            print "-----------------------------------------------------------------\n";
+#        }
+#     system ("ftp -s:$ftpcommands $ftpversionsite > $tempfile");
+#     if (($debug) || ($verbose))
+#        {
+#           print "debug here are the results from the ftp attempt\n";
+#           system ("$ostype $tempfile");
+#           &Pauser(4842);
+#        }
+#     &Openordie("ftpresults:: $tempfile :: < :: Cannot access $tempfile\n");
+#     while (<ftpresults>)
+#        {
+#            if ((index($_,"Transfer OK") > -1) || (index($_,"Transfer complete")))
+#            {
+#                if ($debug) {print "user $username new version downloaded successfully";}
+#                print " Done \n";
+#                print "Now activating newer version...\n";
+#                    $|++;                                    # causes the perl print buffer to immediately flush
+
+#                sleep 2;
+#                &Openordie("tempfile:: emminer.activate.newversion.pl :: < :: Cannot access emminer.activate.newversion.pl for new version activation\n");
+#                print tempfile ("sleep 2;\n");
+#                print tempfile ("system $dq$osrename emminer.pl emminer.pl.olderversion.$emminer_version.txt $dq;\n");
+#                print tempfile ("system $dq$osrename emminer.exe emminer.exe.olderversion.$emminer_version.txt $dq;\n");
+#                print tempfile ("system $dq$osrename emminer.pl.newer emminer.pl$dq;\n");
+#                print tempfile ("system $dq$osrename emminer.exe.newer emminer.exe$dq;\n");
+#                print tempfile ("system $dq$osrename emminer_user_guide.doc.newer emminer_user_guide.doc$dq;\n");
+# #              print tempfile ("system $dq start emminer.pl$dq;\n");
+#                close tempfile;
+#                print "Hit enter to exit the active program, then just rerun emminer for the new version ...";
+#                $nop=<STDIN>;
+#                if ($iwin > -1)  # this is a windows machine
+#                   {
+#                     system("start perl emminer.activate.newversion.pl");
+#                   }
+#                else
+#                   {
+#                     system("emminer.activate.newversion.pl");
+#                   }
+#                exit 0;
+
+#            }
+#        }
+#        close ftpresults;
+#        if ($debug) {print " -- user $username download of newer version failed";}
+
+#        print " failed, sorry\n";
+# cmgs:  print "\nWould you like to see the messages back from the attempt (y/n)?\n";
+#        $ans=<STDIN>; $ans=lc($ans);
+#        if ($ans eq "y")
+#           {
+#               system ("$ostype $tempfile");
+#               print "\nHit enter to continue ...";
+#               $nop=<STDIN>;
+#           }
+#        if (($ans eq "?") || ($ans eq "help"))
+#          {
+#              print "\nLooks like the attempt to connect to the Internet to access the new version of\n";
+#              print "this routine has failed.  If you like, I will display the messages from the attempt.\n";
+#              goto cmgs;
+#          }
+
+# }
 
 #--------------------------------------------#
 # routine Openordie                          #
