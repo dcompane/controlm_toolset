@@ -1,4 +1,3 @@
-
 # Control-M Report Plugin
 
 ## Changes on this version
@@ -27,8 +26,6 @@
 
 1. Upload the attached file
 2. Deploy the integration using Application Integrator or AAPI CLI
-3. 
-4. 
 
 ## Description
 
@@ -44,7 +41,7 @@ Run a job that creates a CTM report and downloads it to a file locally at the ag
 
 * The download location is the agent (see note in the name field)
 * The download location can be changed by updating the EM parameter RF_SHARED_FILE_SYSTEM_BASE_PATH
-  * See Reporting documentation
+  * See [Reporting documentation](https://documents.bmc.com/supportu/9.0.22/en-US/Documentation/Report_Management.htm#ConfiguringControlMReportsinaControlMEMDistributedEnvironment)
 
 ## Control-M
 
