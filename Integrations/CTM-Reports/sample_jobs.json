@@ -1,0 +1,685 @@
+{
+  "DCO-VAS-Reports_OS" : {
+    "Type" : "Folder",
+    "Variables" : [ {
+      "fldr_mode" : "OS"
+    }, {
+      "repdir" : "/home/saasAgSand/reports"
+    }, {
+      "thisdate" : "%%$YEAR.-%%MONTH.-%%DAY"
+    } ],
+    "ControlmServer" : "IN01",
+    "OrderMethod" : "Manual",
+    "RunAs" : "saasAgSand",
+    "SubApplication" : "DCO_VAS_REPORTS",
+    "CreatedBy" : "daniel_companeetz@bmc.com",
+    "Application" : "DCO",
+    "When" : {
+      "RuleBasedCalendars" : {
+        "Included" : [ "EVERYDAY" ],
+        "EVERYDAY" : {
+          "Type" : "Calendar:RuleBased",
+          "When" : {
+            "DaysRelation" : "OR",
+            "WeekDays" : [ "NONE" ],
+            "MonthDays" : [ "ALL" ]
+          }
+        }
+      }
+    },
+    "DCO_VAS-OH-Failure-N-Exception" : {
+      "Type" : "SubFolder",
+      "SubApplication" : "DCO_VAS_REPORTS",
+      "AdjustEvents" : false,
+      "ReferencePath" : "DCO_VAS-Reports_OS_Ref",
+      "CreatedBy" : "daniel_companeetz@bmc.com",
+      "Application" : "DCO",
+      "Variables" : [ {
+        "unique" : "03"
+      }, {
+        "filename" : "VAS-OH-Failure-N-Exception"
+      }, {
+        "repname" : "VAS-OH-Failure & Exception"
+      } ],
+      "When" : {
+        "DaysRelation" : "OR",
+        "RuleBasedCalendars" : {
+          "Included" : [ "USE PARENT" ]
+        }
+      },
+      "eventsToAdd" : {
+        "Type" : "AddEvents",
+        "Events" : [ {
+          "Event" : "DCO_VAS-OH-Failure-N-Exception-TO-DCO_VAS-Reports_OS_Xfer"
+        } ]
+      }
+    },
+    "DCO_VAS-Estate_Visibility" : {
+      "Type" : "SubFolder",
+      "SubApplication" : "DCO_VAS_REPORTS",
+      "AdjustEvents" : false,
+      "ReferencePath" : "DCO_VAS-Reports_OS_Ref",
+      "CreatedBy" : "daniel_companeetz@bmc.com",
+      "Application" : "DCO",
+      "Variables" : [ {
+        "unique" : "02"
+      }, {
+        "repname" : "VAS-Estate Visibility"
+      }, {
+        "filename" : "Daily_Jobs_Report_for_Prod"
+      } ],
+      "When" : {
+        "DaysRelation" : "OR",
+        "RuleBasedCalendars" : {
+          "Included" : [ "USE PARENT" ]
+        }
+      },
+      "eventsToAdd" : {
+        "Type" : "AddEvents",
+        "Events" : [ {
+          "Event" : "DCO_VAS-Estate_Visibility-TO-DCO_VAS-Reports_OS_Xfer"
+        } ]
+      }
+    },
+    "DCO_VAS-OM-Cyclic" : {
+      "Type" : "SubFolder",
+      "SubApplication" : "DCO_VAS_REPORTS",
+      "AdjustEvents" : false,
+      "ReferencePath" : "DCO_VAS-Reports_OS_Ref",
+      "CreatedBy" : "daniel_companeetz@bmc.com",
+      "Application" : "DCO",
+      "Variables" : [ {
+        "unique" : "04"
+      }, {
+        "repname" : "VAS-OM-Cyclic"
+      }, {
+        "filename" : "CYCLIC_JOB_REPORT"
+      } ],
+      "When" : {
+        "DaysRelation" : "OR",
+        "RuleBasedCalendars" : {
+          "Included" : [ "USE PARENT" ]
+        }
+      },
+      "eventsToAdd" : {
+        "Type" : "AddEvents",
+        "Events" : [ {
+          "Event" : "DCO_VAS-OM-Cyclic-TO-DCO_VAS-Reports_OS_Xfer"
+        } ]
+      }
+    },
+    "DCO_VAS_OH_SLA" : {
+      "Type" : "SubFolder",
+      "SubApplication" : "DCO_VAS_REPORTS",
+      "AdjustEvents" : false,
+      "ReferencePath" : "DCO_VAS-Reports_OS_Ref",
+      "CreatedBy" : "daniel_companeetz@bmc.com",
+      "Application" : "DCO",
+      "Variables" : [ {
+        "unique" : "01"
+      }, {
+        "filename" : "SLA-REPORT"
+      }, {
+        "repname" : "VAS-OH-SLA"
+      } ],
+      "When" : {
+        "DaysRelation" : "OR",
+        "RuleBasedCalendars" : {
+          "Included" : [ "USE PARENT" ]
+        }
+      },
+      "eventsToAdd" : {
+        "Type" : "AddEvents",
+        "Events" : [ {
+          "Event" : "DCO_VAS_OH_SLA-TO-DCO_VAS-Reports_OS_Xfer"
+        } ]
+      }
+    },
+    "DCO_VAS-Reports_OS_Xfer" : {
+      "Type" : "SubFolder",
+      "SubApplication" : "DCO_VAS_REPORTS",
+      "AdjustEvents" : false,
+      "ReferencePath" : "DCO_VAS-Reports_Xfer",
+      "CreatedBy" : "daniel_companeetz@bmc.com",
+      "Application" : "DCO",
+      "Variables" : [ {
+        "unique" : "10"
+      } ],
+      "When" : {
+        "DaysRelation" : "OR",
+        "RuleBasedCalendars" : {
+          "Included" : [ "USE PARENT" ]
+        }
+      },
+      "eventsToWaitFor" : {
+        "Type" : "WaitForEvents",
+        "Events" : [ {
+          "Event" : "DCO_VAS-Estate_Visibility-TO-DCO_VAS-Reports_OS_Xfer"
+        }, {
+          "Event" : "DCO_VAS-OH-Failure-N-Exception-TO-DCO_VAS-Reports_OS_Xfer"
+        }, {
+          "Event" : "DCO_VAS-OM-Cyclic-TO-DCO_VAS-Reports_OS_Xfer"
+        }, {
+          "Event" : "DCO_VAS_OH_SLA-TO-DCO_VAS-Reports_OS_Xfer"
+        } ]
+      },
+      "eventsToDelete" : {
+        "Type" : "DeleteEvents",
+        "Events" : [ {
+          "Event" : "DCO_VAS-Estate_Visibility-TO-DCO_VAS-Reports_OS_Xfer"
+        }, {
+          "Event" : "DCO_VAS-OH-Failure-N-Exception-TO-DCO_VAS-Reports_OS_Xfer"
+        }, {
+          "Event" : "DCO_VAS-OM-Cyclic-TO-DCO_VAS-Reports_OS_Xfer"
+        }, {
+          "Event" : "DCO_VAS_OH_SLA-TO-DCO_VAS-Reports_OS_Xfer"
+        } ]
+      }
+    }
+  },
+  "DCO-VAS-Reports_AppInt" : {
+    "Type" : "Folder",
+    "Variables" : [ {
+      "fldr_mode" : "AppInt"
+    }, {
+      "repdir" : "/home/saasAgSand/reports"
+    }, {
+      "thisdate" : "%%$YEAR.-%%MONTH.-%%DAY"
+    } ],
+    "ControlmServer" : "IN01",
+    "OrderMethod" : "Manual",
+    "RunAs" : "saasAgSand",
+    "SubApplication" : "DCO_VAS_REPORTS",
+    "CreatedBy" : "daniel_companeetz@bmc.com",
+    "Application" : "DCO",
+    "When" : {
+      "RuleBasedCalendars" : {
+        "Included" : [ "EVERYDAY" ],
+        "EVERYDAY" : {
+          "Type" : "Calendar:RuleBased",
+          "When" : {
+            "DaysRelation" : "OR",
+            "WeekDays" : [ "NONE" ],
+            "MonthDays" : [ "ALL" ]
+          }
+        }
+      }
+    },
+    "DCO_VAS-Estate_Visibility" : {
+      "Type" : "SubFolder",
+      "SubApplication" : "DCO_VAS_REPORTS",
+      "AdjustEvents" : false,
+      "ReferencePath" : "DCO_VAS-Reports_AppInt_Ref",
+      "CreatedBy" : "daniel_companeetz@bmc.com",
+      "Application" : "DCO",
+      "Variables" : [ {
+        "unique" : "02"
+      }, {
+        "repname" : "VAS-Estate Visibility"
+      }, {
+        "filename" : "Daily_Jobs_Report_for_Prod"
+      } ],
+      "When" : {
+        "DaysRelation" : "OR",
+        "RuleBasedCalendars" : {
+          "Included" : [ "USE PARENT" ]
+        }
+      },
+      "eventsToAdd" : {
+        "Type" : "AddEvents",
+        "Events" : [ {
+          "Event" : "DCO_VAS-Estate_Visibility-TO-DCO_VAS-Reports_AppInt_Xfer"
+        } ]
+      }
+    },
+    "DCO_VAS-OH-Failure-N-Exception" : {
+      "Type" : "SubFolder",
+      "SubApplication" : "DCO_VAS_REPORTS",
+      "AdjustEvents" : false,
+      "ReferencePath" : "DCO_VAS-Reports_AppInt_Ref",
+      "CreatedBy" : "daniel_companeetz@bmc.com",
+      "Application" : "DCO",
+      "Variables" : [ {
+        "unique" : "03"
+      }, {
+        "filename" : "VAS-OH-Failure-N-Exception"
+      }, {
+        "repname" : "VAS-OH-Failure & Exception"
+      } ],
+      "When" : {
+        "DaysRelation" : "OR",
+        "RuleBasedCalendars" : {
+          "Included" : [ "USE PARENT" ]
+        }
+      },
+      "eventsToAdd" : {
+        "Type" : "AddEvents",
+        "Events" : [ {
+          "Event" : "DCO_VAS-OH-Failure-N-Exception-TO-DCO_VAS-Reports_AppInt_Xfer"
+        } ]
+      }
+    },
+    "DCO_VAS-OM-Cyclic" : {
+      "Type" : "SubFolder",
+      "SubApplication" : "DCO_VAS_REPORTS",
+      "AdjustEvents" : false,
+      "ReferencePath" : "DCO_VAS-Reports_AppInt_Ref",
+      "CreatedBy" : "daniel_companeetz@bmc.com",
+      "Application" : "DCO",
+      "Variables" : [ {
+        "unique" : "04"
+      }, {
+        "repname" : "VAS-OM-Cyclic"
+      }, {
+        "filename" : "CYCLIC_JOB_REPORT"
+      } ],
+      "When" : {
+        "DaysRelation" : "OR",
+        "RuleBasedCalendars" : {
+          "Included" : [ "USE PARENT" ]
+        }
+      },
+      "eventsToAdd" : {
+        "Type" : "AddEvents",
+        "Events" : [ {
+          "Event" : "DCO_VAS-OM-Cyclic-TO-DCO_VAS-Reports_AppInt_Xfer"
+        } ]
+      }
+    },
+    "DCO_VAS_OH_SLA" : {
+      "Type" : "SubFolder",
+      "SubApplication" : "DCO_VAS_REPORTS",
+      "AdjustEvents" : false,
+      "ReferencePath" : "DCO_VAS-Reports_AppInt_Ref",
+      "CreatedBy" : "daniel_companeetz@bmc.com",
+      "Application" : "DCO",
+      "Variables" : [ {
+        "unique" : "01"
+      }, {
+        "filename" : "SLA-REPORT"
+      }, {
+        "repname" : "VAS-OH-SLA"
+      } ],
+      "When" : {
+        "DaysRelation" : "OR",
+        "RuleBasedCalendars" : {
+          "Included" : [ "USE PARENT" ]
+        }
+      },
+      "eventsToAdd" : {
+        "Type" : "AddEvents",
+        "Events" : [ {
+          "Event" : "DCO_VAS_OH_SLA-TO-DCO_VAS-Reports_AppInt_Xfer"
+        } ]
+      }
+    },
+    "DCO_VAS-Reports_AppInt_Xfer" : {
+      "Type" : "SubFolder",
+      "SubApplication" : "DCO_VAS_REPORTS",
+      "AdjustEvents" : false,
+      "ReferencePath" : "DCO_VAS-Reports_Xfer",
+      "CreatedBy" : "daniel_companeetz@bmc.com",
+      "Application" : "DCO",
+      "Variables" : [ {
+        "unique" : "10"
+      } ],
+      "When" : {
+        "DaysRelation" : "OR",
+        "RuleBasedCalendars" : {
+          "Included" : [ "USE PARENT" ]
+        }
+      },
+      "eventsToWaitFor" : {
+        "Type" : "WaitForEvents",
+        "Events" : [ {
+          "Event" : "DCO_VAS-OM-Cyclic-TO-DCO_VAS-Reports_AppInt_Xfer"
+        }, {
+          "Event" : "DCO_VAS-OH-Failure-N-Exception-TO-DCO_VAS-Reports_AppInt_Xfer"
+        }, {
+          "Event" : "DCO_VAS-Estate_Visibility-TO-DCO_VAS-Reports_AppInt_Xfer"
+        }, {
+          "Event" : "DCO_VAS_OH_SLA-TO-DCO_VAS-Reports_AppInt_Xfer"
+        } ]
+      },
+      "eventsToDelete" : {
+        "Type" : "DeleteEvents",
+        "Events" : [ {
+          "Event" : "DCO_VAS-OM-Cyclic-TO-DCO_VAS-Reports_AppInt_Xfer"
+        }, {
+          "Event" : "DCO_VAS-OH-Failure-N-Exception-TO-DCO_VAS-Reports_AppInt_Xfer"
+        }, {
+          "Event" : "DCO_VAS-Estate_Visibility-TO-DCO_VAS-Reports_AppInt_Xfer"
+        }, {
+          "Event" : "DCO_VAS_OH_SLA-TO-DCO_VAS-Reports_AppInt_Xfer"
+        } ]
+      }
+    }
+  },
+  "DCO_VAS-Reports_OS_Ref" : {
+    "Type" : "Folder",
+    "ControlmServer" : "IN01",
+    "ActiveRetentionPolicy" : "CleanEndedOK",
+    "SubApplication" : "DCO_VAS_REPORTS",
+    "CreatedBy" : "daniel_companeetz@bmc.com",
+    "Application" : "DCO",
+    "When" : {
+      "RuleBasedCalendars" : {
+        "Included" : [ "EVERYDAY" ],
+        "EVERYDAY" : {
+          "Type" : "Calendar:RuleBased",
+          "When" : {
+            "DaysRelation" : "OR",
+            "WeekDays" : [ "NONE" ],
+            "MonthDays" : [ "ALL" ]
+          }
+        }
+      }
+    },
+    "DCO_VAS-GenReport" : {
+      "Type" : "Job:Command",
+      "SubApplication" : "DCO_VAS_REPORTS",
+      "Priority" : "High",
+      "Host" : "dco-dc01-saasagsand",
+      "CreatedBy" : "a-zz23b5",
+      "Description" : "Creates a failure and exception report",
+      "RunAs" : "saasAgSand",
+      "Application" : "DCO",
+      "Command" : "ctm reporting report::get \"shared:%%repname.\" csv -o %%repdir./%%filename.-%%thisdate..csv",
+      "When" : {
+        "WeekDays" : [ "NONE" ],
+        "MonthDays" : [ "ALL" ],
+        "DaysRelation" : "OR"
+      },
+      "DCO_VAS_DAILY_JOBS_REPORT" : {
+        "Type" : "Resource:Pool",
+        "Quantity" : "1"
+      },
+      "IfBase:Folder:CompletionStatus_0" : {
+        "Type" : "If:CompletionStatus",
+        "CompletionStatus" : "NOTOK",
+        "DoNotify_0" : {
+          "Type" : "Action:Notify",
+          "Message" : "%%JOBNAME FAILED-PLEASE CONTACT TOOLS TEAM"
+        }
+      },
+      "IfBase:Folder:CompletionStatus_1" : {
+        "Type" : "If:CompletionStatus",
+        "CompletionStatus" : "OK",
+        "Set_0" : {
+          "Type" : "Action:Set",
+          "Variable" : "\\EMAIL_SUBJECT",
+          "Value" : "VAS - Monlthy Prod Job Count"
+        }
+      },
+      "IfBase:Folder:CompletionStatus_2" : {
+        "Type" : "If:CompletionStatus",
+        "CompletionStatus" : "OK",
+        "Set_0" : {
+          "Type" : "Action:Set",
+          "Variable" : "\\RECIPIENT_LIST",
+          "Value" : "john_lee@bmc.com,guilherme_assumpcao@bmc.com,daniel_companeetz@bmc.com,antonio_almeida@bmc.com"
+        }
+      },
+      "IfBase:Folder:CompletionStatus_3" : {
+        "Type" : "If:CompletionStatus",
+        "CompletionStatus" : "OK",
+        "Set_0" : {
+          "Type" : "Action:Set",
+          "Variable" : "\\REPORT_FILE",
+          "Value" : "JOB_COUNT_RPT-%%MONNAM.-%%$YEAR..pdf"
+        }
+      },
+      "eventsToAdd" : {
+        "Type" : "AddEvents",
+        "Events" : [ {
+          "Event" : "DCO_VAS-GenReport-TO-DCO_VAS-ShowRep-%%unique"
+        } ]
+      }
+    },
+    "DCO_VAS-ShowRep" : {
+      "Type" : "Job:Command",
+      "SubApplication" : "DCO_VAS_REPORTS",
+      "Host" : "dco-dc01-saasagsand",
+      "CreatedBy" : "daniel_companeetz@bmc.com",
+      "RunAs" : "saasAgSand",
+      "Application" : "DCO",
+      "Command" : "head -10 %%repdir/%%filename.-%%thisdate..csv",
+      "When" : {
+        "WeekDays" : [ "NONE" ],
+        "MonthDays" : [ "ALL" ],
+        "DaysRelation" : "OR"
+      },
+      "eventsToWaitFor" : {
+        "Type" : "WaitForEvents",
+        "Events" : [ {
+          "Event" : "DCO_VAS-GenReport-TO-DCO_VAS-ShowRep-%%unique"
+        } ]
+      },
+      "eventsToDelete" : {
+        "Type" : "DeleteEvents",
+        "Events" : [ {
+          "Event" : "DCO_VAS-GenReport-TO-DCO_VAS-ShowRep-%%unique"
+        } ]
+      }
+    }
+  },
+  "DCO_VAS-Reports_AppInt_Ref" : {
+    "Type" : "Folder",
+    "ControlmServer" : "IN01",
+    "ActiveRetentionPolicy" : "CleanEndedOK",
+    "SubApplication" : "DCO_VAS_REPORTS",
+    "CreatedBy" : "daniel_companeetz@bmc.com",
+    "Application" : "DCO",
+    "When" : {
+      "RuleBasedCalendars" : {
+        "Included" : [ "EVERYDAY" ],
+        "EVERYDAY" : {
+          "Type" : "Calendar:RuleBased",
+          "When" : {
+            "DaysRelation" : "OR",
+            "WeekDays" : [ "NONE" ],
+            "MonthDays" : [ "ALL" ]
+          }
+        }
+      }
+    },
+    "DCO_VAS-ShowRep" : {
+      "Type" : "Job:Command",
+      "SubApplication" : "DCO_VAS_REPORTS",
+      "Host" : "dco-dc01-saasagsand",
+      "CreatedBy" : "daniel_companeetz@bmc.com",
+      "RunAs" : "saasAgSand",
+      "Application" : "DCO",
+      "Command" : "head -10 %%repdir/%%filename.-%%thisdate..csv",
+      "When" : {
+        "WeekDays" : [ "NONE" ],
+        "MonthDays" : [ "ALL" ],
+        "DaysRelation" : "OR"
+      },
+      "eventsToWaitFor" : {
+        "Type" : "WaitForEvents",
+        "Events" : [ {
+          "Event" : "DCO_VAS-GenReport_AppInt-TO-DCO_VAS-ShowRep-%%unique"
+        } ]
+      },
+      "eventsToDelete" : {
+        "Type" : "DeleteEvents",
+        "Events" : [ {
+          "Event" : "DCO_VAS-GenReport_AppInt-TO-DCO_VAS-ShowRep-%%unique"
+        } ]
+      }
+    },
+    "DCO_VAS-GenReport_AppInt" : {
+      "Type" : "Job:ApplicationIntegrator:AI DCO CTM Reports",
+      "ConnectionProfile" : "DCO_VAS_REPORTS",
+      "AI-Shared Report" : "shared",
+      "AI-Report Format" : "CSV",
+      "AI-Append Date/Time" : "unchecked",
+      "AI-Report Name" : "%%repname",
+      "AI-File Name" : "%%filename-%%thisdate",
+      "SubApplication" : "DCO_VAS_REPORTS",
+      "Host" : "dco-dc01-saasagsand",
+      "CreatedBy" : "daniel_companeetz@bmc.com",
+      "RunAs" : "DCO_VAS_REPORTS",
+      "Application" : "DCO",
+      "When" : {
+        "WeekDays" : [ "NONE" ],
+        "MonthDays" : [ "ALL" ],
+        "DaysRelation" : "OR"
+      },
+      "DCO_VAS_DAILY_JOBS_REPORT" : {
+        "Type" : "Resource:Pool",
+        "Quantity" : "1"
+      },
+      "eventsToAdd" : {
+        "Type" : "AddEvents",
+        "Events" : [ {
+          "Event" : "DCO_VAS-GenReport_AppInt-TO-DCO_VAS-ShowRep-%%unique"
+        } ]
+      }
+    }
+  },
+  "DCO_VAS-Reports_Xfer" : {
+    "Type" : "Folder",
+    "ControlmServer" : "IN01",
+    "ActiveRetentionPolicy" : "CleanEndedOK",
+    "SubApplication" : "DCO_VAS_REPORTS",
+    "CreatedBy" : "daniel_companeetz@bmc.com",
+    "Application" : "DCO",
+    "When" : {
+      "RuleBasedCalendars" : {
+        "Included" : [ "EVERYDAY" ],
+        "EVERYDAY" : {
+          "Type" : "Calendar:RuleBased",
+          "When" : {
+            "DaysRelation" : "OR",
+            "WeekDays" : [ "NONE" ],
+            "MonthDays" : [ "ALL" ]
+          }
+        }
+      }
+    },
+    "DCO_Archive_Reports" : {
+      "Type" : "Job:Command",
+      "SubApplication" : "DCO_VAS_REPORTS",
+      "Host" : "dco-dc01-saasagsand",
+      "CreatedBy" : "daniel_companeetz@bmc.com",
+      "Description" : "Creates a report archive. Note -a does not compress even if called zip on Linux (equivalent to tar).",
+      "RunAs" : "saasAgSand",
+      "Application" : "DCO",
+      "Command" : "cd %%repdir; tar -cvaf reports-%%fldr_mode.-%%thisdate..zip *-%%thisdate..csv",
+      "When" : {
+        "WeekDays" : [ "NONE" ],
+        "MonthDays" : [ "ALL" ],
+        "DaysRelation" : "OR"
+      },
+      "eventsToAdd" : {
+        "Type" : "AddEvents",
+        "Events" : [ {
+          "Event" : "DCO_Archive_Reports-TO-DCO_Transfer_Reports-%%unique"
+        } ]
+      }
+    },
+    "DCO_Transfer_Reports" : {
+      "Type" : "Job:FileTransfer",
+      "ConnectionProfileSrc" : "DCO_MFT_LOCAL",
+      "ConnectionProfileDest" : "DCO_MFT_SFTP",
+      "SubApplication" : "DCO_VAS_REPORTS",
+      "Host" : "dco-dc01-saasagsand",
+      "CreatedBy" : "daniel_companeetz@bmc.com",
+      "RunAs" : "DCO_MFT_LOCAL+DCO_MFT_SFTP",
+      "Application" : "DCO",
+      "Variables" : [ {
+        "FTP-LOSTYPE" : "Unix"
+      }, {
+        "FTP-CONNTYPE1" : "File System"
+      }, {
+        "FTP-LHOST" : "<Agent Host>"
+      }, {
+        "FTP-LUSER" : "saasAgSand"
+      }, {
+        "FTP-ROSTYPE" : "Unix"
+      }, {
+        "FTP-CONNTYPE2" : "SFTP"
+      }, {
+        "FTP-RHOST" : "dc01"
+      }, {
+        "FTP-RUSER" : "dcompane1"
+      }, {
+        "FTP-HOMEDIR2" : "/home/dcompane1/"
+      }, {
+        "FTP-CM_VER" : "9.0.00"
+      }, {
+        "FTP-COMPRESSION11" : "0"
+      }, {
+        "FTP-COMPRESSION21" : "0"
+      }, {
+        "FTP-OVERRIDE_WATCH_INTERVAL1" : "0"
+      }, {
+        "FTP-NEWNAME1" : "$$AFTFILE_ALL$$.bkp"
+      }, {
+        "FTP-POSTCMD_ON_FAILURE1" : "0"
+      }, {
+        "FTP-SYNC_DIR_NO_DEL1" : "0"
+      } ],
+      "FileTransfers" : [ {
+        "TransferType" : "Binary",
+        "TransferOption" : "SrcToDestFileWatcher",
+        "Src" : "%%repdir./reports-%%fldr_mode.-%%thisdate..zip",
+        "Dest" : "/home/dcompane1/reports/",
+        "SRC_PATTERN" : "Wildcard",
+        "ABSTIME" : "0",
+        "TIMELIMIT" : "0",
+        "UNIQUE" : "0",
+        "SRCOPT" : "2",
+        "IF_EXIST" : "4",
+        "DSTOPT" : "0",
+        "ContinueOnFailure" : false,
+        "DeleteFileOnDestIfFails" : false,
+        "FailJobOnSourceActionFailure" : false,
+        "FailJobOnDestActionFailure" : false,
+        "FailJobOnSourceCommandFailure" : false,
+        "FailJobOnDestCommandFailure" : false,
+        "RECURSIVE" : "0",
+        "EXCLUDE_WILDCARD" : "0",
+        "TRIM" : "1",
+        "NULLFLDS" : "0",
+        "VERNUM" : "0",
+        "CASEIFS" : "0",
+        "FileWatcherOptions" : {
+          "TransferAllMatchingFiles" : false,
+          "MinDetectedSizeInBytes" : "0",
+          "MaxFileAge" : "4Min",
+          "UnitsOfTimeLimit" : "Minutes",
+          "SkipToNextFileIfCriteriaNotMatch" : true,
+          "TransferFilesMatchingSizeAndAgeCriteria" : false
+        },
+        "IncrementalTransfer" : {
+          "IncrementalTransferEnabled" : false,
+          "MaxModificationAgeForFirstRunEnabled" : false,
+          "MaxModificationAgeForFirstRunInHours" : "1"
+        },
+        "SimultaneousTransfer" : {
+          "TransferMultipleFilesSimultaneously" : false
+        }
+      } ],
+      "When" : {
+        "WeekDays" : [ "NONE" ],
+        "MonthDays" : [ "ALL" ],
+        "DaysRelation" : "OR"
+      },
+      "eventsToWaitFor" : {
+        "Type" : "WaitForEvents",
+        "Events" : [ {
+          "Event" : "DCO_Archive_Reports-TO-DCO_Transfer_Reports-%%unique"
+        } ]
+      },
+      "eventsToDelete" : {
+        "Type" : "DeleteEvents",
+        "Events" : [ {
+          "Event" : "DCO_Archive_Reports-TO-DCO_Transfer_Reports-%%unique"
+        } ]
+      }
+    }
+  }
+}
