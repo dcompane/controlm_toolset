@@ -62,4 +62,11 @@ Fields on the job are simple. Notes:
 * Shared is required for reports not owned
   * They must be shared for ALL, since the token is not a user (but a role).
 
+### Sample Jobs
+
+See the use of reference folders to schedule multiple different jobs across a single folder
+
+* This reduces the need for maintaining multiple jobs that are re-used always in the same way.
+* It does require some additional planning and thought (and testing) but there is a significant reduction in the jobs defined (not ordered!)
+
 Try it and let me know how it works!
